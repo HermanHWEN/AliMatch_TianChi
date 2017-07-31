@@ -14,20 +14,24 @@ public class ReadAsLink {
 		//read link info
 		Map<String,Link> linksMap=new HashMap<String,Link>();
 		List<String> linkInfos=ReadDataAsString.readTxtFile("C://match//gy_contest_link_info.txt");
-		for(String linkInfo:linkInfos){
+		for(int index=1;index<linkInfos.size();++index){
+			String linkInfo=linkInfos.get(index);
 			String[] linkFields=linkInfo.split(";");
+			if(linkFields.length!=4) continue;
 			Link link=new Link();
 			link.setLink_ID(linkFields[0]);
 			link.setLength(new Double(linkFields[1]));
 			link.setWidth(new Double(linkFields[2]));
-			link.setLink_class(new Integer(linkFields[2]));
+			link.setLink_class(new Integer(linkFields[3]));
 			linksMap.put(link.getLink_ID(), link);
 		}
 		
 		//read in and out info
 		List<String> linkInOutInfos=ReadDataAsString.readTxtFile("C://match//gy_contest_link_top(20170715更新).txt");
-		for(String linkInOutInfo:linkInOutInfos){
+		for(int index=1;index<linkInOutInfos.size();++index){
+			String linkInOutInfo=linkInOutInfos.get(index);
 			String[] linkFields=linkInOutInfo.split(";");
+			if(linkFields.length!=3) continue;
 			Link link=linksMap.get(linkFields[0]);
 			
 			//set in_links

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ejml.simple.SimpleMatrix;
 
 import model.DataInLink;
@@ -19,9 +20,10 @@ public class CrossValidation {
 	public static Map<Integer,Double> errors(List<DataInLink> dataInLinks){
 		
 		Map<Integer,Double> errorMap=new HashMap<>();
+		Map<Integer,SimpleMatrix> weightMap=new HashMap<>();
 		List<DataInLink> validationSet=new ArrayList<DataInLink>();
 		List<DataInLink> trainingSet=new ArrayList<DataInLink>();
-		
+		int maxOrder=5;
 		
 		double error=0;
 		
@@ -44,8 +46,8 @@ public class CrossValidation {
 			
 			//training.....
 			//get full dimension data
-			List<List<Double>> fullTrainingData=transferData(trainingSet);
-			List<List<Double>> fullValidationData=transferData(validationSet);
+			List<List<Double>> fullTrainingData=transferData(maxOrder,trainingSet);
+			List<List<Double>> fullValidationData=transferData(maxOrder,validationSet);
 			
 			SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
 			setY(Yt,trainingSet);
@@ -77,6 +79,7 @@ public class CrossValidation {
 				}else{
 					errorMap.put(count,e);
 				}
+				weightMap.put(count, W);
 				
 			}
 			
@@ -85,7 +88,7 @@ public class CrossValidation {
 		//get min error
 		int minCount=0;
 		double minError=Double.MAX_VALUE;
-		for(int count=0;count<getCounts();count++){
+		for(int count=0;count<getCounts(maxOrder);count++){
 			if(errorMap.get(count)!=null){
 				if(errorMap.get(count)<minError){
 					minCount=count;
@@ -93,16 +96,41 @@ public class CrossValidation {
 				}
 			}
 		}
+		
+		System.out.println("orders: " +StringUtils.join(getOrders(maxOrder,minCount),","));
+		System.out.println("weight: "+ StringUtils.join(weightMap.get(minCount).getMatrix().getData(),","));
 		System.out.println(minCount);
-		System.out.println(minError);
+		System.out.println("error: " + minError/10);
 		
 		return errorMap;
 		
 	}
 	
-	private static int getCounts(){
+	private static List<String> getOrders(int maxOrder,int minCount){
+		List<String> res=new ArrayList<>();
+		int count=0;
+		
+		//init res
+		for(int order=1;order<=maxOrder;order++){
+			
+			for(int lengthO=order;lengthO>=0;lengthO--){
+				for(int widthO=order-lengthO;widthO>=0;widthO--){
+					for(int classO=order-lengthO-widthO;classO>=0;classO--){
+						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
+							int startTimeO=order-lengthO-widthO-classO-weightO;
+							count++;
+							res.add(""+lengthO+widthO+classO+weightO+startTimeO);
+							if(count>minCount) return res;
+						}
+					}
+				}
+			}
+		}
+		return res;
+	}
+	
+	private static int getCounts(int maxOrder){
 		int res=0;
-		int maxOrder=5;
 		
 		//init res
 		for(int order=1;order<=maxOrder;order++){
@@ -121,9 +149,8 @@ public class CrossValidation {
 		return res;
 	}
 	
-	private static List<List<Double>> transferData(List<DataInLink> dataInLinks){
+	private static List<List<Double>> transferData(int maxOrder,List<DataInLink> dataInLinks){
 		List<List<Double>> res=new ArrayList<List<Double>>();
-		int maxOrder=5;
 		//get result
 		
 		int index=0;

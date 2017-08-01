@@ -13,9 +13,9 @@ import model.Link;
 
 public class ReadAsTrainData {
 	
-	public static List<DataInLink> readAsTrainData() throws ParseException{
+	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException{
 		List<DataInLink> dataInLinks=new ArrayList<DataInLink>();
-		List<String> linkInfos=ReadDataAsString.readTxtFile("C://match//gy_contest_link_traveltime_training_data.txt");
+		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_TRAINING_DATA);
 		for(int index=1;index<linkInfos.size();++index){
 			String linkInfo=linkInfos.get(index);
 			String[] linkFields=linkInfo.split(";");
@@ -23,6 +23,7 @@ public class ReadAsTrainData {
 			
 			DataInLink dataInLink=new DataInLink();
 			DateFormat df=new SimpleDateFormat("yyyy-mm-dd",Locale.ENGLISH);
+			dataInLink.setLink(links.get(linkFields[0]));
 			dataInLink.setDate(df.parse(linkFields[1]));
 			String[] times=linkFields[2].substring(1, linkFields[2].length()-1).split(",");
 			

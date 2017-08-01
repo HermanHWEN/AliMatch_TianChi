@@ -15,11 +15,6 @@
   </properties>
 
   <dependencies>
-<!-- 	  <dependency> -->
-<!-- 	    <groupId>org.ujmp</groupId> -->
-<!-- 	    <artifactId>ujmp-core</artifactId> -->
-<!-- 	    <version>0.3.0</version> -->
-<!-- 	</dependency> -->
 	<dependency>
 	    <groupId>com.googlecode.efficient-java-matrix-library</groupId>
 	    <artifactId>ejml</artifactId>

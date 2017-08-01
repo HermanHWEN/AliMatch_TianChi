@@ -3,12 +3,13 @@ package model;
 import java.util.Date;
 
 public class DataInLink {
-	private String link_ID;
-	public String getLink_ID() {
-		return link_ID;
+	private Link link;
+	
+	public Link getLink() {
+		return link;
 	}
-	public void setLink_ID(String link_ID) {
-		this.link_ID = link_ID;
+	public void setLink(Link link) {
+		this.link = link;
 	}
 	private Date date;
 	private Date startTime;
@@ -21,6 +22,10 @@ public class DataInLink {
 		this.date = date;
 	}
 	public Date getStartTime() {
+		return startTime;
+	}
+	
+	public Date getStartMinus() {
 		return startTime;
 	}
 	public void setStartTime(Date startTime) {

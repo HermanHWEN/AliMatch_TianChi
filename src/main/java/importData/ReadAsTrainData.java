@@ -41,14 +41,14 @@ public class ReadAsTrainData {
 			convertTxtToDataLink.join();
 		}
 
-		int count=0;
-		for(DataInLink dataInLink: dataInLinks){
-			if(dataInLink==null){
-				System.out.println(count);
-			}
-			count++;
-		}
-
+//		int count=0;
+//		for(DataInLink dataInLink: dataInLinks){
+//			if(dataInLink==null){
+//				System.out.println(count);
+//			}
+//			count++;
+//		}
+		System.gc();
 		return dataInLinks;
 	}
 
@@ -94,7 +94,7 @@ class ConvertTxtToDataLink implements Runnable{
 						synchronized(df){
 							dataInLink.setDate(df.parse(linkFields[1].trim()));
 						}
-					}catch(Exception e){
+					}catch(ParseException e){
 						System.out.println("Thread : "+round + "# index :"+index+" date: "+linkFields[1]);
 					}
 					
@@ -104,7 +104,7 @@ class ConvertTxtToDataLink implements Runnable{
 						synchronized(df2){
 							dataInLink.setStartTime(df2.parse(times[0].trim()));
 						}
-					}catch(Exception e){
+					}catch(ParseException e){
 						System.out.println("Thread "+round + "# index :"+index+" Start time: "+times[0]);
 					}
 				}
@@ -113,7 +113,7 @@ class ConvertTxtToDataLink implements Runnable{
 						synchronized(df2){
 							dataInLink.setStartTime(df2.parse(times[1].trim()));
 						}
-					}catch(Exception e){
+					}catch(ParseException e){
 						System.out.println("Thread "+round + "# index :"+index+" end time: "+times[1]);
 					}
 				}
@@ -122,6 +122,7 @@ class ConvertTxtToDataLink implements Runnable{
 				dataInLinks.add(dataInLink);
 			}
 		}
+		System.gc();
 	}
 
 	public List<DataInLink> getDataInLinks() {

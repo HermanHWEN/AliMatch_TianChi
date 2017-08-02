@@ -22,9 +22,10 @@ public class CrossValidation {
 	public static Map<Integer,Double> errors(List<DataInLink> dataInLinks) throws InterruptedException{
 		
 		int maxOrder=5;
+		int foldTime=10;
 
 		//convert data high dimension
-		List<LinkedList<Double>> fullDataSetWithDimension= transferData(5,dataInLinks);
+		List<LinkedList<Double>> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
 		
 		
 		//from low dimension to high
@@ -34,7 +35,7 @@ public class CrossValidation {
             for(int index=0;index<=count;index++){
             	fullDataSet.add(fullDataSetWithDimension.get(index));
             }
-        	Thread training=new Thread(new Training(count,10,errorMap,weightMap,fullDataSet));
+        	Thread training=new Thread(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
 			trainingTs.add(training);
 			training.start();
         }
@@ -148,15 +149,7 @@ public class CrossValidation {
 							List<Double> list=new ArrayList<Double>();
 							for(int index=0;index<dataInLinks.size();index++){
 								DataInLink dataInLink=dataInLinks.get(index);
-								
-								if(dataInLink==null){
-									System.out.println("null");
-								}
-								try{
-									oneColData.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
-								}catch(Exception e){
-									System.out.println(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
-								}
+								oneColData.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
 							}
 							res.add(oneColData);
 						}

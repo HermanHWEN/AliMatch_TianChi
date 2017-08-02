@@ -34,6 +34,7 @@ public class ReadDataAsString {
             System.out.println("reading error.");
             e.printStackTrace();
         }
+        System.gc();
 		return res;
      
     }   

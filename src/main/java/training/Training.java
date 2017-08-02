@@ -61,12 +61,11 @@ public class Training implements Runnable{
 			for(LinkedList<Double> fullDataSet:fullDataSetWithDimension){
 				
 				LinkedList<Double> validationData=(LinkedList<Double>) fullDataSet.subList(start, start+step-1);
+				LinkedList<Double> trainingData;
 				LinkedList<Double> trainingData2=(LinkedList<Double>) fullDataSet.subList(start+step, size-1);
-				LinkedList<Double> trainingData=null;
 				if(start>0){
 					
-					LinkedList<Double> trainingData1=(LinkedList<Double>) fullDataSet.subList(0, start-1);
-					trainingData.addAll(trainingData1);
+					trainingData=(LinkedList<Double>) fullDataSet.subList(0, start-1);
 					trainingData.addAll(trainingData2);
 				}else{
 					trainingData=trainingData2;

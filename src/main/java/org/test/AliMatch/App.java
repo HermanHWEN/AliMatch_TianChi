@@ -24,6 +24,8 @@ public class App
     	linksMap=CalculateFeatures.calculateFeaturesOfLinks(linksMap);
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
     	linksMap.clear();
+    	linksMap=null;
+    	System.gc();
     	CrossValidation.errors(dataInLinks);
     }
 }

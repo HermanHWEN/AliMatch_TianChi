@@ -27,17 +27,21 @@ public class CrossValidation {
 		//convert data high dimension
 		System.out.println("converting data high dimension");
 		List<LinkedList<Double>> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
+		System.out.println("converted data high dimension");
 		
 		
 		//from low dimension to high
+		System.out.println("Start training");
 		List<Thread> trainingTs=new ArrayList<Thread>();
 		for(int count=0;count<fullDataSetWithDimension.size();count++){
 			List<LinkedList<Double>> fullDataSet=new ArrayList<>();
             for(int index=0;index<=count;index++){
             	fullDataSet.add(fullDataSetWithDimension.get(index));
             }
+            System.out.println("Got full data with order: " +StringUtils.join(getOrders(maxOrder,count),","));
         	Thread training=new Thread(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
 			trainingTs.add(training);
+			System.out.println("Start training of order: " +StringUtils.join(getOrders(maxOrder,count),","));
 			training.start();
         }
 		
@@ -45,6 +49,7 @@ public class CrossValidation {
 		for(Thread training:trainingTs){
 			training.join();
 		}
+		System.out.println("All trainings completed.");
 		
 		//get min error
 		int minCount=0;
@@ -58,10 +63,10 @@ public class CrossValidation {
 			}
 		}
 		
-		System.out.println("orders: " +StringUtils.join(getOrders(maxOrder,minCount),","));
-		System.out.println("weight: "+ StringUtils.join(weightMap.get(minCount).getMatrix().getData(),","));
+		System.out.println("Order of min error:  " +StringUtils.join(getOrders(maxOrder,minCount),","));
+		System.out.println("Weight of min error: "+ StringUtils.join(weightMap.get(minCount).getMatrix().getData(),","));
 		System.out.println(minCount);
-		System.out.println("error: " + minError/10);
+		System.out.println("Min error: " + minError/10);
 		
 		return errorMap;
 		
@@ -171,7 +176,7 @@ public class CrossValidation {
 		
 	}
 	
-	private static double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
+	private static synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
 		if(dataInLink==null) return 0;
 		double reswithOrder=Math.pow(dataInLink.getLink().getLength(), lengthO)*
 		Math.pow(dataInLink.getLink().getWidth(), widthO)*

@@ -153,6 +153,13 @@ public class CrossValidation {
 		List<List<Double>> res=new ArrayList<List<Double>>();
 		//get result
 		
+		//constant col
+		List<Double> constants=new ArrayList<Double>();
+		for(DataInLink dataInLink: dataInLinks){
+			constants.add((double) 1);
+		}
+		res.add(constants);
+		
 		int index=0;
 		for(int order=1;order<=maxOrder;order++){
 			

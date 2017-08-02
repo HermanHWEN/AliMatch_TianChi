@@ -25,8 +25,8 @@ public class CalculateFeatures {
 			oldWeight=newWeight;
 			newWeight=updateWeight(linksList,links,numOfTriangleMap);
 		}while(oldWeight.doubleValue()==0 || (oldWeight.add(newWeight.multiply(BigDecimal.valueOf(-1)))).abs().divide(oldWeight,MathContext.DECIMAL128).doubleValue()>0.0001);
-		System.out.println(oldWeight+"");
-		System.out.println(newWeight+"");
+//		System.out.println(oldWeight+"");
+//		System.out.println(newWeight+"");
 		
 		return links;
 		  

@@ -119,13 +119,13 @@ public class CrossValidation {
 	}
 	
 	
-	public static SimpleMatrix genTargetFunWeidth(List<List<Double>> res, SimpleMatrix Y){
+	public static SimpleMatrix genTargetFunWeidth(List<double[]> res, SimpleMatrix Y){
 		
-		SimpleMatrix X=new SimpleMatrix(res.get(0).size(),res.size());
+		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
 		
 		int colNum=0;
-		for(List<Double> col:res){
-			X.setColumn(colNum, 0,col.stream().mapToDouble(Double::doubleValue).toArray());
+		for(double[] col:res){
+			X.setColumn(colNum, 0,col);
 			colNum++;
 		}
 		

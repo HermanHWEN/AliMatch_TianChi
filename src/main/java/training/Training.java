@@ -35,8 +35,8 @@ public class Training implements Runnable{
     public void run() {
         //training.....
         //get full dimension data
-        List<List<Double>> fullTrainingData= transferData(5,trainingSet);
-        List<List<Double>> fullValidationData=transferData(5,validationSet);
+        List<double[]> fullTrainingData= transferData(5,trainingSet);
+        List<double[]> fullValidationData=transferData(5,validationSet);
 
         SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
         CrossValidation.setY(Yt,trainingSet);
@@ -45,19 +45,20 @@ public class Training implements Runnable{
 
 
         for(int count=0;count<fullTrainingData.size();count++){
-            List<List<Double>> trainingData=new ArrayList<List<Double>>();
-            List<List<Double>> validationData=new ArrayList<List<Double>>();
+            List<double[]> trainingData=new ArrayList<double[]>();
+            List<double[]> validationData=new ArrayList<double[]>();
             for(int index=0;index<=count;index++){
                 trainingData.add(fullTrainingData.get(index));
                 validationData.add(fullValidationData.get(index));
             }
 
             SimpleMatrix W=CrossValidation.genTargetFunWeidth(trainingData,Yt);
-            SimpleMatrix X=new SimpleMatrix(validationData.get(0).size(),trainingData.size());
+            SimpleMatrix X=new SimpleMatrix(validationData.get(0).length,trainingData.size());
 
+            //validate
             int colNum=0;
-            for(List<Double> col:validationData){
-                X.setColumn(colNum, 0,col.stream().mapToDouble(Double::doubleValue).toArray());
+            for(double[] col:validationData){
+                X.setColumn(colNum, 0,col);
                 colNum++;
             }
 
@@ -76,20 +77,17 @@ public class Training implements Runnable{
     }
     
 
-	public synchronized List<List<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
-		List<List<Double>> res=new ArrayList<List<Double>>();
+	public synchronized List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
+		List<double[]> res=new ArrayList<double[]>();
 		//get result
 		
 		//constant col
-		List<Double> constants=new ArrayList<Double>();
-		int count = 0;
-		while(count<dataInLinks.size()){
-			count++;
-			constants.add((double) 1);
+		double[] constants=new double[dataInLinks.size()];
+		for(int index=0;index<dataInLinks.size();index++){
+			constants[index]=1;
 		}
 		res.add(constants);
 		
-		int index=0;
 		for(int order=1;order<=maxOrder;order++){
 			
 			for(int lengthO=order;lengthO>=0;lengthO--){
@@ -97,21 +95,23 @@ public class Training implements Runnable{
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
+							double[] oneColData=new double[dataInLinks.size()];
 							List<Double> list=new ArrayList<Double>();
 							synchronized(mListMutex){
-								for(DataInLink dataInLink: dataInLinks){
+								for(int index=0;index<dataInLinks.size();index++){
+									DataInLink dataInLink=dataInLinks.get(index);
+									
 									if(dataInLink==null){
 										System.out.println("null");
 									}
 									try{
-										
-										list.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
+										oneColData[index]=caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
 									}catch(Exception e){
 										System.out.println(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
 									}
 								}
 							}
-							res.add(list);
+							res.add(oneColData);
 						}
 					}
 				}

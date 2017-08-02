@@ -3,6 +3,7 @@ package crossValidation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,13 +24,13 @@ public class CrossValidation {
 		int maxOrder=5;
 
 		//convert data high dimension
-		List<double[]> fullDataSetWithDimension= transferData(5,dataInLinks);
+		List<LinkedList<Double>> fullDataSetWithDimension= transferData(5,dataInLinks);
 		
 		
 		//from low dimension to high
 		List<Thread> trainingTs=new ArrayList<Thread>();
 		for(int count=0;count<fullDataSetWithDimension.size();count++){
-			List<double[]> fullDataSet=new ArrayList<>();
+			List<LinkedList<Double>> fullDataSet=new ArrayList<>();
             for(int index=0;index<=count;index++){
             	fullDataSet.add(fullDataSetWithDimension.get(index));
             }
@@ -109,13 +110,13 @@ public class CrossValidation {
 	}
 	
 	
-	public static SimpleMatrix genTargetFunWeidth(List<double[]> res, SimpleMatrix Y){
+	public static SimpleMatrix genTargetFunWeidth(List<LinkedList<Double>> res, SimpleMatrix Y){
 		
-		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
+		SimpleMatrix X=new SimpleMatrix(res.get(0).size(),res.size());
 		
 		int colNum=0;
-		for(double[] col:res){
-			X.setColumn(colNum, 0,col);
+		for(LinkedList<Double> col:res){
+			X.setColumn(colNum, 0,col.stream().mapToDouble(d -> d).toArray());
 			colNum++;
 		}
 		
@@ -124,14 +125,14 @@ public class CrossValidation {
 		return W;
 		
 	}
-	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
-		List<double[]> res=new ArrayList<double[]>();
+	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
+		List<LinkedList<Double>> res=new ArrayList<LinkedList<Double>>();
 		//get result
 		
 		//constant col
-		double[] constants=new double[dataInLinks.size()];
+		LinkedList<Double> constants=new LinkedList<Double>();
 		for(int index=0;index<dataInLinks.size();index++){
-			constants[index]=1;
+			constants.add((double) 1);
 		}
 		res.add(constants);
 		
@@ -143,7 +144,7 @@ public class CrossValidation {
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
-							double[] oneColData=new double[dataInLinks.size()];
+							LinkedList<Double> oneColData=new LinkedList<>();
 							List<Double> list=new ArrayList<Double>();
 							for(int index=0;index<dataInLinks.size();index++){
 								DataInLink dataInLink=dataInLinks.get(index);
@@ -152,7 +153,7 @@ public class CrossValidation {
 									System.out.println("null");
 								}
 								try{
-									oneColData[index]=caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
+									oneColData.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
 								}catch(Exception e){
 									System.out.println(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
 								}
@@ -166,10 +167,10 @@ public class CrossValidation {
 		
 		//Y
 		//constant col
-		double[] Y=new double[dataInLinks.size()];
+		LinkedList<Double> Y=new LinkedList<Double>();
 		for(int index=0;index<dataInLinks.size();index++){
 			DataInLink dataInLink=dataInLinks.get(index);
-			Y[index]=dataInLink.getTravle_time();
+			Y.add(dataInLink.getTravle_time());
 		}
 		res.add(Y);
 		return res;

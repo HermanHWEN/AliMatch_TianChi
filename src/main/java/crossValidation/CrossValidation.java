@@ -25,6 +25,7 @@ public class CrossValidation {
 		int foldTime=10;
 
 		//convert data high dimension
+		System.out.println("converting data high dimension");
 		List<LinkedList<Double>> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
 		
 		
@@ -100,7 +101,6 @@ public class CrossValidation {
 				for(int widthO=order-lengthO;widthO>=0;widthO--){
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							int startTimeO=order-lengthO-widthO-classO-weightO;
 							res++;
 						}
 					}
@@ -128,6 +128,8 @@ public class CrossValidation {
 	}
 	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
 		List<LinkedList<Double>> res=new ArrayList<LinkedList<Double>>();
+		DataInLink dataInLink;
+		LinkedList<Double> oneColData;
 		//get result
 		
 		//constant col
@@ -145,10 +147,9 @@ public class CrossValidation {
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
-							LinkedList<Double> oneColData=new LinkedList<>();
-							List<Double> list=new ArrayList<Double>();
+							oneColData=new LinkedList<>();
 							for(int index=0;index<dataInLinks.size();index++){
-								DataInLink dataInLink=dataInLinks.get(index);
+								dataInLink=dataInLinks.get(index);
 								oneColData.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
 							}
 							res.add(oneColData);
@@ -162,7 +163,7 @@ public class CrossValidation {
 		//constant col
 		LinkedList<Double> Y=new LinkedList<Double>();
 		for(int index=0;index<dataInLinks.size();index++){
-			DataInLink dataInLink=dataInLinks.get(index);
+			dataInLink=dataInLinks.get(index);
 			Y.add(dataInLink.getTravle_time());
 		}
 		res.add(Y);

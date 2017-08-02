@@ -27,7 +27,6 @@ public class ReadAsTrainData {
 		int totalThreadNum=10;
 		int step=linkInfos.size()/totalThreadNum+1;
 
-		List<ConvertTxtToDataLink> convertTxtToDataLinks=new ArrayList<ConvertTxtToDataLink>();
 		List<Thread> convertTxtToDataLinkTs=new ArrayList<Thread>();
 
 		for(int threadIndex=0;threadIndex<totalThreadNum;++threadIndex){

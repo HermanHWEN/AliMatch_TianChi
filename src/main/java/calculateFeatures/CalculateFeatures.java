@@ -12,7 +12,7 @@ import model.Link;
 
 public class CalculateFeatures {
 	
-	public static Map<String,Link> calculateFeaturesOfLinks(final Map<String,Link> links){
+	public static void calculateFeaturesOfLinks(final Map<String,Link> links){
 		List<Link> linksList= new ArrayList<Link>(links.values());
 		initWeight(linksList);
 		Map<String,Integer> numOfTriangleMap=getNumOfTriangleMap(linksList);
@@ -27,8 +27,6 @@ public class CalculateFeatures {
 		}while(oldWeight.doubleValue()==0 || (oldWeight.add(newWeight.multiply(BigDecimal.valueOf(-1)))).abs().divide(oldWeight,MathContext.DECIMAL128).doubleValue()>0.0001);
 //		System.out.println(oldWeight+"");
 //		System.out.println(newWeight+"");
-		
-		return links;
 		  
 	}
 	

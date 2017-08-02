@@ -3,7 +3,6 @@ package importData;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,7 +15,7 @@ public class ReadDataAsString {
 	public static List<String> readTxtFile(String filePath){
 		List<String> res=new ArrayList<String>();
         try {
-                String encoding="GBK";
+                String encoding="UTF-8";
                 File file=new File(filePath);
                 if(file.isFile() && file.exists()){ //file exists?
                     InputStreamReader read = new InputStreamReader(

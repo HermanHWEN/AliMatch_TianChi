@@ -2,27 +2,24 @@ package crossValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+
+import model.DataInLink;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ejml.simple.SimpleMatrix;
 
-import model.DataInLink;
-import model.Link;
+import training.Training;
 
 public class CrossValidation {
-	
-	
-	public static Map<Integer,Double> errors(List<DataInLink> dataInLinks){
-		
-		Map<Integer,Double> errorMap=new HashMap<>();
-		Map<Integer,SimpleMatrix> weightMap=new HashMap<>();
-		List<DataInLink> validationSet=new ArrayList<DataInLink>();
-		List<DataInLink> trainingSet=new ArrayList<DataInLink>();
+
+	static Map<Integer,Double> errorMap=new HashMap<Integer,Double>();
+	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
+
+	public static Map<Integer,Double> errors(List<DataInLink> dataInLinks) throws InterruptedException{
+
 		int maxOrder=5;
 		
 		double error=0;
@@ -30,7 +27,11 @@ public class CrossValidation {
 		//Separate data into training set and validation set
 		int size=dataInLinks.size();
 		int step=size/10+1;
+		List<Thread> trainingTs=new ArrayList<Thread>();
+		
 		for(int start=0;start<size;start+=step){
+			List<DataInLink> validationSet=new ArrayList<DataInLink>();
+			List<DataInLink> trainingSet=new ArrayList<DataInLink>();
 			
 			for(int index=0;index<size;++index){
 				
@@ -42,47 +43,14 @@ public class CrossValidation {
 					trainingSet.add(dataInLinks.get(index));
 				}
 			}
-			
-			
-			//training.....
-			//get full dimension data
-			List<List<Double>> fullTrainingData=transferData(maxOrder,trainingSet);
-			List<List<Double>> fullValidationData=transferData(maxOrder,validationSet);
-			
-			SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
-			setY(Yt,trainingSet);
-			SimpleMatrix Yv=new SimpleMatrix(validationSet.size(),1);
-			setY(Yv,validationSet);
-			
-			
-			for(int count=0;count<fullTrainingData.size();count++){
-				List<List<Double>> trainingData=new ArrayList<List<Double>>();
-				List<List<Double>> validationData=new ArrayList<List<Double>>();
-				for(int index=0;index<=count;index++){
-					trainingData.add(fullTrainingData.get(index));
-					validationData.add(fullValidationData.get(index));
-				}
-				
-				SimpleMatrix W=genTargetFunWeidth(trainingData,Yt);
-				SimpleMatrix X=new SimpleMatrix(validationData.get(0).size(),trainingData.size());
-				
-				int colNum=0;
-				for(List<Double> col:validationData){
-					X.setColumn(colNum, 0,col.stream().mapToDouble(Double::doubleValue).toArray());
-					colNum++;
-				}
-				
-				//get validation error for a partial
-				double e=X.mult(W).minus(Yv).normF()/(validationSet.size()+1);
-				if(errorMap.get(count)!=null){
-					errorMap.put(count,errorMap.get(count)+e);
-				}else{
-					errorMap.put(count,e);
-				}
-				weightMap.put(count, W);
-				
-			}
-			
+			Thread training=new Thread(new Training(trainingSet,validationSet,errorMap,weightMap));
+			trainingTs.add(training);
+			training.start();
+		}
+		
+		
+		for(Thread training:trainingTs){
+			training.join();
 		}
 		
 		//get min error
@@ -105,9 +73,10 @@ public class CrossValidation {
 		return errorMap;
 		
 	}
-	
+
+
 	private static List<String> getOrders(int maxOrder,int minCount){
-		List<String> res=new ArrayList<>();
+		List<String> res=new ArrayList<String>();
 		int count=0;
 		
 		//init res
@@ -149,48 +118,8 @@ public class CrossValidation {
 		return res;
 	}
 	
-	private static List<List<Double>> transferData(int maxOrder,List<DataInLink> dataInLinks){
-		List<List<Double>> res=new ArrayList<List<Double>>();
-		//get result
-		
-		//constant col
-		List<Double> constants=new ArrayList<Double>();
-		for(DataInLink dataInLink: dataInLinks){
-			constants.add((double) 1);
-		}
-		res.add(constants);
-		
-		int index=0;
-		for(int order=1;order<=maxOrder;order++){
-			
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							int startTimeO=order-lengthO-widthO-classO-weightO;
-							List<Double> list=new ArrayList<Double>();
-							for(DataInLink dataInLink: dataInLinks){
-								list.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
-							}
-							res.add(list);
-						}
-					}
-				}
-			}
-		}
-		return res;
-		
-	}
 	
-	private static double caclulateWithOrder(DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
-		return Math.pow(dataInLink.getLink().getLength(), lengthO)*
-		Math.pow(dataInLink.getLink().getWidth(), widthO)*
-		Math.pow(dataInLink.getLink().getLink_class(), classO)*
-		Math.pow(dataInLink.getLink().getWeight(), weightO)*
-		Math.pow(dataInLink.getStartTime().getHours()*60+dataInLink.getStartTime().getMinutes(), startTimeO);
-	}
-	
-	private static SimpleMatrix genTargetFunWeidth(List<List<Double>> res,SimpleMatrix Y){
+	public static SimpleMatrix genTargetFunWeidth(List<List<Double>> res, SimpleMatrix Y){
 		
 		SimpleMatrix X=new SimpleMatrix(res.get(0).size(),res.size());
 		
@@ -205,7 +134,7 @@ public class CrossValidation {
 		return W;
 		
 	}
-	private static void setY(SimpleMatrix Y,List<DataInLink> dataInLinks){
+	public static void setY(SimpleMatrix Y, List<DataInLink> dataInLinks){
 		
 		for(DataInLink dataInLink:dataInLinks){
 			

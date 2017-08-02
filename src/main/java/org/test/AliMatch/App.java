@@ -23,6 +23,7 @@ public class App
     	Map<String,Link> linksMap=ReadAsLink.readAsLink();
     	linksMap=CalculateFeatures.calculateFeaturesOfLinks(linksMap);
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
+    	linksMap.clear();
     	CrossValidation.errors(dataInLinks);
     }
 }

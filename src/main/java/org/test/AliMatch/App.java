@@ -1,16 +1,20 @@
 package org.test.AliMatch;
 
+import importData.ConstantPath;
 import importData.ReadAsLink;
 import importData.ReadAsTrainData;
 
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 
 import model.DataInLink;
 import model.Link;
+import outputData.WriteData;
+import testData.Testing;
 import calculateFeatures.CalculateFeatures;
 import crossValidation.CrossValidation;
 
@@ -31,7 +35,25 @@ public class App
     	linksMap.clear();
     	linksMap=null;
     	System.gc();
+    	
+    	
     	System.out.println("Training model... ");
-    	CrossValidation.errors(dataInLinks);
+    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
+    	System.out.println("Got target function.");
+    	
+    	
+    	
+    	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
+    	
+//    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);
+    	System.out.println("Generated testing data set # total : " + testDataSet.size());
+    	
+    	Testing.testing(targetFunction,testDataSet);
+    	System.out.println("Test result generated.");
+    	
+    	
+    	System.out.println("Writing data to specified path - "+ConstantPath.PATH_OF_RESULT);
+    	WriteData.contentToTxt(ConstantPath.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
+    	System.out.println("Done");
     }
 }

@@ -1,8 +1,14 @@
 package model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class DataInLink {
+	
+	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private Link link;
 	
 	public Link getLink() {
@@ -43,6 +49,17 @@ public class DataInLink {
 	public void setTravle_time(double travle_time) {
 		this.travle_time = travle_time;
 	}
+	@Override
+	public String toString() {
+		return link.getLink_ID()
+				+ "#" + DataInLink.df.format(date)
+				+ "#[" + DataInLink.df2.format(startTime) + "," + DataInLink.df2.format(endTime)
+				+ ")#" + travle_time;
+	}
+	
+	
+	
+	
 	
 	
 }

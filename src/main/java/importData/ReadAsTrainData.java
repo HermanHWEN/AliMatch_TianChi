@@ -21,8 +21,8 @@ public class ReadAsTrainData {
 		
 		List<DataInLink> dataInLinks=Collections.synchronizedList(new ArrayList<DataInLink>());
 		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_TRAINING_DATA);
-		DateFormat df = new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH);
-		DateFormat df2 = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss", Locale.ENGLISH);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
 		int totalThreadNum=10;
 		int step=linkInfos.size()/totalThreadNum+1;

@@ -19,34 +19,24 @@ public class CrossValidation {
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
 
 	public static Map<Integer,Double> errors(List<DataInLink> dataInLinks) throws InterruptedException{
-
+		
 		int maxOrder=5;
+
+		//convert data high dimension
+		List<double[]> fullDataSetWithDimension= transferData(5,dataInLinks);
 		
-		double error=0;
 		
-		//Separate data into training set and validation set
-		int size=dataInLinks.size();
-		int step=size/10+1;
+		//from low dimension to high
 		List<Thread> trainingTs=new ArrayList<Thread>();
-		
-		for(int start=0;start<size;start+=step){
-			List<DataInLink> validationSet=new ArrayList<DataInLink>();
-			List<DataInLink> trainingSet=new ArrayList<DataInLink>();
-			
-			for(int index=0;index<size;++index){
-				
-				
-				//pick validation set
-				if(index>start && index<start+step && index<size){
-					validationSet.add(dataInLinks.get(index));
-				}else{//there is training set
-					trainingSet.add(dataInLinks.get(index));
-				}
-			}
-			Thread training=new Thread(new Training(trainingSet,validationSet,errorMap,weightMap));
+		for(int count=0;count<fullDataSetWithDimension.size();count++){
+			List<double[]> fullDataSet=new ArrayList<>();
+            for(int index=0;index<=count;index++){
+            	fullDataSet.add(fullDataSetWithDimension.get(index));
+            }
+        	Thread training=new Thread(new Training(count,10,errorMap,weightMap,fullDataSet));
 			trainingTs.add(training);
 			training.start();
-		}
+        }
 		
 		
 		for(Thread training:trainingTs){
@@ -134,14 +124,66 @@ public class CrossValidation {
 		return W;
 		
 	}
-	public static void setY(SimpleMatrix Y, List<DataInLink> dataInLinks){
+	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
+		List<double[]> res=new ArrayList<double[]>();
+		//get result
 		
-		for(DataInLink dataInLink:dataInLinks){
+		//constant col
+		double[] constants=new double[dataInLinks.size()];
+		for(int index=0;index<dataInLinks.size();index++){
+			constants[index]=1;
+		}
+		res.add(constants);
+		
+		//tranfered columns
+		for(int order=1;order<=maxOrder;order++){
 			
-			int offset=0;
-			Y.setColumn(0, 0, dataInLink.getTravle_time());
-			offset++;
+			for(int lengthO=order;lengthO>=0;lengthO--){
+				for(int widthO=order-lengthO;widthO>=0;widthO--){
+					for(int classO=order-lengthO-widthO;classO>=0;classO--){
+						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
+							int startTimeO=order-lengthO-widthO-classO-weightO;
+							double[] oneColData=new double[dataInLinks.size()];
+							List<Double> list=new ArrayList<Double>();
+							for(int index=0;index<dataInLinks.size();index++){
+								DataInLink dataInLink=dataInLinks.get(index);
+								
+								if(dataInLink==null){
+									System.out.println("null");
+								}
+								try{
+									oneColData[index]=caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
+								}catch(Exception e){
+									System.out.println(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
+								}
+							}
+							res.add(oneColData);
+						}
+					}
+				}
+			}
 		}
 		
+		//Y
+		//constant col
+		double[] Y=new double[dataInLinks.size()];
+		for(int index=0;index<dataInLinks.size();index++){
+			DataInLink dataInLink=dataInLinks.get(index);
+			Y[index]=dataInLink.getTravle_time();
+		}
+		res.add(Y);
+		return res;
+		
+	}
+	
+	private static double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
+		if(dataInLink==null) return 0;
+		double reswithOrder=Math.pow(dataInLink.getLink().getLength(), lengthO)*
+		Math.pow(dataInLink.getLink().getWidth(), widthO)*
+		Math.pow(dataInLink.getLink().getLink_class(), classO)*
+		Math.pow(dataInLink.getLink().getWeight(), weightO)*
+		Math.pow(dataInLink.getStartTime().getHours()*60+dataInLink.getStartTime().getMinutes(), startTimeO);
+		
+		return reswithOrder;
 	}
 }

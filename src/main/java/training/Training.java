@@ -1,6 +1,7 @@
 package training;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 
 import model.DataInLink;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.ejml.simple.SimpleBase;
 import org.ejml.simple.SimpleMatrix;
 
 import crossValidation.CrossValidation;
@@ -18,152 +21,108 @@ import crossValidation.CrossValidation;
 public class Training implements Runnable{
 	private final Object mListMutex = new Object();
 
-    private List<DataInLink> trainingSet;
-    private List<DataInLink> validationSet;
+	private int count;
+	private int foldTime;
+	private Map<Integer,Double> errorMap;
+	private Map<Integer,SimpleMatrix> weightMap;
+    private Double error;
+    private SimpleMatrix weight;
+	private List<List<double[]>> trainingSetWithFold=Collections.unmodifiableList(new ArrayList<List<double[]>>());
+	private List<List<double[]>> validationSetWithFold=Collections.unmodifiableList(new ArrayList<List<double[]>>());
+    
+    private List<double[]> fullDataSetWithDimension;
 
-    private Map<Integer,Double> errorMap=new HashMap<>();
-    private Map<Integer,SimpleMatrix> weightMap=new HashMap<>();
-
-    public Training(List<DataInLink> trainingSet, List<DataInLink> validationSet, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap) {
-        this.trainingSet = Collections.unmodifiableList(trainingSet);
-        this.validationSet = Collections.unmodifiableList(validationSet);
-        this.errorMap = errorMap;
-        this.weightMap = weightMap;
-    }
+    
+    
+    public Training(int count,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
+			List<double[]> fullDataSetWithDimension) {
+		super();
+		this.count = count;
+		this.foldTime = foldTime;
+		this.errorMap = errorMap;
+		this.weightMap = weightMap;
+		this.fullDataSetWithDimension=Collections.unmodifiableList(fullDataSetWithDimension);
+	}
 
     @Override
     public void run() {
+
+    	//Separate data into training set and validation set
+		int size=fullDataSetWithDimension.get(0).length;
+		int step=size/foldTime+1;
+		
+		//training with cross validation 
+		//separate data into training set and validation set
+		
+		for(int start=0;start<size;start+=step){
+			List<double[]> trainingSet=Collections.unmodifiableList(new ArrayList<double[]>());
+			List<double[]> validationSet=Collections.unmodifiableList(new ArrayList<double[]>());
+			for(double[] fullDataSet:fullDataSetWithDimension){
+				double[] validationData=Arrays.copyOfRange(fullDataSet, start, start+step-1);
+				double[] trainingData2=Arrays.copyOfRange(fullDataSet, start+step, size-1);
+				double[] trainingData=null;
+				if(start>0){
+					
+					double[] trainingData1=Arrays.copyOfRange(fullDataSet, 0, start-1);
+					trainingData=ArrayUtils.addAll(trainingData1,trainingData2);
+				}else{
+					trainingData=ArrayUtils.addAll(trainingData2);
+				}
+				trainingSet.add(trainingData);validationSet.add(validationData);
+			}
+			
+			trainingSetWithFold.add(trainingSet);
+			validationSetWithFold.add(validationSet);
+			
+		}
+		
+		
         //training.....
         //get full dimension data
-        List<double[]> fullTrainingData= transferData(5,trainingSet);
-        List<double[]> fullValidationData=transferData(5,validationSet);
-
-        SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
-        CrossValidation.setY(Yt,trainingSet);
-        SimpleMatrix Yv=new SimpleMatrix(validationSet.size(),1);
-        CrossValidation.setY(Yv,validationSet);
-
-
-        for(int count=0;count<fullTrainingData.size();count++){
-            List<double[]> trainingData=new ArrayList<double[]>();
-            List<double[]> validationData=new ArrayList<double[]>();
-            for(int index=0;index<=count;index++){
-                trainingData.add(fullTrainingData.get(index));
-                validationData.add(fullValidationData.get(index));
-            }
-
-            SimpleMatrix W=CrossValidation.genTargetFunWeidth(trainingData,Yt);
-            SimpleMatrix X=new SimpleMatrix(validationData.get(0).length,trainingData.size());
+    	
+    	for(int fold=0;fold< trainingSetWithFold.size();fold++){
+    		List<double[]> trainingSet=trainingSetWithFold.get(fold);
+			List<double[]> validationSet=validationSetWithFold.get(fold);
+			
+			//get W
+			SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
+			Yt.setColumn(0, 0, trainingSet.get(trainingSet.size()-1));
+			SimpleMatrix W=CrossValidation.genTargetFunWeidth(trainingSet,Yt);
+			
+			//validation
+	        SimpleMatrix Yv=new SimpleMatrix(validationSet.size(),1);
+	        Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));
+	        
+	        //get validation error
+	        SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).length,validationSet.size());
 
             //validate
             int colNum=0;
-            for(double[] col:validationData){
-                X.setColumn(colNum, 0,col);
+            for(double[] col:validationSet){
+            	Xv.setColumn(colNum, 0,col);
                 colNum++;
             }
-
-            //get validation error for a partial
-            double e=X.mult(W).minus(Yv).normF()/(validationSet.size()+1);
-            if(errorMap.get(count)!=null){
-                errorMap.put(count,errorMap.get(count)+e);
-            }else{
-                errorMap.put(count,e);
-            }
-            weightMap.put(count, W);
-
-        }
-        trainingSet.clear();
-        validationSet.clear();
+            double e=Xv.mult(W).minus(Yv).normF()/(validationSet.size()+1);
+            error+=e;
+            trainingSet.clear();
+            validationSet.clear();
+    	}
+    	
+    	//get final weight
+    	SimpleMatrix Y=new SimpleMatrix(fullDataSetWithDimension.size(),1);
+		Y.setColumn(0, 0, fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
+		SimpleMatrix W=CrossValidation.genTargetFunWeidth(fullDataSetWithDimension,Y);
+		
+		this.error=this.error/foldTime;
+		this.weight=W;
+		
+        errorMap.put(count,error);
+		weightMap.put(count, W);
+    	
     }
     
 
-	public synchronized List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
-		List<double[]> res=new ArrayList<double[]>();
-		//get result
-		
-		//constant col
-		double[] constants=new double[dataInLinks.size()];
-		for(int index=0;index<dataInLinks.size();index++){
-			constants[index]=1;
-		}
-		res.add(constants);
-		
-		for(int order=1;order<=maxOrder;order++){
-			
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							int startTimeO=order-lengthO-widthO-classO-weightO;
-							double[] oneColData=new double[dataInLinks.size()];
-							List<Double> list=new ArrayList<Double>();
-							synchronized(mListMutex){
-								for(int index=0;index<dataInLinks.size();index++){
-									DataInLink dataInLink=dataInLinks.get(index);
-									
-									if(dataInLink==null){
-										System.out.println("null");
-									}
-									try{
-										oneColData[index]=caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
-									}catch(Exception e){
-										System.out.println(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
-									}
-								}
-							}
-							res.add(oneColData);
-						}
-					}
-				}
-			}
-		}
-		return res;
-		
-	}
 	
-	private synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
-		if(dataInLink==null) return 0;
-		double reswithOrder=Math.pow(dataInLink.getLink().getLength(), lengthO)*
-		Math.pow(dataInLink.getLink().getWidth(), widthO)*
-		Math.pow(dataInLink.getLink().getLink_class(), classO)*
-		Math.pow(dataInLink.getLink().getWeight(), weightO)*
-		Math.pow(dataInLink.getStartTime().getHours()*60+dataInLink.getStartTime().getMinutes(), startTimeO);
-		
-		return reswithOrder;
-	}
-	
-
-    public List<DataInLink> getValidationSet() {
-        return validationSet;
-    }
-
-    public void setValidationSet(List<DataInLink> validationSet) {
-        this.validationSet = validationSet;
-    }
-
-    public List<DataInLink> getTrainingSet() {
-        return trainingSet;
-    }
-
-    public void setTrainingSet(List<DataInLink> trainingSet) {
-        this.trainingSet = trainingSet;
-    }
-
-    public Map<Integer, Double> getErrorMap() {
-        return errorMap;
-    }
-
-    public void setErrorMap(Map<Integer, Double> errorMap) {
-        this.errorMap = errorMap;
-    }
-
-    public Map<Integer, SimpleMatrix> getWeightMap() {
-        return weightMap;
-    }
-
-    public void setWeightMap(Map<Integer, SimpleMatrix> weightMap) {
-        this.weightMap = weightMap;
-    }
 
 
 }

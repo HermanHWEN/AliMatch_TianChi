@@ -110,7 +110,7 @@ class ConvertTxtToDataLink implements Runnable{
 				if(StringUtils.isNotEmpty(times[1])){
 					try{
 						synchronized(df2){
-							dataInLink.setStartTime(df2.parse(times[1].trim()));
+							dataInLink.setEndTime(df2.parse(times[1].trim()));
 						}
 					}catch(ParseException e){
 						System.out.println("Thread "+round + "# index :"+index+" end time: "+times[1]);

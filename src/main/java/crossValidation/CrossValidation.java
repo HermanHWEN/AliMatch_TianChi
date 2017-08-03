@@ -2,6 +2,7 @@ package crossValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -148,7 +149,6 @@ public class CrossValidation {
 	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
 		List<LinkedList<Double>> res=new ArrayList<LinkedList<Double>>();
 		DataInLink dataInLink;
-		LinkedList<Double> oneColData;
 		
 		//init list
 		
@@ -160,7 +160,7 @@ public class CrossValidation {
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
-							oneColData=new LinkedList<>();
+							LinkedList<Double> oneColData=new LinkedList<>();
 							res.add(oneColData);
 							Thread initOneColT=new Thread(new InitOneCol(oneColData,dataInLinks,lengthO,widthO,classO,weightO,startTimeO));
 							initOneColTs.add(initOneColT);
@@ -227,7 +227,7 @@ class InitOneCol implements Runnable{
 			List<DataInLink> dataInLinks, int lengthO, int widthO, int classO,
 			int weightO, int startTimeO) {
 		super();
-		this.oneColData = oneColData;
+		this.oneColData = (LinkedList<Double>) Collections.synchronizedCollection(oneColData);
 		this.dataInLinks = dataInLinks;
 		this.lengthO = lengthO;
 		this.widthO = widthO;

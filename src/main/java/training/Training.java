@@ -40,6 +40,7 @@ public class Training implements Runnable{
 
     @Override
     public void run() {
+    	if(isGoingUp(errorMap,count)) return;
     	double error = 0;
     	//Separate data into training set and validation set
 		int size=fullDataSetWithDimension.get(0).length;
@@ -122,7 +123,22 @@ public class Training implements Runnable{
 		Y=null;
         System.gc();
     }
-    
+
+	private static boolean isGoingUp(Map<Integer, Double> errorMap,int count){
+    	double[] errors=new double[errorMap.values().size()];
+    	int errorI=0;
+    	for(int i=0;i<count;i++){
+    		if(errorMap.containsKey(i)){
+    			errors[errorI]=errorMap.get(i);
+    			errorI++;
+    		}
+    	}
+    	for(int i=1;i<errors.length;i++){
+    		if(errors[i]>errors[i-1]) return true;
+    	}
+    	
+    	return false;
+    }
 
 	
 

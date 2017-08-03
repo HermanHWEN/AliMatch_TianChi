@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.StringUtils;
-
 import model.DataInLink;
 import model.Link;
+
+import org.apache.commons.lang3.StringUtils;
+
 import outputData.WriteData;
 import testData.Testing;
 import calculateFeatures.CalculateFeatures;
@@ -38,7 +39,7 @@ public class App
     	
     	
     	System.out.println("Training model... ");
-    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
+    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks.subList(0, 100));
     	System.out.println("Got target function.");
     	
     	

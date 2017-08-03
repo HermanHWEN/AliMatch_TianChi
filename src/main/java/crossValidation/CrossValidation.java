@@ -145,12 +145,14 @@ public class CrossValidation {
 		return W;
 		
 	}
-	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks){
+	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
 		List<LinkedList<Double>> res=new ArrayList<LinkedList<Double>>();
 		DataInLink dataInLink;
 		LinkedList<Double> oneColData;
 		
-		//tranfered columns
+		//init list
+		
+		List<Thread> initOneColTs=new ArrayList<>();
 		for(int order=0;order<=maxOrder;order++){
 			
 			for(int lengthO=order;lengthO>=0;lengthO--){
@@ -159,11 +161,10 @@ public class CrossValidation {
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
 							oneColData=new LinkedList<>();
-							for(int index=0;index<dataInLinks.size();index++){
-								dataInLink=dataInLinks.get(index);
-								oneColData.add(caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
-							}
 							res.add(oneColData);
+							Thread initOneColT=new Thread(new InitOneCol(oneColData,dataInLinks,lengthO,widthO,classO,weightO,startTimeO));
+							initOneColTs.add(initOneColT);
+							initOneColT.start();
 						}
 					}
 				}
@@ -177,11 +178,16 @@ public class CrossValidation {
 			Y.add(dataInLink.getTravle_time());
 		}
 		res.add(Y);
+		
+		for(Thread initOneColT: initOneColTs){
+			initOneColT.join();
+		}
+		
 		return res;
 		
 	}
 	
-	private static synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
+	static synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
 		if(dataInLink==null) return 0;
 		double reswithOrder=Math.pow(dataInLink.getLink().getLength(), lengthO)*
 		Math.pow(dataInLink.getLink().getWidth(), widthO)*
@@ -191,4 +197,45 @@ public class CrossValidation {
 		
 		return reswithOrder;
 	}
+}
+
+
+class InitOneCol implements Runnable{
+	
+	private LinkedList<Double> oneColData;
+	private List<DataInLink> dataInLinks;
+	private int lengthO;
+	private int widthO;
+	private int classO;
+	private int weightO;
+	private int startTimeO;
+	
+
+	@Override
+	public void run() {
+		
+		oneColData=new LinkedList<>();
+		for(int index=0;index<dataInLinks.size();index++){
+			DataInLink dataInLink=dataInLinks.get(index);
+			oneColData.add(CrossValidation.caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
+		}
+		
+	}
+
+
+	public InitOneCol(LinkedList<Double> oneColData,
+			List<DataInLink> dataInLinks, int lengthO, int widthO, int classO,
+			int weightO, int startTimeO) {
+		super();
+		this.oneColData = oneColData;
+		this.dataInLinks = dataInLinks;
+		this.lengthO = lengthO;
+		this.widthO = widthO;
+		this.classO = classO;
+		this.weightO = weightO;
+		this.startTimeO = startTimeO;
+	}
+
+
+	
 }

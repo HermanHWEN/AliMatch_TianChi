@@ -7,4 +7,6 @@ public class ConstantPath {
 //	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data - small.txt";
 	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data.txt";
 	public final static String PATH_OF_RESULT="C://Match//result.txt";
+	
+	public final static int SIZE_OF_DATA=10000;
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReadDataAsString {
-	public static List<String> readTxtFile(String filePath){
+	public static List<String> readTxtFile(String filePath,int linesWithHead){
 		List<String> res=new ArrayList<String>();
         try {
                 String encoding="UTF-8";
@@ -23,8 +23,10 @@ public class ReadDataAsString {
                     BufferedReader bufferedReader = new BufferedReader(read);
                     String lineTxt = null;
                     
-                    while((lineTxt = bufferedReader.readLine()) != null){
+                    int count=0;
+                    while((lineTxt = bufferedReader.readLine()) != null && (linesWithHead==-1 || count<=linesWithHead)){
                     	res.add(lineTxt);
+                    	count++;
                     }
                     read.close();
         }else{

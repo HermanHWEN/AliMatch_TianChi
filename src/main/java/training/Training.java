@@ -3,15 +3,10 @@ package training;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import model.DataInLink;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.ejml.simple.SimpleBase;
 import org.ejml.simple.SimpleMatrix;
 
 import crossValidation.CrossValidation;
@@ -26,17 +21,15 @@ public class Training implements Runnable{
 	private int foldTime;
 	private Map<Integer,Double> errorMap;
 	private Map<Integer,SimpleMatrix> weightMap;
-    private Double error;
-    private SimpleMatrix weight;
-	private List<List<LinkedList<Double>>> trainingSetWithFold=Collections.unmodifiableList(new ArrayList<List<LinkedList<Double>>>());
-	private List<List<LinkedList<Double>>> validationSetWithFold=Collections.unmodifiableList(new ArrayList<List<LinkedList<Double>>>());
+	private List<List<double[]>> trainingSetWithFold=new ArrayList<List<double[]>>();
+	private List<List<double[]>> validationSetWithFold=new ArrayList<List<double[]>>();
     
-    private List<LinkedList<Double>> fullDataSetWithDimension;
+    private List<double[]> fullDataSetWithDimension;
 
     
     
     public Training(int count,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
-    		List<LinkedList<Double>> fullDataSetWithDimension) {
+    		List<double[]> fullDataSetWithDimension) {
 		super();
 		this.count = count;
 		this.foldTime = foldTime;
@@ -47,28 +40,29 @@ public class Training implements Runnable{
 
     @Override
     public void run() {
-
+    	double error = 0;
     	//Separate data into training set and validation set
-		int size=fullDataSetWithDimension.get(0).size();
+		int size=fullDataSetWithDimension.get(0).length;
 		int step=size/foldTime+1;
 		
 		//training with cross validation 
 		//separate data into training set and validation set
 		
 		for(int start=0;start<size;start+=step){
-			List<LinkedList<Double>> trainingSet=Collections.unmodifiableList(new ArrayList<LinkedList<Double>>());
-			List<LinkedList<Double>> validationSet=Collections.unmodifiableList(new ArrayList<LinkedList<Double>>());
-			for(LinkedList<Double> fullDataSet:fullDataSetWithDimension){
+			List<double[]> trainingSet=new ArrayList<double[]>();
+			List<double[]> validationSet=new ArrayList<double[]>();
+			for(double[] fullDataSet:fullDataSetWithDimension){
 				
-				LinkedList<Double> validationData=(LinkedList<Double>) fullDataSet.subList(start, start+step-1);
-				LinkedList<Double> trainingData;
-				LinkedList<Double> trainingData2=(LinkedList<Double>) fullDataSet.subList(start+step, size-1);
-				if(start>0){
+				double[] validationData=Arrays.copyOfRange(fullDataSet, start, Math.min(size-1, start+step-1));
+				double[] trainingData;
+				if(start==0){
+					trainingData=Arrays.copyOfRange(fullDataSet,start+step,size-1);
 					
-					trainingData=(LinkedList<Double>) fullDataSet.subList(0, start-1);
-					trainingData.addAll(trainingData2);
+				}else if(start+step-1<size-1){
+					trainingData=Arrays.copyOfRange(fullDataSet,0, start-1);
+					ArrayUtils.addAll(trainingData, Arrays.copyOfRange(fullDataSet,start+step, size-1));
 				}else{
-					trainingData=trainingData2;
+					trainingData=Arrays.copyOfRange(fullDataSet,0, start-1);
 				}
 				trainingSet.add(trainingData);validationSet.add(validationData);
 			}
@@ -78,49 +72,55 @@ public class Training implements Runnable{
 			
 		}
 		
-		
         //training.....
         //get full dimension data
     	
     	for(int fold=0;fold< trainingSetWithFold.size();fold++){
-    		List<LinkedList<Double>> trainingSet=trainingSetWithFold.get(fold);
-			List<LinkedList<Double>> validationSet=validationSetWithFold.get(fold);
+    		List<double[]> trainingSet=trainingSetWithFold.get(fold);
+			List<double[]> validationSet=validationSetWithFold.get(fold);
 			
 			//get W
-			SimpleMatrix Yt=new SimpleMatrix(trainingSet.size(),1);
-			Yt.setColumn(0, 0, trainingSet.get(trainingSet.size()-1).stream().mapToDouble(d -> d).toArray());
+			SimpleMatrix Yt=new SimpleMatrix(trainingSet.get(0).length,1);
+			
+			Yt.setColumn(0, 0, trainingSet.get(trainingSet.size()-1));
 			SimpleMatrix W=CrossValidation.genTargetFunWeidth(trainingSet,Yt);
 			
 			//validation
-	        SimpleMatrix Yv=new SimpleMatrix(validationSet.size(),1);
-	        Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1).stream().mapToDouble(d -> d).toArray());
+	        SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
+	        Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));
 	        
 	        //get validation error
-	        SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).size(),validationSet.size());
+	        SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).length,validationSet.size());
 
             //validate
             int colNum=0;
-            for(LinkedList<Double> col:validationSet){
-            	Xv.setColumn(colNum, 0,col.stream().mapToDouble(d -> d).toArray());
+            for(double[] col:validationSet){
+            	Xv.setColumn(colNum, 0,col);
                 colNum++;
             }
             double e=Xv.mult(W).minus(Yv).normF()/(validationSet.size()+1);
             error+=e;
             trainingSet.clear();
             validationSet.clear();
+            Yt=null;W=null;Yv=null;Xv=null;
+            System.gc();
     	}
     	
     	//get final weight
-    	SimpleMatrix Y=new SimpleMatrix(fullDataSetWithDimension.size(),1);
-		Y.setColumn(0, 0, fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1).stream().mapToDouble(d -> d).toArray());
+    	SimpleMatrix Y=new SimpleMatrix(fullDataSetWithDimension.get(0).length,1);
+		Y.setColumn(0, 0, fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
 		SimpleMatrix W=CrossValidation.genTargetFunWeidth(fullDataSetWithDimension,Y);
 		
-		this.error=this.error/foldTime;
-		this.weight=W;
+		error=error/foldTime;
 		
         errorMap.put(count,error);
 		weightMap.put(count, W);
-    	
+		
+		
+		trainingSetWithFold=null;
+		validationSetWithFold=null;
+		Y=null;
+        System.gc();
     }
     
 

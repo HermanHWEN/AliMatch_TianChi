@@ -20,7 +20,7 @@ public class ReadAsTrainData {
 //		CopyOnWriteArrayList<DataInLink> dataInLinks=new CopyOnWriteArrayList<DataInLink>();
 		
 		List<DataInLink> dataInLinks=Collections.synchronizedList(new ArrayList<DataInLink>());
-		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_TRAINING_DATA);
+		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_TRAINING_DATA,ConstantPath.SIZE_OF_DATA);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 

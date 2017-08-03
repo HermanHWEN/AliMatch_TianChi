@@ -33,17 +33,14 @@ public class App
     	System.out.println("Calculated weight of link # total : " + linksMap.size());
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
     	System.out.println("Read training data # total : " + dataInLinks.size());
-    	linksMap.clear();
-    	linksMap=null;
     	System.gc();
     	
-    	
     	System.out.println("Training model... ");
-    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks.subList(0, 100));
+    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
     	System.out.println("Got target function.");
     	
     	
-    	
+    	System.gc();
     	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
     	
 //    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);

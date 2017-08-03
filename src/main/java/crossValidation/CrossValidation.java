@@ -2,7 +2,6 @@ package crossValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class CrossValidation {
 
 		//convert data high dimension
 		System.out.println("converting data high dimension");
-		List<LinkedList<Double>> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
+		List<double[]> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
 		System.out.println("converted data high dimension");
 		
 		
@@ -36,15 +35,15 @@ public class CrossValidation {
 		System.out.println("Start training");
 		List<Thread> trainingTs=new ArrayList<Thread>();
 		for(int count=0;count<fullDataSetWithDimension.size();count++){
-			List<LinkedList<Double>> fullDataSet=new ArrayList<>();
+			List<double[]> fullDataSet=new ArrayList<>();
             for(int index=0;index<=count;index++){
             	fullDataSet.add(fullDataSetWithDimension.get(index));
             }
-            System.out.println("Got full data with order: " +StringUtils.join(getOrders(maxOrder,count),","));
         	Thread training=new Thread(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
 			trainingTs.add(training);
-			System.out.println("Start training of order: " +StringUtils.join(getOrders(maxOrder,count),","));
+			System.out.println("Start training of order: " +StringUtils.join(getOrdersStr(maxOrder,count),","));
 			training.start();
+//			training.run();
         }
 		
 		
@@ -66,9 +65,10 @@ public class CrossValidation {
 		}
 		
 		List<int[]> orders=getOrders(maxOrder,minCount);
+		List<String> ordersStr=getOrdersStr(maxOrder,minCount);
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
-		System.out.println("Order of min error:  " +StringUtils.join(orders,"#"));
-		System.out.println("Weight of min error: "+ StringUtils.join(weights,"#"));
+		System.out.println("Order of min error:  " +StringUtils.join(ordersStr,"#"));
+		System.out.println("Weight of min error: "+ Arrays.toString(weights));
 		System.out.println(minCount);
 		System.out.println("Min error: " + minError/10);
 		
@@ -86,6 +86,14 @@ public class CrossValidation {
 		
 	}
 
+	private static List<String> getOrdersStr(int maxOrder,int minCount){
+		List<String> strRes=new ArrayList<>();
+		List<int[]> res=getOrders(maxOrder,minCount);
+		for(int[] r:res){
+			strRes.add(Arrays.toString(r));
+		}
+		return strRes;
+	}
 
 	private static List<int[]> getOrders(int maxOrder,int minCount){
 		List<int[]> res=new ArrayList<int[]>();
@@ -131,23 +139,30 @@ public class CrossValidation {
 	}
 	
 	
-	public static SimpleMatrix genTargetFunWeidth(List<LinkedList<Double>> res, SimpleMatrix Y){
+	public static SimpleMatrix genTargetFunWeidth(List<double[]> res, SimpleMatrix Y){
 		
-		SimpleMatrix X=new SimpleMatrix(res.get(0).size(),res.size());
+		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
 		
 		int colNum=0;
-		for(LinkedList<Double> col:res){
-			X.setColumn(colNum, 0,col.stream().mapToDouble(d -> d).toArray());
+		for(double[] col:res){
+			X.setColumn(colNum, 0,col);
 			colNum++;
 		}
 		
-		SimpleMatrix W=X.pseudoInverse().mult(Y);
+		SimpleMatrix sudoX=X.pseudoInverse();
+		SimpleMatrix W = null;
+		try{
+			W=sudoX.mult(Y);
+		}catch(Exception e){
+			System.out.println("sudoX rows#" + sudoX.numRows() +" cols#" + sudoX.numCols());
+			System.out.println("Y rows#" + Y.numRows() +" cols#" + Y.numCols());
+		}
 		Arrays.asList(W.getMatrix().data);
 		return W;
 		
 	}
-	public static List<LinkedList<Double>>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
-		List<LinkedList<Double>> res=new ArrayList<LinkedList<Double>>();
+	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
+		List<double[]> res=new LinkedList<double[]>();
 		DataInLink dataInLink;
 		
 		//init list
@@ -160,7 +175,7 @@ public class CrossValidation {
 					for(int classO=order-lengthO-widthO;classO>=0;classO--){
 						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
 							int startTimeO=order-lengthO-widthO-classO-weightO;
-							LinkedList<Double> oneColData=new LinkedList<>();
+							double[] oneColData=new double[dataInLinks.size()];
 							res.add(oneColData);
 							Thread initOneColT=new Thread(new InitOneCol(oneColData,dataInLinks,lengthO,widthO,classO,weightO,startTimeO));
 							initOneColTs.add(initOneColT);
@@ -172,10 +187,10 @@ public class CrossValidation {
 		}
 		
 		//Y
-		LinkedList<Double> Y=new LinkedList<Double>();
+		double[] Y=new double[dataInLinks.size()];
 		for(int index=0;index<dataInLinks.size();index++){
 			dataInLink=dataInLinks.get(index);
-			Y.add(dataInLink.getTravle_time());
+			Y[index]=dataInLink.getTravle_time();
 		}
 		res.add(Y);
 		
@@ -202,7 +217,7 @@ public class CrossValidation {
 
 class InitOneCol implements Runnable{
 	
-	private LinkedList<Double> oneColData;
+	private double[] oneColData;
 	private List<DataInLink> dataInLinks;
 	private int lengthO;
 	private int widthO;
@@ -213,21 +228,18 @@ class InitOneCol implements Runnable{
 
 	@Override
 	public void run() {
-		
-		oneColData=new LinkedList<>();
 		for(int index=0;index<dataInLinks.size();index++){
 			DataInLink dataInLink=dataInLinks.get(index);
-			oneColData.add(CrossValidation.caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO));
+			oneColData[index]=CrossValidation.caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
 		}
-		
 	}
 
 
-	public InitOneCol(LinkedList<Double> oneColData,
+	public InitOneCol(double[] oneColData,
 			List<DataInLink> dataInLinks, int lengthO, int widthO, int classO,
 			int weightO, int startTimeO) {
 		super();
-		this.oneColData = (LinkedList<Double>) Collections.synchronizedCollection(oneColData);
+		this.oneColData = oneColData;
 		this.dataInLinks = dataInLinks;
 		this.lengthO = lengthO;
 		this.widthO = widthO;

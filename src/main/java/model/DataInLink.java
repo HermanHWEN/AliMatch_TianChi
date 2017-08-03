@@ -31,9 +31,6 @@ public class DataInLink {
 		return startTime;
 	}
 	
-	public Date getStartMinus() {
-		return startTime;
-	}
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}

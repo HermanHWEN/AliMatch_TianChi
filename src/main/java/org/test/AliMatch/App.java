@@ -1,6 +1,6 @@
 package org.test.AliMatch;
 
-import importData.ConstantPath;
+import importData.Constant;
 import importData.ReadAsLink;
 import importData.ReadAsTrainData;
 
@@ -50,8 +50,8 @@ public class App
     	System.out.println("Test result generated.");
     	
     	
-    	System.out.println("Writing data to specified path - "+ConstantPath.PATH_OF_RESULT);
-    	WriteData.contentToTxt(ConstantPath.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
+    	System.out.println("Writing data to specified path - "+Constant.PATH_OF_RESULT);
+    	WriteData.contentToTxt(Constant.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
     	System.out.println("Done");
     }
 }

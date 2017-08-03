@@ -19,8 +19,9 @@ public class ReadAsTrainData {
 	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException, InterruptedException{
 //		CopyOnWriteArrayList<DataInLink> dataInLinks=new CopyOnWriteArrayList<DataInLink>();
 		
+		List<String> uniqueKeys=Collections.synchronizedList(new ArrayList<String>());
 		List<DataInLink> dataInLinks=Collections.synchronizedList(new ArrayList<DataInLink>());
-		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_TRAINING_DATA,ConstantPath.SIZE_OF_DATA);
+		List<String> linkInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_TRAINING_DATA,Constant.SIZE_OF_DATA);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
@@ -30,7 +31,7 @@ public class ReadAsTrainData {
 		List<Thread> convertTxtToDataLinkTs=new ArrayList<Thread>();
 
 		for(int threadIndex=0;threadIndex<totalThreadNum;++threadIndex){
-			ConvertTxtToDataLink convertTxtToDataLinkI=new ConvertTxtToDataLink(threadIndex,dataInLinks,linkInfos,df,df2,links,threadIndex*step,(threadIndex+1)*step-1);
+			ConvertTxtToDataLink convertTxtToDataLinkI=new ConvertTxtToDataLink(threadIndex,uniqueKeys,dataInLinks,linkInfos,df,df2,links,threadIndex*step,(threadIndex+1)*step-1);
 			Thread convertTxtToDataLink=new Thread(convertTxtToDataLinkI);
 			convertTxtToDataLinkTs.add(convertTxtToDataLink);
 			convertTxtToDataLink.start();
@@ -55,6 +56,7 @@ public class ReadAsTrainData {
 
 class ConvertTxtToDataLink implements Runnable{
 	int round;
+	List<String> uniqueKeys;
 	List<DataInLink> dataInLinks;
 	List<String> linkInfos;
 	DateFormat df;
@@ -64,8 +66,9 @@ class ConvertTxtToDataLink implements Runnable{
 	int startIndex;
 	int endIndex;
 
-	public ConvertTxtToDataLink(int round,List<DataInLink> dataInLinks,final List<String> linkInfos, DateFormat df, DateFormat df2, Map<String, Link> links, int startIndex, int endIndex) {
+	public ConvertTxtToDataLink(int round,List<String> uniqueKeys,List<DataInLink> dataInLinks,final List<String> linkInfos, DateFormat df, DateFormat df2, Map<String, Link> links, int startIndex, int endIndex) {
 		this.round=round;
+		this.uniqueKeys = uniqueKeys;
 		this.dataInLinks = dataInLinks;
 		this.linkInfos = linkInfos;
 		this.df = df;
@@ -118,6 +121,7 @@ class ConvertTxtToDataLink implements Runnable{
 				}
 				
 				dataInLink.setTravle_time(new Double(linkFields[3]));
+				if(uniqueKeys.contains(dataInLink.getLink().getLink_ID()+times[0].trim())) continue;
 				dataInLinks.add(dataInLink);
 			}
 		}

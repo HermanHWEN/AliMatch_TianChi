@@ -54,7 +54,7 @@ public class ReadDataAsString {
 		    break;
 		   }
 		   buffer.flip();
-		   FileOutputStream fout = new FileOutputStream(ConstantPath.PATH_OF_TMP+"\\" + Math.random() + ".txt");
+		   FileOutputStream fout = new FileOutputStream(Constant.PATH_OF_TMP+"\\" + Math.random() + ".txt");
 		   FileChannel fcout = fout.getChannel();
 		   fcout.write(buffer);
 		   System.out.println(buffer);

@@ -12,7 +12,7 @@ public class ReadAsLink {
 	public static Map<String,Link> readAsLink(){
 		//read link info
 		Map<String,Link> linksMap=new HashMap<String,Link>();
-		List<String> linkInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_LINK_INFO,-1);
+		List<String> linkInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_LINK_INFO,-1);
 		for(int index=1;index<linkInfos.size();++index){
 			String linkInfo=linkInfos.get(index);
 			String[] linkFields=linkInfo.split(";");
@@ -26,7 +26,7 @@ public class ReadAsLink {
 		}
 		
 		//read in and out info
-		List<String> linkInOutInfos=ReadDataAsString.readTxtFile(ConstantPath.PATH_OF_LINK_TOP,-1);
+		List<String> linkInOutInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_LINK_TOP,-1);
 		for(int index=1;index<linkInOutInfos.size();++index){
 			String linkInOutInfo=linkInOutInfos.get(index);
 			String[] linkFields=linkInOutInfo.split(";");

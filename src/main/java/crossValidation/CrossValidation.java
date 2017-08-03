@@ -139,28 +139,7 @@ public class CrossValidation {
 	}
 	
 	
-	public static SimpleMatrix genTargetFunWeidth(List<double[]> res, SimpleMatrix Y){
-		
-		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
-		
-		int colNum=0;
-		for(double[] col:res){
-			X.setColumn(colNum, 0,col);
-			colNum++;
-		}
-		
-		SimpleMatrix sudoX=X.pseudoInverse();
-		SimpleMatrix W = null;
-		try{
-			W=sudoX.mult(Y);
-		}catch(Exception e){
-			System.out.println("sudoX rows#" + sudoX.numRows() +" cols#" + sudoX.numCols());
-			System.out.println("Y rows#" + Y.numRows() +" cols#" + Y.numCols());
-		}
-		Arrays.asList(W.getMatrix().data);
-		return W;
-		
-	}
+	
 	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
 		List<double[]> res=new LinkedList<double[]>();
 		DataInLink dataInLink;

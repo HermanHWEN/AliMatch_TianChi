@@ -17,6 +17,7 @@ import model.DataInLink;
 import org.apache.commons.lang3.StringUtils;
 import org.ejml.simple.SimpleMatrix;
 
+import importData.Constant;
 import training.Training;
 
 public class CrossValidation {
@@ -25,8 +26,7 @@ public class CrossValidation {
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
 
 	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
-		BlockingQueue queue = new LinkedBlockingQueue();   
-		ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(4,20,Long.MAX_VALUE,TimeUnit.DAYS, queue);
+
 		int maxOrder=5;
 		int foldTime=10;
 
@@ -34,25 +34,25 @@ public class CrossValidation {
 		System.out.println("converting data high dimension");
 		List<double[]> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
 		System.out.println("converted data high dimension");
-		
-		
+
+
 		//from low dimension to high
 		System.out.println("Start training");
 		for(int count=0;count<fullDataSetWithDimension.size()-1;count++){
 			List<double[]> fullDataSet=new ArrayList<>();
-            for(int index=0;index<=count;index++){
-            	fullDataSet.add(fullDataSetWithDimension.get(index));
-            }
-            fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-            threadPoolExecutor.execute(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
+			for(int index=0;index<=count;index++){
+				fullDataSet.add(fullDataSetWithDimension.get(index));
+			}
+			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
+			Constant.getThreadPoolExecutor().execute(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
 			System.out.println("Start training of order: " +StringUtils.join(getOrdersStr(maxOrder,count),","));
-        }
-		threadPoolExecutor.shutdown();
-		
-		while(!threadPoolExecutor.isTerminated()){}
-		
+		}
+		Constant.getThreadPoolExecutor().shutdown();
+
+		while(!Constant.getThreadPoolExecutor().isTerminated()){}
+
 		System.out.println("All trainings completed.");
-		
+
 		//get min error
 		int minCount=0;
 		double minError=Double.MAX_VALUE;
@@ -64,107 +64,43 @@ public class CrossValidation {
 				}
 			}
 		}
-		
-		List<int[]> orders=getOrders(maxOrder,minCount);
+
+		List<OrdersOfVars> orders=getOrders(maxOrder,minCount);
 		List<String> ordersStr=getOrdersStr(maxOrder,minCount);
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
 		System.out.println("Order of min error:  " +StringUtils.join(ordersStr,"#"));
 		System.out.println("Weight of min error: "+ Arrays.toString(weights));
 		System.out.println("minCount : " + minCount);
 		System.out.println("Min error: " + minError/10);
-		
+
 		Function<DataInLink,Double> targetFunction = (x) -> {
 			double y=0;
 			for(int index=0;index<orders.size();++index){
-				int[] order=orders.get(index);
+				OrdersOfVars order=orders.get(index);
 				double weight=weights[index];
-				y+=caclulateWithOrder(x,order[0],order[1],order[2],order[3],order[4])*weight;
+				y+=caclulateWithOrder(x,order.getLengthO(),order.getWidthO(),order.getClassO(),order.getWeightO(),order.getDateO(),order.getStartTimeO())*weight;
 			}
 			return y;
-			};  
-		
+		};  
+
 		return targetFunction;
-		
 	}
 
-	private static List<String> getOrdersStr(int maxOrder,int minCount){
-		List<String> strRes=new ArrayList<>();
-		List<int[]> res=getOrders(maxOrder,minCount);
-		for(int[] r:res){
-			strRes.add(Arrays.toString(r));
-		}
-		return strRes;
-	}
 
-	private static List<int[]> getOrders(int maxOrder,int minCount){
-		List<int[]> res=new ArrayList<int[]>();
-		int count=0;
-		
-		//init res
-		for(int order=0;order<=maxOrder;order++){
-			
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							int startTimeO=order-lengthO-widthO-classO-weightO;
-							int[] orderI=new int[]{lengthO,widthO,classO,weightO,startTimeO};
-							count++;
-							res.add(orderI);
-							if(count>minCount) return res;
-						}
-					}
-				}
-			}
-		}
-		return res;
-	}
-	
-	private static int getCounts(int maxOrder){
-		int res=0;
-		
-		//init res
-		for(int order=0;order<=maxOrder;order++){
-			
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							res++;
-						}
-					}
-				}
-			}
-		}
-		return res;
-	}
-	
-	
 	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
 		List<double[]> res=new LinkedList<double[]>();
 		DataInLink dataInLink;
-		
+
 		//init list
+
+		List<OrdersOfVars> orders=getOrders(maxOrder,-1);
 		
-		List<Thread> initOneColTs=new ArrayList<>();
-		for(int order=0;order<=maxOrder;order++){
-			
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
-							int startTimeO=order-lengthO-widthO-classO-weightO;
-							double[] oneColData=new double[dataInLinks.size()];
-							res.add(oneColData);
-							Thread initOneColT=new Thread(new InitOneCol(oneColData,dataInLinks,lengthO,widthO,classO,weightO,startTimeO));
-							initOneColTs.add(initOneColT);
-							initOneColT.start();
-						}
-					}
-				}
-			}
+		for(OrdersOfVars order: orders){
+			double[] oneColData=new double[dataInLinks.size()];
+			res.add(oneColData);
+			Constant.getThreadPoolExecutor().execute(new InitOneCol(oneColData,dataInLinks,order.getLengthO(),order.getWidthO(),order.getClassO(),order.getWeightO(),order.getDateO(),order.getStartTimeO()));
 		}
-		
+
 		//Y
 		double[] Y=new double[dataInLinks.size()];
 		for(int index=0;index<dataInLinks.size();index++){
@@ -172,61 +108,106 @@ public class CrossValidation {
 			Y[index]=dataInLink.getTravle_time();
 		}
 		res.add(Y);
-		
-		for(Thread initOneColT: initOneColTs){
-			initOneColT.join();
-		}
-		
+
+		while(!Constant.getThreadPoolExecutor().isTerminated()){}
 		return res;
-		
+
 	}
-	
-	static synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int startTimeO){
+
+	static synchronized double caclulateWithOrder(final DataInLink dataInLink,int lengthO,int widthO,int classO,int weightO,int dateO,int startTimeO){
 		if(dataInLink==null) return 0;
 		double reswithOrder=Math.pow(dataInLink.getLink().getLength(), lengthO)*
-		Math.pow(dataInLink.getLink().getWidth(), widthO)*
-		Math.pow(dataInLink.getLink().getLink_class(), classO)*
-		Math.pow(dataInLink.getLink().getWeight(), weightO)*
-		Math.pow(dataInLink.getStartTime().getHours()*60+dataInLink.getStartTime().getMinutes(), startTimeO);
-		
+				Math.pow(dataInLink.getLink().getWidth(), widthO)*
+				Math.pow(dataInLink.getLink().getLink_class(), classO)*
+				Math.pow(dataInLink.getLink().getWeight(), weightO)*
+				Math.pow(dataInLink.getDate().getDate(), dateO)*
+				Math.pow(dataInLink.getStartTime().getHours()*60+dataInLink.getStartTime().getMinutes(), startTimeO);
+
 		return reswithOrder;
+	}
+	
+	private static List<String> getOrdersStr(int maxOrder,int minCount){
+		List<String> strRes=new ArrayList<>();
+		List<OrdersOfVars> res=getOrders(maxOrder,minCount);
+		for(OrdersOfVars r:res){
+			strRes.add(r.toString());
+		}
+		return strRes;
+	}
+
+	private static List<OrdersOfVars> getOrders(int maxOrder,int minCount){
+		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
+		int count=0;
+		for(int order=0;order<=maxOrder;order++){
+
+			for(int lengthO=order;lengthO>=0;lengthO--){
+				for(int widthO=order-lengthO;widthO>=0;widthO--){
+					for(int classO=order-lengthO-widthO;classO>=0;classO--){
+						for(int weightO=order-lengthO-widthO-classO;weightO>=0;weightO--){
+							for(int dateO=order-lengthO-widthO-classO-weightO;dateO>=0;dateO--){
+								int startTimeO=order-lengthO-widthO-classO-weightO-dateO;
+								OrdersOfVars ordersOfVars=new OrdersOfVars();
+								ordersOfVars.setLengthO(lengthO);
+								ordersOfVars.setWidthO(widthO);
+								ordersOfVars.setClassO(classO);
+								ordersOfVars.setWeightO(weightO);
+								ordersOfVars.setDateO(dateO);
+								ordersOfVars.setStartTimeO(startTimeO);
+								ordersOfVarsList.add(ordersOfVars);
+								count++;
+								if(count>minCount && minCount!=-1) return ordersOfVarsList;
+							}
+
+						}
+					}
+				}
+			}
+		}
+		return ordersOfVarsList;
+
+	}
+
+	private static int getCounts(int maxOrder){
+		return getOrders(maxOrder,-1).size()-1;
 	}
 }
 
 
 class InitOneCol implements Runnable{
-	
+
 	private double[] oneColData;
 	private List<DataInLink> dataInLinks;
 	private int lengthO;
 	private int widthO;
 	private int classO;
 	private int weightO;
+	private int dateO;
 	private int startTimeO;
-	
+
 
 	@Override
 	public void run() {
 		for(int index=0;index<dataInLinks.size();index++){
 			DataInLink dataInLink=dataInLinks.get(index);
-			oneColData[index]=CrossValidation.caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO, startTimeO);
+			oneColData[index]=CrossValidation.caclulateWithOrder(dataInLink,lengthO, widthO, classO, weightO,dateO, startTimeO);
 		}
 	}
 
 
 	public InitOneCol(double[] oneColData,
 			List<DataInLink> dataInLinks, int lengthO, int widthO, int classO,
-			int weightO, int startTimeO) {
+			int weightO,int dateO, int startTimeO) {
 		super();
 		this.oneColData = oneColData;
 		this.dataInLinks = dataInLinks;
 		this.lengthO = lengthO;
 		this.widthO = widthO;
 		this.classO = classO;
+		this.dateO = dateO;
 		this.weightO = weightO;
 		this.startTimeO = startTimeO;
 	}
 
 
-	
+
 }

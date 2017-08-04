@@ -49,12 +49,12 @@ public class Convert2STD {
 
 		//get standardDeviation
 		for(DataInLink dataInLink: dataInLinks){
-			standardDeviation.setLength(Math.pow(average.getLength()-dataInLink.getLink().getLength(),2));
-			standardDeviation.setWidth(Math.pow(average.getWidth()-dataInLink.getLink().getWidth(),2));
-			standardDeviation.setClassLevel(Math.pow(average.getClassLevel()-dataInLink.getLink().getLink_class(),2));
-			standardDeviation.setWeight(Math.pow(average.getWeight()-dataInLink.getLink().getWeight(),2));
-			standardDeviation.setDate(Math.pow(average.getDate()-dataInLink.getDate().getDate(),2));
-			standardDeviation.setStartTime(Math.pow(average.getStartTime()-(dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2),2));
+			standardDeviation.setLength(standardDeviation.getLength()+Math.pow(average.getLength()-dataInLink.getLink().getLength(),2));
+			standardDeviation.setWidth(standardDeviation.getWidth()+Math.pow(average.getWidth()-dataInLink.getLink().getWidth(),2));
+			standardDeviation.setClassLevel(standardDeviation.getClassLevel()+Math.pow(average.getClassLevel()-dataInLink.getLink().getLink_class(),2));
+			standardDeviation.setWeight(standardDeviation.getWeight()+Math.pow(average.getWeight()-dataInLink.getLink().getWeight(),2));
+			standardDeviation.setDate(standardDeviation.getDate()+Math.pow(average.getDate()-dataInLink.getDate().getDate(),2));
+			standardDeviation.setStartTime(standardDeviation.getStartTime()+Math.pow(average.getStartTime()-(dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2),2));
 		}
 		standardDeviation.setLength(Math.sqrt(average.getLength()/dataInLinks.size()));
 		standardDeviation.setWidth(Math.sqrt(average.getWidth()/dataInLinks.size()));

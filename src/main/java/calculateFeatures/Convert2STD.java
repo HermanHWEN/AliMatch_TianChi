@@ -5,14 +5,16 @@ import java.util.List;
 
 import model.DataInLink;
 import model.FlatData;
-import model.STDDataInLink;
 
 public class Convert2STD {
-	public static List<DataInLink> convert2STD(List<DataInLink> dataInLinks) throws CloneNotSupportedException{
+	public static void convert2STD(List<DataInLink> dataInLinks){
 		
 		List<DataInLink> stdDataInLinks=new ArrayList<DataInLink>();
 		FlatData average=new FlatData();
 		FlatData standardDeviation=new FlatData();
+		
+		FlatData min=new FlatData("min");
+		FlatData max=new FlatData("max");
 
 		//get average
 		for(DataInLink dataInLink: dataInLinks){
@@ -22,6 +24,20 @@ public class Convert2STD {
 			average.setWeight(average.getWeight()+dataInLink.getLink().getWeight());
 			average.setDate(average.getDate()+dataInLink.getDate().getDate());
 			average.setStartTime(average.getStartTime()+dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2);
+		
+			min.setLength(dataInLink.getLink().getLength()<min.getLength()?dataInLink.getLink().getLength():min.getLength());
+			min.setWidth(dataInLink.getLink().getWidth()<min.getWidth()?dataInLink.getLink().getWidth():min.getWidth());
+			min.setClassLevel(dataInLink.getLink().getLink_class()<min.getClassLevel()?dataInLink.getLink().getLink_class():min.getClassLevel());
+			min.setWeight(dataInLink.getLink().getWeight()<min.getWeight()?dataInLink.getLink().getWeight():min.getWeight());
+			min.setDate(dataInLink.getDate().getDate()<min.getDate()?dataInLink.getDate().getDate():min.getDate());
+			min.setStartTime(dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2<min.getStartTime()?dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2:min.getStartTime());
+			
+			max.setLength(dataInLink.getLink().getLength()>max.getLength()?dataInLink.getLink().getLength():max.getLength());
+			max.setWidth(dataInLink.getLink().getWidth()>max.getWidth()?dataInLink.getLink().getWidth():max.getWidth());
+			max.setClassLevel(dataInLink.getLink().getLink_class()>max.getClassLevel()?dataInLink.getLink().getLink_class():max.getClassLevel());
+			max.setWeight(dataInLink.getLink().getWeight()>max.getWeight()?dataInLink.getLink().getWeight():max.getWeight());
+			max.setDate(dataInLink.getDate().getDate()>max.getDate()?dataInLink.getDate().getDate():max.getDate());
+			max.setStartTime(dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2>max.getStartTime()?dataInLink.getStartTime().getHours()*30+dataInLink.getStartTime().getMinutes()/2:max.getStartTime());
 		}
 		average.setLength(average.getLength()/dataInLinks.size());
 		average.setWidth(average.getWidth()/dataInLinks.size());
@@ -50,9 +66,11 @@ public class Convert2STD {
 		
 		//convert data
 		for(DataInLink dataInLink: dataInLinks){
-			DataInLink stdDataInLink=dataInLink.clone();
-//			stdDataInLink.set
+			dataInLink.setAverage(average);
+			dataInLink.setStandardDeviation(standardDeviation);
+			
+			dataInLink.setMin(min);
+			dataInLink.setMax(max);
 		}
-		return stdDataInLinks;
 	}
 }

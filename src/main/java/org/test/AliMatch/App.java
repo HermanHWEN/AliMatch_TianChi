@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import outputData.WriteData;
 import testData.Testing;
 import calculateFeatures.CalculateFeatures;
+import calculateFeatures.Convert2STD;
 import crossValidation.CrossValidation;
 
 /**
@@ -32,6 +33,9 @@ public class App
     	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
     	System.out.println("Calculated weight of link # total : " + linksMap.size());
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
+    	
+    	Convert2STD.convert2STD(dataInLinks);
+    	
     	System.out.println("Read training data # total : " + dataInLinks.size());
     	System.gc();
     	

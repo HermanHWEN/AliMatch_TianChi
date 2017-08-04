@@ -1,15 +1,13 @@
 package crossValidation;
 
+import importData.Constant;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import model.DataInLink;
@@ -17,7 +15,6 @@ import model.DataInLink;
 import org.apache.commons.lang3.StringUtils;
 import org.ejml.simple.SimpleMatrix;
 
-import importData.Constant;
 import training.Training;
 
 public class CrossValidation {
@@ -27,12 +24,9 @@ public class CrossValidation {
 
 	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
 
-		int maxOrder=5;
-		int foldTime=10;
-
 		//convert data high dimension
 		System.out.println("converting data high dimension");
-		List<double[]> fullDataSetWithDimension= transferData(maxOrder,dataInLinks);
+		List<double[]> fullDataSetWithDimension= transferData(Constant.MAXORDER,dataInLinks);
 		System.out.println("converted data high dimension");
 
 
@@ -44,8 +38,8 @@ public class CrossValidation {
 				fullDataSet.add(fullDataSetWithDimension.get(index));
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-			Constant.getThreadPoolExecutor().execute(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
-			System.out.println("Start training of order: " +StringUtils.join(getOrdersStr(maxOrder,count),","));
+			Constant.getThreadPoolExecutor().execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
+			System.out.println("Start training of order: " +StringUtils.join(getOrdersStr(Constant.MAXORDER,count),","));
 		}
 		Constant.getThreadPoolExecutor().shutdown();
 
@@ -56,7 +50,7 @@ public class CrossValidation {
 		//get min error
 		int minCount=0;
 		double minError=Double.MAX_VALUE;
-		for(int count=0;count<getCounts(maxOrder);count++){
+		for(int count=0;count<getCounts(Constant.MAXORDER);count++){
 			if(errorMap.get(count)!=null){
 				if(errorMap.get(count)<minError){
 					minCount=count;
@@ -65,8 +59,8 @@ public class CrossValidation {
 			}
 		}
 
-		List<OrdersOfVars> orders=getOrders(maxOrder,minCount);
-		List<String> ordersStr=getOrdersStr(maxOrder,minCount);
+		List<OrdersOfVars> orders=getOrders(Constant.MAXORDER,minCount);
+		List<String> ordersStr=getOrdersStr(Constant.MAXORDER,minCount);
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
 		System.out.println("Order of min error:  " +StringUtils.join(ordersStr,"#"));
 		System.out.println("Weight of min error: "+ Arrays.toString(weights));

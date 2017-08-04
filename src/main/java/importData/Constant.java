@@ -13,6 +13,8 @@ public class Constant {
 	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data.txt";
 	public final static String PATH_OF_RESULT="C://Match//result.txt";
 	
+	public final static int MAXORDER=3;
+	public final static int FOLDTIME=10;
 	public final static int SIZE_OF_DATA=100;
 	public final static int REPEATE_TIMES=1000;
 	public final static double LEARNING_RATE=0.1;
@@ -21,6 +23,7 @@ public class Constant {
 	public static ThreadPoolExecutor getThreadPoolExecutor(){
 		if(threadPoolExecutor!=null) return threadPoolExecutor;
 		BlockingQueue queue = new LinkedBlockingQueue();   
-		return new ThreadPoolExecutor(4,20,Long.MAX_VALUE,TimeUnit.DAYS, queue);
+		threadPoolExecutor=new ThreadPoolExecutor(10,20,Long.MAX_VALUE,TimeUnit.DAYS, queue);
+		return threadPoolExecutor;
 	}
 }

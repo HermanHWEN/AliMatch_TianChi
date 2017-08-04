@@ -1,5 +1,8 @@
 package crossValidation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OrdersOfVars {
 	
 	private int lengthO;
@@ -43,6 +46,53 @@ public class OrdersOfVars {
 	}
 	public void setStartTimeO(int startTimeO) {
 		this.startTimeO = startTimeO;
+	}
+	
+	public static List<OrdersOfVars> getOrders(int maxOrder,int minCount){
+		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
+		int count=0;
+		for(int order=0;order<=maxOrder;order++){
+
+			for(int lengthO=order;lengthO>=0;lengthO--){
+				for(int widthO=order-lengthO;widthO>=0;widthO--){
+					for(int classO=order-lengthO-widthO;classO>=0;classO--){
+						for(int startTimeO=order-lengthO-widthO-classO;startTimeO>=0;startTimeO--){
+							for(int weightO=order-lengthO-widthO-classO-startTimeO;weightO>=0;weightO--){
+								int dateO=order-lengthO-widthO-classO-startTimeO-weightO;
+								OrdersOfVars ordersOfVars=new OrdersOfVars();
+								ordersOfVars.setLengthO(lengthO);
+								ordersOfVars.setWidthO(widthO);
+								ordersOfVars.setClassO(classO);
+								ordersOfVars.setWeightO(weightO);
+								ordersOfVars.setDateO(dateO);
+								ordersOfVars.setStartTimeO(startTimeO);
+								ordersOfVarsList.add(ordersOfVars);
+								count++;
+								if(count>minCount && minCount!=-1) return ordersOfVarsList;
+							}
+
+						}
+					}
+				}
+			}
+		}
+		return ordersOfVarsList;
+
+	}
+	
+	public static List<String> getOrdersStr(int maxOrder,int minCount){
+		List<String> strRes=new ArrayList<>();
+		List<OrdersOfVars> res=OrdersOfVars.getOrders(maxOrder,minCount);
+		for(OrdersOfVars r:res){
+			strRes.add(r.toString());
+		}
+		return strRes;
+	}
+
+	
+
+	public static int getCounts(int maxOrder){
+		return OrdersOfVars.getOrders(maxOrder,-1).size()-1;
 	}
 	@Override
 	public String toString() {

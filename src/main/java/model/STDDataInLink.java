@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import crossValidation.OrdersOfVars;
 
-public class DataInLink implements Cloneable{
+public class STDDataInLink {
 	
 	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	private static final DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -51,8 +51,8 @@ public class DataInLink implements Cloneable{
 	@Override
 	public String toString() {
 		return link.getLink_ID()
-				+ "#" + DataInLink.df.format(date)
-				+ "#[" + DataInLink.df2.format(startTime) + "," + DataInLink.df2.format(endTime)
+				+ "#" + STDDataInLink.df.format(date)
+				+ "#[" + STDDataInLink.df2.format(startTime) + "," + STDDataInLink.df2.format(endTime)
 				+ ")#" + travle_time;
 	}
 	
@@ -67,8 +67,6 @@ public class DataInLink implements Cloneable{
 	}
 	
 	
-	public DataInLink clone() throws CloneNotSupportedException{
-		return (DataInLink) super.clone();
-	}
+	
 	
 }

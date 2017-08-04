@@ -25,12 +25,7 @@ public class Training implements Runnable{
 	private Map<Integer,SimpleMatrix> weightMap;
 	private List<List<double[]>> trainingSetWithFold=new ArrayList<List<double[]>>();
 	private List<List<double[]>> validationSetWithFold=new ArrayList<List<double[]>>();
-
-	//	private List<double[]> yTrainingSetWithFold=new ArrayList<double[]>();
-	//	private List<double[]> yValidationSetWithFold=new ArrayList<double[]>();
-
 	private List<double[]> fullDataSetWithDimension;
-
 
 
 	public Training(int count,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
@@ -49,7 +44,7 @@ public class Training implements Runnable{
 		double error = 0;
 		//Separate data into training set and validation set
 		int size=fullDataSetWithDimension.get(0).length;
-		int step=size/foldTime+1;
+		int step=(int) Math.ceil(((double) size)/foldTime);
 
 		//training with cross validation 
 		//separate data into training set and validation set
@@ -59,16 +54,16 @@ public class Training implements Runnable{
 			List<double[]> validationSet=new ArrayList<double[]>();
 			for(double[] fullDataSet:fullDataSetWithDimension){
 
-				double[] validationData=Arrays.copyOfRange(fullDataSet, start, Math.min(size-1, start+step-1));
+				double[] validationData=Arrays.copyOfRange(fullDataSet, start, Math.min(size, start+step));
 				double[] trainingData;
 				if(start==0){
-					trainingData=Arrays.copyOfRange(fullDataSet,start+step,size-1);
+					trainingData=Arrays.copyOfRange(fullDataSet,start+step,size);
 
-				}else if(start+step-1<size-1){
-					trainingData=Arrays.copyOfRange(fullDataSet,0, start-1);
-					ArrayUtils.addAll(trainingData, Arrays.copyOfRange(fullDataSet,start+step, size-1));
+				}else if(start+step<size){
+					trainingData=Arrays.copyOfRange(fullDataSet,0, start);
+					ArrayUtils.addAll(trainingData, Arrays.copyOfRange(fullDataSet,start+step, size));
 				}else{
-					trainingData=Arrays.copyOfRange(fullDataSet,0, start-1);
+					trainingData=Arrays.copyOfRange(fullDataSet,0, start);
 				}
 				trainingSet.add(trainingData);validationSet.add(validationData);
 			}
@@ -86,8 +81,8 @@ public class Training implements Runnable{
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
 
-			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
-			//			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
+//			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
+			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
 
 			//validation
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
@@ -110,11 +105,11 @@ public class Training implements Runnable{
 			System.gc();
 		}
 
-		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
-		//		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+//		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
 
 		error=error/foldTime;
-
+		System.out.println("Training with "+(count+1)+" parameters completed! Error: " +error);
 		errorMap.put(count,error);
 		weightMap.put(count, W);
 
@@ -174,8 +169,14 @@ public class Training implements Runnable{
 
 		W.set(0.1);
 
-		for(int count=0;count<Constant.REPEATE_TIMES;count++)
-			W=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
+		for(int count=0;count<Constant.REPEATE_TIMES;count++){
+			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
+			if(errorLowerThanThredhold(W,Wn,X,Y,Constant.THREDHOLD)) {
+				System.out.println("Lower Than Thredhold # "+(res.size()-1)+" parameters  # Repeat times:" + (count+1));
+				break;
+			}
+			W=Wn;
+		}
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
 		X=null;
@@ -184,6 +185,21 @@ public class Training implements Runnable{
 
 	}
 
+	private static boolean lowerThanThredhold(SimpleMatrix Wo,SimpleMatrix Wn,double thredhold){
+		SimpleMatrix tmp=Wn.minus(Wo);
+		for(int index=0;index<tmp.getNumElements();index++){
+			if(Math.abs((tmp.get(index)-Wo.get(index))/Wo.get(index))>thredhold){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean errorLowerThanThredhold(SimpleMatrix Wo,SimpleMatrix Wn,SimpleMatrix X,SimpleMatrix Y,double thredhold){
+		double errorO=ErrorFun.targetError(Wo, X, Y);
+		double errorN=ErrorFun.targetError(Wn, X, Y);
+		return Math.abs(errorN-errorO)<=thredhold;
+	}
 	private static boolean isGoingUp(Map<Integer, Double> errorMap,int count){
 		double[] errors=new double[errorMap.values().size()];
 		int errorI=0;

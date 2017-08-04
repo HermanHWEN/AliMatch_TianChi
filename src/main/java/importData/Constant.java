@@ -8,6 +8,7 @@ public class Constant {
 	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data.txt";
 	public final static String PATH_OF_RESULT="C://Match//result.txt";
 	
-	public final static int SIZE_OF_DATA=10000;
+	public final static int SIZE_OF_DATA=5000;
+	public final static int REPEATE_TIMES=1000;
 	public final static double LEARNING_RATE=0.1;
 }

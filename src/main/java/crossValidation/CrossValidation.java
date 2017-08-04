@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import model.DataInLink;
@@ -21,7 +25,8 @@ public class CrossValidation {
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
 
 	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
-		
+		BlockingQueue queue = new LinkedBlockingQueue();   
+		ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(4,20,Long.MAX_VALUE,TimeUnit.DAYS, queue);
 		int maxOrder=5;
 		int foldTime=10;
 
@@ -33,23 +38,19 @@ public class CrossValidation {
 		
 		//from low dimension to high
 		System.out.println("Start training");
-		List<Thread> trainingTs=new ArrayList<Thread>();
-		for(int count=0;count<fullDataSetWithDimension.size();count++){
+		for(int count=0;count<fullDataSetWithDimension.size()-1;count++){
 			List<double[]> fullDataSet=new ArrayList<>();
             for(int index=0;index<=count;index++){
             	fullDataSet.add(fullDataSetWithDimension.get(index));
             }
-        	Thread training=new Thread(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
-			trainingTs.add(training);
+            fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
+            threadPoolExecutor.execute(new Training(count,foldTime,errorMap,weightMap,fullDataSet));
 			System.out.println("Start training of order: " +StringUtils.join(getOrdersStr(maxOrder,count),","));
-			training.start();
-//			training.run();
         }
+		threadPoolExecutor.shutdown();
 		
+		while(!threadPoolExecutor.isTerminated()){}
 		
-		for(Thread training:trainingTs){
-			training.join();
-		}
 		System.out.println("All trainings completed.");
 		
 		//get min error
@@ -69,7 +70,7 @@ public class CrossValidation {
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
 		System.out.println("Order of min error:  " +StringUtils.join(ordersStr,"#"));
 		System.out.println("Weight of min error: "+ Arrays.toString(weights));
-		System.out.println(minCount);
+		System.out.println("minCount : " + minCount);
 		System.out.println("Min error: " + minError/10);
 		
 		Function<DataInLink,Double> targetFunction = (x) -> {
@@ -137,7 +138,6 @@ public class CrossValidation {
 		}
 		return res;
 	}
-	
 	
 	
 	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{

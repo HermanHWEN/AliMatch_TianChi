@@ -27,18 +27,18 @@ public class ErrorFun {
 
 	public static SimpleMatrix derivative(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 
-		SimpleMatrix sum=new SimpleMatrix(W.numRows(),0);
+		SimpleMatrix sum=new SimpleMatrix(W.numRows(),1);
 		for(int row=0;row<X.numRows();row++){
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 			SimpleMatrix yi=Y.extractMatrix(row, row+1, 0, 1);
 			SimpleMatrix tmp=Xi.transpose().mult(Xi.mult(W).minus(yi));
-			double cons=2/Math.pow(Y.get(row, 0), 2);
+			double cons=2/Math.pow(Y.get(row, 0), 2)/Math.pow(X.numRows(), 2);
 			SimpleMatrix consM=new SimpleMatrix(tmp.numRows(),tmp.numRows());
 			for(int i=0;i<consM.numRows();i++){
 				consM.set(i, i, cons);
 			}
-			sum.plus(consM.mult(tmp));
+			sum=sum.plus(consM.mult(tmp));
 		}
 		return sum;
 	}

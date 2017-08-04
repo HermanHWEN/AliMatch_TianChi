@@ -1,5 +1,7 @@
 package training;
 
+import importData.Constant;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,9 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.ejml.simple.SimpleMatrix;
 
-import crossValidation.CrossValidation;
 import crossValidation.ErrorFun;
-import importData.Constant;
 
 /**
  * Created by 43903042 on 2017/8/2.
@@ -25,6 +25,9 @@ public class Training implements Runnable{
 	private Map<Integer,SimpleMatrix> weightMap;
 	private List<List<double[]>> trainingSetWithFold=new ArrayList<List<double[]>>();
 	private List<List<double[]>> validationSetWithFold=new ArrayList<List<double[]>>();
+
+	//	private List<double[]> yTrainingSetWithFold=new ArrayList<double[]>();
+	//	private List<double[]> yValidationSetWithFold=new ArrayList<double[]>();
 
 	private List<double[]> fullDataSetWithDimension;
 
@@ -42,7 +45,7 @@ public class Training implements Runnable{
 
 	@Override
 	public void run() {
-		if(isGoingUp(errorMap,count)) return;
+		//		if(isGoingUp(errorMap,count)) return;
 		double error = 0;
 		//Separate data into training set and validation set
 		int size=fullDataSetWithDimension.get(0).length;
@@ -82,40 +85,33 @@ public class Training implements Runnable{
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
-			//get W
-			SimpleMatrix Yt=new SimpleMatrix(trainingSet.get(0).length,1);
 
-			Yt.setColumn(0, 0, trainingSet.get(trainingSet.size()-1));
-//			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet,Yt);
-			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet,Yt);
+			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
+			//			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
 
 			//validation
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
 			Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));
 
 			//get validation error
-			SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).length,validationSet.size());
+			SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).length,validationSet.size()-1);
 
 			//validate
-			int colNum=0;
-			for(double[] col:validationSet){
+			for(int colNum=0;colNum<validationSet.size()-1;colNum++){
+				double[] col=validationSet.get(colNum);
 				Xv.setColumn(colNum, 0,col);
-				colNum++;
 			}
-//			double e=Xv.mult(W).minus(Yv).normF()/(validationSet.size()+1);
+			//			double e=Xv.mult(W).minus(Yv).normF()/(validationSet.size()+1);
 			double e=ErrorFun.targetError(W, Xv, Yv);
 			error+=e;
 			trainingSet.clear();
 			validationSet.clear();
-			Yt=null;W=null;Yv=null;Xv=null;
+			W=null;Yv=null;Xv=null;
 			System.gc();
 		}
 
-		//get final weight
-		SimpleMatrix Y=new SimpleMatrix(fullDataSetWithDimension.get(0).length,1);
-		Y.setColumn(0, 0, fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-//		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension,Y);
-		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,Y);
+		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+		//		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
 
 		error=error/foldTime;
 
@@ -125,19 +121,22 @@ public class Training implements Runnable{
 
 		trainingSetWithFold=null;
 		validationSetWithFold=null;
-		Y=null;
 		System.gc();
 	}
 
 	//pseudo-inverse
-	public SimpleMatrix genTargetFunWeidthPseudoI(List<double[]> res, SimpleMatrix Y){
+	public SimpleMatrix genTargetFunWeidthPseudoI(List<double[]> res){
 
-		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
+		//get W
+		SimpleMatrix Y=new SimpleMatrix(res.get(0).length,1);
 
-		int colNum=0;
-		for(double[] col:res){
+		Y.setColumn(0, 0, res.get(res.size()-1));
+
+		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size()-1);
+
+		for(int colNum=0;colNum<res.size()-1;colNum++){
+			double[] col=res.get(colNum);
 			X.setColumn(colNum, 0,col);
-			colNum++;
 		}
 
 		SimpleMatrix sudoX=X.pseudoInverse();
@@ -149,28 +148,38 @@ public class Training implements Runnable{
 			System.out.println("Y rows#" + Y.numRows() +" cols#" + Y.numCols());
 		}
 		Arrays.asList(W.getMatrix().data);
+		Y=null;
+		X=null;
+		System.gc();
 		return W;
 
 	}
 
 	//iterator gradient descend
-	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res, SimpleMatrix Y){
+	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res){
 
-		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size());
+		//get W
+		SimpleMatrix Y=new SimpleMatrix(res.get(0).length,1);
 
-		int colNum=0;
-		for(double[] col:res){
+		Y.setColumn(0, 0, res.get(res.size()-1));
+
+		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size()-1);
+
+		for(int colNum=0;colNum<res.size()-1;colNum++){
+			double[] col=res.get(colNum);
 			X.setColumn(colNum, 0,col);
-			colNum++;
 		}
 
-		SimpleMatrix W = new SimpleMatrix(res.size(),0);
-		
+		SimpleMatrix W = new SimpleMatrix(res.size()-1,1);
+
 		W.set(0.1);
-		
-		for(int count=0;count<1000;count++)
-		W=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
+
+		for(int count=0;count<Constant.REPEATE_TIMES;count++)
+			W=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
 		Arrays.asList(W.getMatrix().data);
+		Y=null;
+		X=null;
+		System.gc();
 		return W;
 
 	}

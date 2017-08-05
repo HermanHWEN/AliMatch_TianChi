@@ -5,6 +5,8 @@ import importData.ReadAsLink;
 import importData.ReadAsTrainData;
 
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,8 +15,10 @@ import model.DataInLink;
 import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import outputData.WriteData;
+import sun.util.calendar.CalendarUtils;
 import testData.Testing;
 import calculateFeatures.CalculateFeatures;
 import calculateFeatures.Convert2STD;
@@ -28,6 +32,7 @@ public class App
 {
     public static void main( String[] args ) throws ParseException, InterruptedException
     {
+    	long  startTime=Calendar.getInstance().getTimeInMillis();
     	Map<String,Link> linksMap=ReadAsLink.readAsLink();
     	System.out.println("Read link info # total : " + linksMap.size());
     	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
@@ -58,6 +63,13 @@ public class App
     	
     	System.out.println("Writing data to specified path - "+Constant.PATH_OF_RESULT);
     	WriteData.contentToTxt(Constant.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
-    	System.out.println("Done");
+    	
+    	long endTime=Calendar.getInstance().getTimeInMillis();
+    	long usedDays= (long)((endTime - startTime)/(1000 * 60 * 60 *24) + 0.5); 
+    	long usedHours=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))/(1000 * 60 * 60); 
+    	long usedMinus=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))% (1000 * 60 * 60)/(1000 * 60);
+    	long usedSec=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))% (1000 * 60 * 60)%(1000 * 60)/1000;
+//    	startTime.getmi
+    	System.out.println("Done! Used days:" + usedDays+" hours:" + usedHours+" minus:" + usedMinus+" seconds:" + usedSec);
     }
 }

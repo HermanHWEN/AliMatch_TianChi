@@ -20,12 +20,12 @@ public class Constant {
 	public final static double LEARNING_RATE=0.1;
 	public final static double THREDHOLD=0.00001;
 	
-	public final static boolean USE_GRADIENT_DESCEND=true;
+	public final static boolean USE_GRADIENT_DESCEND=true;//when false, will use pseudo inverse
 	
-	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;
+	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//when false, will use batch gradient descend
 	
 	public final static boolean USE_MIN_MAX_NORMALIZATION=true;
-	public final static boolean USE_ZERO_MEAN_NORMALIZATION=true;
+	public final static boolean USE_ZERO_MEAN_NORMALIZATION=true;//when above two are false, won't use normalization
 	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	

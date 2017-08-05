@@ -6,6 +6,9 @@ public class ErrorFun {
 	public static synchronized double targetError(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 
 		double sum=0;
+		if(X.numRows()==1){
+			return Math.abs(Math.abs(X.mult(W).trace())-Y.trace())/Y.trace();
+		}
 		for(int row=0;row<X.numRows();row++){
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
@@ -29,10 +32,14 @@ public class ErrorFun {
 
 		SimpleMatrix sum=new SimpleMatrix(W.numRows(),1);
 		int N=X.numRows();
+		SimpleMatrix Xi;SimpleMatrix yi;
 		for(int row=0;row<X.numRows();row++){
-
-			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
-			SimpleMatrix yi=Y.extractMatrix(row, row+1, 0, 1);
+			if(N==1){
+				Xi=X;yi=Y;
+			}else{
+				Xi=X.extractMatrix(row, row+1, 0, X.numCols());
+				yi=Y.extractMatrix(row, row+1, 0, 1);
+			}
 			double yiNum=yi.trace();
 			
 			double cons=1/(yiNum*N);//yi/N
@@ -45,6 +52,7 @@ public class ErrorFun {
 				consM.set(i, i, cons);
 			}
 			
+			if(N==1) return consM.mult(Xi.transpose());
 			sum=sum.plus(consM.mult(Xi.transpose()));
 		}
 		return sum;

@@ -41,12 +41,17 @@ public class CrossValidation {
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
 			System.out.println("Start training with "+(count+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,count),","));
-			threadPoolExecutor.execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
-			new Thread(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
+			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
+				threadPoolExecutor.execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
+			}else{
+				new Thread(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
+			}
 		}
-		threadPoolExecutor.shutdown();
-
-		while(!threadPoolExecutor.isTerminated()){}
+		
+		if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
+			threadPoolExecutor.shutdown();
+			while(!threadPoolExecutor.isTerminated()){}
+		}
 		System.out.println("All trainings completed.");
 
 		

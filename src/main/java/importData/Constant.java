@@ -27,6 +27,8 @@ public class Constant {
 	public final static boolean USE_MIN_MAX_NORMALIZATION=true;
 	public final static boolean USE_ZERO_MEAN_NORMALIZATION=true;//when above two are false, won't use normalization
 	
+	public final static boolean USE_MULTI_THREAD_FOR_TRAINING=true;
+	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	
 	public static ThreadPoolExecutor getThreadPoolExecutor(){

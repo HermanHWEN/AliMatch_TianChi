@@ -10,7 +10,6 @@ public class ErrorFun {
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 			double yi=Y.get(row, 0);
-//			sum+=Math.abs(Xi.mult(W).trace()-yi)/yi;
 			sum+=Math.abs(Math.abs(Xi.mult(W).trace())-yi)/yi;
 		}
 		return sum/X.numRows();
@@ -29,17 +28,24 @@ public class ErrorFun {
 	public static synchronized SimpleMatrix derivative(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 
 		SimpleMatrix sum=new SimpleMatrix(W.numRows(),1);
+		int N=X.numRows();
 		for(int row=0;row<X.numRows();row++){
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 			SimpleMatrix yi=Y.extractMatrix(row, row+1, 0, 1);
-			SimpleMatrix tmp=Xi.transpose().mult(Xi.mult(W).minus(yi));
-			double cons=2/Math.pow(Y.get(row, 0), 2)/Math.pow(X.numRows(), 2);
-			SimpleMatrix consM=new SimpleMatrix(tmp.numRows(),tmp.numRows());
+			double yiNum=yi.trace();
+			
+			double cons=1/(yiNum*N);//yi/N
+			double yHash=Xi.mult(W).trace();
+			if((yHash>0 && yHash<yiNum) || yHash<(-1*yiNum)){
+				cons=-1*cons;
+			}
+			SimpleMatrix consM=new SimpleMatrix(X.numCols(),X.numCols());
 			for(int i=0;i<consM.numRows();i++){
 				consM.set(i, i, cons);
 			}
-			sum=sum.plus(consM.mult(tmp));
+			
+			sum=sum.plus(consM.mult(Xi.transpose()));
 		}
 		return sum;
 	}

@@ -67,7 +67,7 @@ public class App
     	
     	String today= df.format(Calendar.getInstance().getTime());
     	System.out.println("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));
-    	WriteData.contentToTxt(Constant.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
+    	WriteData.contentToTxt(MessageFormat.format(Constant.PATH_OF_RESULT,today), StringUtils.join(testDataSet, "\n")+"\n");
     	
     	
     	System.out.println("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));

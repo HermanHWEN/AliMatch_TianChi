@@ -5,7 +5,7 @@ import importData.Constant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -42,7 +42,7 @@ public class CrossValidation {
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
 			System.out.println("Start training with "+(count+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,count),","));
 			threadPoolExecutor.execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
-//			new Thread(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
+			new Thread(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
 		}
 		threadPoolExecutor.shutdown();
 
@@ -90,7 +90,7 @@ public class CrossValidation {
 
 
 	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
-		List<double[]> res=new LinkedList<double[]>();
+		List<double[]> res=new ArrayList<double[]>();
 		DataInLink dataInLink;
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		//init list

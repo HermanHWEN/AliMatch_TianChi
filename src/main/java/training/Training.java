@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.ejml.simple.SimpleMatrix;
@@ -81,8 +82,12 @@ public class Training implements Runnable{
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
 
-//			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
-			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
+			SimpleMatrix W;
+			if(Constant.USE_GRADIENT_DESCEND){
+				W=genTargetFunWeidthGradientDescend(trainingSet);
+			}else{
+				W=genTargetFunWeidthPseudoI(trainingSet);
+			}
 
 			//validation
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
@@ -105,8 +110,12 @@ public class Training implements Runnable{
 			System.gc();
 		}
 
-//		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
-		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+		SimpleMatrix W;
+		if(Constant.USE_GRADIENT_DESCEND){
+			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+		}else{
+			W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+		}
 
 		error=error/foldTime;
 		System.out.println("Training with "+(count+1)+" parameters completed! Error: " +error);
@@ -153,16 +162,28 @@ public class Training implements Runnable{
 	//iterator gradient descend
 	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res){
 
-		//get W
-		SimpleMatrix Y=new SimpleMatrix(res.get(0).length,1);
+		SimpleMatrix Y;SimpleMatrix X;
+		
+		int max=res.get(0).length-1;
+        Random random = new Random();
 
-		Y.setColumn(0, 0, res.get(res.size()-1));
-
-		SimpleMatrix X=new SimpleMatrix(res.get(0).length,res.size()-1);
-
-		for(int colNum=0;colNum<res.size()-1;colNum++){
-			double[] col=res.get(colNum);
-			X.setColumn(colNum, 0,col);
+		if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
+			//get W
+			Y=new SimpleMatrix(1,1);
+			X=new SimpleMatrix(1,res.size()-1);
+		}else{
+			
+			//get W
+			Y=new SimpleMatrix(res.get(0).length,1);
+			
+			Y.setColumn(0, 0, res.get(res.size()-1));
+			
+			X=new SimpleMatrix(res.get(0).length,res.size()-1);
+			
+			for(int colNum=0;colNum<res.size()-1;colNum++){
+				double[] col=res.get(colNum);
+				X.setColumn(colNum, 0,col);
+			}
 		}
 
 		SimpleMatrix W = new SimpleMatrix(res.size()-1,1);
@@ -170,6 +191,14 @@ public class Training implements Runnable{
 		W.set(0.1);
 
 		for(int count=0;count<Constant.REPEATE_TIMES;count++){
+			if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
+				int r = random.nextInt(max);
+				Y.setColumn(0, 0, res.get(res.size()-1)[r]);
+				for(int colNum=0;colNum<res.size()-1;colNum++){
+					double[] col=res.get(colNum);
+					X.setColumn(colNum, 0,col[r]);
+				}
+			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
 			if(errorLowerThanThredhold(W,Wn,X,Y,Constant.THREDHOLD)) {
 				System.out.println("Lower Than Thredhold # "+(res.size()-1)+" parameters  # Repeat times:" + (count+1));
@@ -199,10 +228,6 @@ public class Training implements Runnable{
 		double errorO=ErrorFun.targetError(Wo, X, Y);
 		double errorN=ErrorFun.targetError(Wn, X, Y);
 		
-		SimpleMatrix YDash=X.mult(Wn);
-		for(int index=0;index<YDash.getNumElements();index++){
-			if(YDash.get(index)<0) return false;
-		}
 		return Math.abs(errorN-errorO)<=thredhold;
 	}
 	private static boolean isGoingUp(Map<Integer, Double> errorMap,int count){

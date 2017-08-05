@@ -43,7 +43,7 @@ public class DataInLink implements Cloneable{
 	public synchronized double powerWithOrders(OrdersOfVars order){
 		double reswithOrder=Math.pow(this.link.getLength(), order.getLengthO())*
 				Math.pow(this.link.getWidth(), order.getWidthO())*
-				Math.pow(this.link.getLink_class(), order.getClassO())*
+//				Math.pow(this.link.getLink_class(), order.getClassO())*
 				Math.pow(this.link.getWeight(), order.getWeightO())*
 				Math.pow(this.date.getDate(), order.getDateO())*
 				Math.pow(this.startTime.getHours()*30+this.startTime.getMinutes()/2, order.getStartTimeO());
@@ -53,7 +53,7 @@ public class DataInLink implements Cloneable{
 	public synchronized double powerWithOrders2(OrdersOfVars order){
 		double reswithOrder=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO())*
 				Math.pow((this.link.getWidth()-average.getWidth())/standardDeviation.getWidth()/standardDeviation.getWidth(), order.getWidthO())*
-				Math.pow((this.link.getLink_class()-average.getClassLevel())/standardDeviation.getClassLevel(), order.getClassO())*
+//				Math.pow((this.link.getLink_class()-average.getClassLevel())/standardDeviation.getClassLevel(), order.getClassO())*
 				Math.pow((this.link.getWeight()-average.getWeight())/standardDeviation.getWeight(), order.getWeightO())*
 				Math.pow((this.date.getDate()-average.getDate())/standardDeviation.getDate(), order.getDateO())*
 				Math.pow((this.startTime.getHours()*30+this.startTime.getMinutes()/2-average.getStartTime())/standardDeviation.getStartTime(), order.getStartTimeO());
@@ -63,7 +63,7 @@ public class DataInLink implements Cloneable{
 	public synchronized double powerWithOrders3(OrdersOfVars order){
 		double reswithOrder=Math.pow((this.link.getLength()-min.getLength())/(max.getLength()-min.getStartTime()), order.getLengthO())*
 				Math.pow((this.link.getWidth()-min.getWidth())/(max.getWidth()-min.getStartTime()), order.getWidthO())*
-				Math.pow((this.link.getLink_class()-min.getClassLevel())/(max.getClassLevel()-min.getStartTime()), order.getClassO())*
+//				Math.pow((this.link.getLink_class()-min.getClassLevel())/(max.getClassLevel()-min.getStartTime()), order.getClassO())*
 				Math.pow((this.link.getWeight()-min.getWeight())/(max.getWeight()-min.getStartTime()), order.getWeightO())*
 				Math.pow((this.date.getDate()-min.getDate())/(max.getDate()-min.getStartTime()), order.getDateO())*
 				Math.pow((this.startTime.getHours()*30+this.startTime.getMinutes()/2-min.getStartTime())/(max.getStartTime()-min.getStartTime()), order.getStartTimeO());

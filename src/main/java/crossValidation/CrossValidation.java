@@ -41,17 +41,17 @@ public class CrossValidation {
 		//from low dimension to high
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		log.info("Start training");
-		for(int count=0;count<fullDataSetWithDimension.size()-1;count++){
+		for(int parametersNum=0;parametersNum<fullDataSetWithDimension.size()-1;parametersNum++){
 			List<double[]> fullDataSet=new ArrayList<>();
-			for(int index=0;index<=count;index++){
+			for(int index=0;index<=parametersNum;index++){
 				fullDataSet.add(fullDataSetWithDimension.get(index));
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-			log.info("Start training with "+(count+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,count),","));
+			log.info("Start training with "+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum),","));
 			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
-				threadPoolExecutor.execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
+				threadPoolExecutor.execute(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
 			}else{
-				new Thread(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
+				new Thread(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
 			}
 		}
 		
@@ -63,28 +63,28 @@ public class CrossValidation {
 
 		
 		//get min error
-		int minCount=0;
+		int minParametersNum=0;
 		double minError=Double.MAX_VALUE;
-		for(int count=0;count<OrdersOfVars.getCounts(Constant.MAXORDER);count++){
-			if(errorMap.get(count)!=null){
-				if(errorMap.get(count)<minError){
-					minCount=count;
-					minError=errorMap.get(count);
+		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER);parametersNum++){
+			if(errorMap.get(parametersNum)!=null){
+				if(errorMap.get(parametersNum)<(minError-0.01)){
+					minParametersNum=parametersNum;
+					minError=errorMap.get(parametersNum);
 				}
 			}
 		}
 
 		CrossValidation.minError=minError;
 		//print result
-		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minCount);
-		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minCount);
-		double[] weights=weightMap.get(minCount).getMatrix().getData();
+		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minParametersNum);
+		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minParametersNum);
+		double[] weights=weightMap.get(minParametersNum).getMatrix().getData();
 		
 		StringBuffer modelInfo= new StringBuffer("Model info:\n");
 		modelInfo.append("Number of samples:  " +dataInLinks.size()+"\n");
 		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"#")+"\n");
 		modelInfo.append("Weight of min error: "+ Arrays.toString(weights)+"\n");
-		modelInfo.append("MinCount : " + minCount+"\n");
+		modelInfo.append("Parameters Num : " + minParametersNum+"\n");
 		modelInfo.append("Min error: " + minError+"\n");
 		log.info(modelInfo);
 		

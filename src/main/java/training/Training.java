@@ -22,7 +22,8 @@ public class Training implements Runnable{
 	private static Logger log = Logger.getLogger(Training.class);  
 	private final Object mListMutex = new Object();
 
-	private int count;
+	private int countFolde;
+	private int parametersNum;
 	private int foldTime;
 	private Map<Integer,Double> errorMap;
 	private Map<Integer,SimpleMatrix> weightMap;
@@ -31,10 +32,10 @@ public class Training implements Runnable{
 	private List<double[]> fullDataSetWithDimension;
 
 
-	public Training(int count,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
+	public Training(int parametersNum,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
 			List<double[]> fullDataSetWithDimension) {
 		super();
-		this.count = count;
+		this.parametersNum = parametersNum;
 		this.foldTime = foldTime;
 		this.errorMap = errorMap;
 		this.weightMap = weightMap;
@@ -43,7 +44,7 @@ public class Training implements Runnable{
 
 	@Override
 	public void run() {
-		//		if(isGoingUp(errorMap,count)) return;
+		//		if(isGoingUp(errorMap,parametersNum)) return;
 		double error = 0;
 		//Separate data into training set and validation set
 		int size=fullDataSetWithDimension.get(0).length;
@@ -120,9 +121,9 @@ public class Training implements Runnable{
 		}
 
 		error=error/foldTime;
-		log.info("Training with "+(count+1)+" parameters completed! Error: " +error);
-		errorMap.put(count,error);
-		weightMap.put(count, W);
+		log.info("Training with "+(parametersNum+1)+" parameters completed! Error: " +error);
+		errorMap.put(parametersNum,error);
+		weightMap.put(parametersNum, W);
 
 
 		trainingSetWithFold=null;
@@ -192,6 +193,7 @@ public class Training implements Runnable{
 
 		W.set(0.1);
 
+		countFolde++;
 		for(int count=0;count<Constant.REPEATE_TIMES;count++){
 			if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
 				int r = random.nextInt(max);
@@ -203,10 +205,13 @@ public class Training implements Runnable{
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
 			if(errorLowerThanThredhold(W,Wn,X,Y,Constant.THREDHOLD)) {
-				log.info("Lower Than Thredhold # "+(res.size()-1)+" parameters  # Repeat times:" + (count+1));
+				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than thredhold # Repeated times:" + (count+1));
 				break;
 			}
 			W=Wn;
+		}
+		if(parametersNum>=Constant.REPEATE_TIMES){
+			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than thredhold # Reached times limit:" + Constant.REPEATE_TIMES);
 		}
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
@@ -232,10 +237,10 @@ public class Training implements Runnable{
 		
 		return Math.abs(errorN-errorO)<=thredhold;
 	}
-	private static boolean isGoingUp(Map<Integer, Double> errorMap,int count){
+	private static boolean isGoingUp(Map<Integer, Double> errorMap,int parametersNum){
 		double[] errors=new double[errorMap.values().size()];
 		int errorI=0;
-		for(int i=0;i<count;i++){
+		for(int i=0;i<parametersNum;i++){
 			if(errorMap.containsKey(i)){
 				errors[errorI]=errorMap.get(i);
 				errorI++;

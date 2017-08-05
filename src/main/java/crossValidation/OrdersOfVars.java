@@ -48,9 +48,9 @@ public class OrdersOfVars {
 		this.startTimeO = startTimeO;
 	}
 	
-	public static List<OrdersOfVars> getOrders(int maxOrder,int minCount){
+	public static List<OrdersOfVars> getOrders(int maxOrder,int maxParametersNum){
 		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
-		int count=0;
+		int parametersNum=0;
 		for(int order=0;order<=maxOrder;order++){
 
 			for(int lengthO=order;lengthO>=0;lengthO--){
@@ -67,8 +67,8 @@ public class OrdersOfVars {
 								ordersOfVars.setDateO(dateO);
 								ordersOfVars.setStartTimeO(startTimeO);
 								ordersOfVarsList.add(ordersOfVars);
-								count++;
-								if(count>minCount && minCount!=-1) return ordersOfVarsList;
+								parametersNum++;
+								if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
 							}
 
 						}
@@ -80,9 +80,9 @@ public class OrdersOfVars {
 
 	}
 	
-	public static List<String> getOrdersStr(int maxOrder,int minCount){
+	public static List<String> getOrdersStr(int maxOrder,int maxParametersNum){
 		List<String> strRes=new ArrayList<>();
-		List<OrdersOfVars> res=OrdersOfVars.getOrders(maxOrder,minCount);
+		List<OrdersOfVars> res=OrdersOfVars.getOrders(maxOrder,maxParametersNum);
 		for(OrdersOfVars r:res){
 			strRes.add(r.toString());
 		}
@@ -91,7 +91,7 @@ public class OrdersOfVars {
 
 	
 
-	public static int getCounts(int maxOrder){
+	public static int getParametersNum(int maxOrder){
 		return OrdersOfVars.getOrders(maxOrder,-1).size()-1;
 	}
 	@Override

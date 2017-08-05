@@ -37,15 +37,23 @@ public class App
     {
     	DateFormat df = new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH);
     	Calendar  startTime=Calendar.getInstance();
+    	
+    	
     	Map<String,Link> linksMap=ReadAsLink.readAsLink();
     	System.out.println("Read link info # total : " + linksMap.size());
+    	
+    	
     	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
     	System.out.println("Calculated weight of link # total : " + linksMap.size());
+    	
+    	
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
+    	System.out.println("Read training data # total : " + dataInLinks.size());
+
     	
     	Convert2STD.convert2STD(dataInLinks);
+    	System.out.println("Got some componets for normalization.");
     	
-    	System.out.println("Read training data # total : " + dataInLinks.size());
     	System.gc();
     	
     	System.out.println("Training model... ");
@@ -54,15 +62,17 @@ public class App
     	
     	
     	System.gc();
+    	
+    	
     	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
-    	
     	Convert2STD.convert2STD(testDataSet);
-    	
 //    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);
     	System.out.println("Generated testing data set # total : " + testDataSet.size());
     	
+    	
     	Testing.testing(targetFunction,testDataSet);
     	System.out.println("Test result generated.");
+    	
     	
     	String today= df.format(Calendar.getInstance().getTime());
     	System.out.println("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));

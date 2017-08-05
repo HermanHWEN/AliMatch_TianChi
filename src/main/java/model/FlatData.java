@@ -50,19 +50,19 @@ public class FlatData {
 	
 	public FlatData(String flag) {
 		if("min".equals(flag)){
-			this.length = Double.MIN_VALUE;
-			this.width = Double.MIN_VALUE;
-			this.classLevel = Double.MIN_VALUE;
-			this.weight = Double.MIN_VALUE;
-			this.date = Double.MIN_VALUE;
-			this.startTime = Double.MIN_VALUE;
-		}else{
 			this.length = Double.MAX_VALUE;
 			this.width = Double.MAX_VALUE;
 			this.classLevel = Double.MAX_VALUE;
 			this.weight = Double.MAX_VALUE;
 			this.date = Double.MAX_VALUE;
 			this.startTime = Double.MAX_VALUE;
+		}else{
+			this.length = Double.MIN_VALUE;
+			this.width = Double.MIN_VALUE;
+			this.classLevel = Double.MIN_VALUE;
+			this.weight = Double.MIN_VALUE;
+			this.date = Double.MIN_VALUE;
+			this.startTime = Double.MIN_VALUE;
 		}
 	}
 	

@@ -8,19 +8,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import model.DataInLink;
 import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
 
+import Filter.Filters;
 import controll.Constant;
 
 public class ReadAsTrainData {
 
 	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException, InterruptedException{
-//		CopyOnWriteArrayList<DataInLink> dataInLinks=new CopyOnWriteArrayList<DataInLink>();
 		
+		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		List<String> uniqueKeys=Collections.synchronizedList(new ArrayList<String>());
 		List<DataInLink> dataInLinks=Collections.synchronizedList(new ArrayList<DataInLink>());
 		List<String> linkInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_TRAINING_DATA,Constant.SIZE_OF_DATA);
@@ -30,26 +32,17 @@ public class ReadAsTrainData {
 		int totalThreadNum=10;
 		int step=linkInfos.size()/totalThreadNum+1;
 
-		List<Thread> convertTxtToDataLinkTs=new ArrayList<Thread>();
 
 		for(int threadIndex=0;threadIndex<totalThreadNum;++threadIndex){
 			ConvertTxtToDataLink convertTxtToDataLinkI=new ConvertTxtToDataLink(threadIndex,uniqueKeys,dataInLinks,linkInfos,df,df2,links,threadIndex*step,(threadIndex+1)*step-1);
 			Thread convertTxtToDataLink=new Thread(convertTxtToDataLinkI);
-			convertTxtToDataLinkTs.add(convertTxtToDataLink);
-			convertTxtToDataLink.start();
+			threadPoolExecutor.execute(convertTxtToDataLink);
 		}
 
-		for(Thread convertTxtToDataLink: convertTxtToDataLinkTs){
-			convertTxtToDataLink.join();
-		}
+		threadPoolExecutor.shutdown();
+		while(!threadPoolExecutor.isTerminated()){}
 
-//		int count=0;
-//		for(DataInLink dataInLink: dataInLinks){
-//			if(dataInLink==null){
-//				System.out.println(count);
-//			}
-//			count++;
-//		}
+		linkInfos=null;
 		System.gc();
 		return dataInLinks;
 	}
@@ -124,7 +117,8 @@ class ConvertTxtToDataLink implements Runnable{
 				
 				dataInLink.setTravle_time(new Double(linkFields[3]));
 				if(uniqueKeys.contains(dataInLink.getLink().getLink_ID()+times[0].trim())) continue;
-				dataInLinks.add(dataInLink);
+				
+				if(!Filters.startTimeShouldRemoved(dataInLink)) dataInLinks.add(dataInLink);
 			}
 		}
 		System.gc();

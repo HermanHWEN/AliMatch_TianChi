@@ -9,7 +9,8 @@ import java.io.FileWriter;
 public class WriteData {
 	public static void contentToTxt(String filePath, String content) {  
         try {  
-            File f = new File(filePath);  
+            File f = new File(filePath); 
+            f.getParentFile().mkdirs();
             if (!f.exists()) {  
                 f.createNewFile();// create when doesn't exist 
             }  

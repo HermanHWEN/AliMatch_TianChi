@@ -11,8 +11,8 @@ public class Constant {
 	public final static String PATH_OF_LINK_TOP="C://Match//gy_contest_link_top(20170715更新).txt";
 //	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data - small.txt";
 	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data.txt";
-	public final static String PATH_OF_RESULT="C://Match//HermanWen_{0}_{1}.txt";
-	public final static String PATH_OF_MODEL="C://Match//Model_{0}_{1}.txt";
+	public final static String PATH_OF_RESULT="C://Match//{1}//HermanWen_{0}_{1}.txt";
+	public final static String PATH_OF_MODEL="C://Match//{1}//Model_{0}_{1}.txt";
 	
 	public final static int MAXORDER=4;
 	public final static int FOLDTIME=10;

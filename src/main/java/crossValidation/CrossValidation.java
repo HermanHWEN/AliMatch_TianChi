@@ -81,13 +81,14 @@ public class CrossValidation {
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
 		
 		StringBuffer modelInfo= new StringBuffer("Model info:\n");
+		modelInfo.append("Number of samples:  " +dataInLinks.size()+"\n");
 		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"#")+"\n");
 		modelInfo.append("Weight of min error: "+ Arrays.toString(weights)+"\n");
 		modelInfo.append("MinCount : " + minCount+"\n");
 		modelInfo.append("Min error: " + minError+"\n");
 		log.info(modelInfo);
 		
-		String modelPath=MessageFormat.format(Constant.PATH_OF_MODEL,new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH).format(Calendar.getInstance().getTime()),minError);
+		String modelPath=MessageFormat.format(Constant.PATH_OF_MODEL,new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH).format(Calendar.getInstance().getTime()),String.format(".6", minError));
 		WriteData.contentToTxt(modelPath, modelInfo.toString());
 
 		

@@ -40,7 +40,7 @@ public class DataInLink implements Cloneable{
 				+ ")#" + travle_time;
 	}
 	
-	public synchronized double powerWithOrders1(OrdersOfVars order){
+	public synchronized double powerWithOrders(OrdersOfVars order){
 		double reswithOrder=Math.pow(this.link.getLength(), order.getLengthO())*
 				Math.pow(this.link.getWidth(), order.getWidthO())*
 				Math.pow(this.link.getLink_class(), order.getClassO())*
@@ -50,7 +50,7 @@ public class DataInLink implements Cloneable{
 		return reswithOrder;
 	}
 	
-	public synchronized double powerWithOrders(OrdersOfVars order){
+	public synchronized double powerWithOrders2(OrdersOfVars order){
 		double reswithOrder=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO())*
 				Math.pow((this.link.getWidth()-average.getWidth())/standardDeviation.getWidth()/standardDeviation.getWidth(), order.getWidthO())*
 				Math.pow((this.link.getLink_class()-average.getClassLevel())/standardDeviation.getClassLevel(), order.getClassO())*

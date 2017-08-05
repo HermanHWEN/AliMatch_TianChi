@@ -15,10 +15,10 @@ public class Constant {
 	
 	public final static int MAXORDER=4;
 	public final static int FOLDTIME=10;
-	public final static int SIZE_OF_DATA=5000;
+	public final static int SIZE_OF_DATA=8000;
 	public final static int REPEATE_TIMES=10000;
 	public final static double LEARNING_RATE=0.1;
-	public final static double THREDHOLD=0.0001;
+	public final static double THREDHOLD=0.01;
 	public static ThreadPoolExecutor threadPoolExecutor;
 	
 	public static ThreadPoolExecutor getThreadPoolExecutor(){

@@ -81,8 +81,8 @@ public class Training implements Runnable{
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
 
-			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
-//			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
+//			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
+			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
 
 			//validation
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
@@ -105,8 +105,8 @@ public class Training implements Runnable{
 			System.gc();
 		}
 
-		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
-//		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+//		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
 
 		error=error/foldTime;
 		System.out.println("Training with "+(count+1)+" parameters completed! Error: " +error);
@@ -198,6 +198,11 @@ public class Training implements Runnable{
 	private static boolean errorLowerThanThredhold(SimpleMatrix Wo,SimpleMatrix Wn,SimpleMatrix X,SimpleMatrix Y,double thredhold){
 		double errorO=ErrorFun.targetError(Wo, X, Y);
 		double errorN=ErrorFun.targetError(Wn, X, Y);
+		
+		SimpleMatrix YDash=X.mult(Wn);
+		for(int index=0;index<YDash.getNumElements();index++){
+			if(YDash.get(index)<0) return false;
+		}
 		return Math.abs(errorN-errorO)<=thredhold;
 	}
 	private static boolean isGoingUp(Map<Integer, Double> errorMap,int count){

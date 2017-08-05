@@ -24,6 +24,9 @@ public class Constant {
 	
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;
 	
+	public final static boolean USE_MIN_MAX_NORMALIZATION=true;
+	public final static boolean USE_ZERO_MEAN_NORMALIZATION=true;
+	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	
 	public static ThreadPoolExecutor getThreadPoolExecutor(){

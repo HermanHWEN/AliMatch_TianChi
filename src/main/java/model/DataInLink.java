@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import crossValidation.OrdersOfVars;
+import importData.Constant;
 
 public class DataInLink implements Cloneable{
 	
@@ -41,6 +42,12 @@ public class DataInLink implements Cloneable{
 	}
 	
 	public synchronized double powerWithOrders(OrdersOfVars order){
+		if(Constant.USE_MIN_MAX_NORMALIZATION) return withMinMaxNormalization(order);
+		if(Constant.USE_ZERO_MEAN_NORMALIZATION) return withZeroMeanNormalization(order);
+		return withoutNormalization(order);
+	}
+	
+	public synchronized double withoutNormalization(OrdersOfVars order){
 		double reswithOrder=Math.pow(this.link.getLength(), order.getLengthO())*
 				Math.pow(this.link.getWidth(), order.getWidthO())*
 //				Math.pow(this.link.getLink_class(), order.getClassO())*
@@ -50,7 +57,7 @@ public class DataInLink implements Cloneable{
 		return reswithOrder;
 	}
 	
-	public synchronized double powerWithOrders2(OrdersOfVars order){
+	public synchronized double withZeroMeanNormalization(OrdersOfVars order){
 		double reswithOrder=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO())*
 				Math.pow((this.link.getWidth()-average.getWidth())/standardDeviation.getWidth()/standardDeviation.getWidth(), order.getWidthO())*
 //				Math.pow((this.link.getLink_class()-average.getClassLevel())/standardDeviation.getClassLevel(), order.getClassO())*
@@ -60,7 +67,7 @@ public class DataInLink implements Cloneable{
 		return reswithOrder;
 	}
 	
-	public synchronized double powerWithOrders3(OrdersOfVars order){
+	public synchronized double withMinMaxNormalization(OrdersOfVars order){
 		double reswithOrder=Math.pow((this.link.getLength()-min.getLength())/(max.getLength()-min.getStartTime()), order.getLengthO())*
 				Math.pow((this.link.getWidth()-min.getWidth())/(max.getWidth()-min.getStartTime()), order.getWidthO())*
 //				Math.pow((this.link.getLink_class()-min.getClassLevel())/(max.getClassLevel()-min.getStartTime()), order.getClassO())*

@@ -11,6 +11,8 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import controll.Constant;
+
 public class ReadDataAsString {
 	public static List<String> readTxtFile(String filePath,int linesWithHead){
 		List<String> res=new ArrayList<String>();

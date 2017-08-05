@@ -14,6 +14,8 @@ import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
 
+import controll.Constant;
+
 public class ReadAsTrainData {
 
 	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException, InterruptedException{

@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import controll.Constant;
 import crossValidation.OrdersOfVars;
-import importData.Constant;
 
 public class DataInLink implements Cloneable{
 	

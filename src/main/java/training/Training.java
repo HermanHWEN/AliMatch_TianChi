@@ -1,7 +1,5 @@
 package training;
 
-import importData.Constant;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +10,7 @@ import java.util.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.ejml.simple.SimpleMatrix;
 
+import controll.Constant;
 import crossValidation.ErrorFun;
 
 /**

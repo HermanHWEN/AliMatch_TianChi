@@ -1,4 +1,4 @@
-package importData;
+package controll;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

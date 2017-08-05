@@ -1,6 +1,5 @@
-package org.test.AliMatch;
+package controll;
 
-import importData.Constant;
 import importData.ReadAsLink;
 import importData.ReadAsTrainData;
 

@@ -1,7 +1,5 @@
 package crossValidation;
 
-import importData.Constant;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import model.DataInLink;
 import org.apache.commons.lang3.StringUtils;
 import org.ejml.simple.SimpleMatrix;
 
+import controll.Constant;
 import training.Training;
 
 public class CrossValidation {

@@ -3,7 +3,7 @@ package crossValidation;
 import org.ejml.simple.SimpleMatrix;
 
 public class ErrorFun {
-	public static double targetError(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
+	public static synchronized double targetError(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 
 		double sum=0;
 		for(int row=0;row<X.numRows();row++){
@@ -15,7 +15,7 @@ public class ErrorFun {
 		return sum/X.numRows();
 	}
 	
-	public static SimpleMatrix updateWeight(double learningRate,SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
+	public static synchronized SimpleMatrix updateWeight(double learningRate,SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 		SimpleMatrix lamda=new SimpleMatrix(W.numRows(),W.numRows());
 		for(int i=0;i<W.numRows();i++){
 			lamda.set(i, i, learningRate);
@@ -25,7 +25,7 @@ public class ErrorFun {
 		return WNew;
 	}
 
-	public static SimpleMatrix derivative(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
+	public static synchronized SimpleMatrix derivative(SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 
 		SimpleMatrix sum=new SimpleMatrix(W.numRows(),1);
 		for(int row=0;row<X.numRows();row++){

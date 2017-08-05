@@ -81,8 +81,8 @@ public class Training implements Runnable{
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
 
-//			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
-			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
+			SimpleMatrix W=genTargetFunWeidthPseudoI(trainingSet);
+//			SimpleMatrix W=genTargetFunWeidthGradientDescend(trainingSet);
 
 			//validation
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
@@ -105,8 +105,8 @@ public class Training implements Runnable{
 			System.gc();
 		}
 
-//		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
-		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+		SimpleMatrix W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+//		SimpleMatrix W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
 
 		error=error/foldTime;
 		System.out.println("Training with "+(count+1)+" parameters completed! Error: " +error);

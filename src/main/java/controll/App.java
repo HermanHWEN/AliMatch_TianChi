@@ -74,9 +74,10 @@ public class App
     	log.info("Test result generated.");
     	
     	
-//    	String today= df.format(Calendar.getInstance().getTime());
-//    	log.info("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));
-//    	WriteData.contentToTxt(MessageFormat.format(Constant.PATH_OF_RESULT,today), StringUtils.join(testDataSet, "\n")+"\n");
+    	String today= df.format(Calendar.getInstance().getTime());
+    	String resultPath=MessageFormat.format(Constant.PATH_OF_RESULT,today,CrossValidation.minError);
+    	log.info("Writing data to specified path - "+resultPath);
+    	WriteData.contentToTxt(resultPath, StringUtils.join(testDataSet, "\n")+"\n");
     	
     	
     	log.info("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));

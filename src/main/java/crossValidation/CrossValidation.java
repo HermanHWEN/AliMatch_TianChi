@@ -1,15 +1,20 @@
 package crossValidation;
 
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
 import model.DataInLink;
+import outputData.WriteData;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,6 +28,7 @@ public class CrossValidation {
 	private static Logger log = Logger.getLogger(CrossValidation.class); 
 	static Map<Integer,Double> errorMap=new HashMap<Integer,Double>();
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
+	public static double minError;
 
 	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
 
@@ -68,15 +74,21 @@ public class CrossValidation {
 			}
 		}
 
-		
+		CrossValidation.minError=minError;
 		//print result
 		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minCount);
 		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minCount);
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
-		log.info("Order of min error:  " +StringUtils.join(ordersStr,"#"));
-		log.info("Weight of min error: "+ Arrays.toString(weights));
-		log.info("minCount : " + minCount);
-		log.info("Min error: " + minError);
+		
+		StringBuffer modelInfo= new StringBuffer("Model info:\n");
+		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"#")+"\n");
+		modelInfo.append("Weight of min error: "+ Arrays.toString(weights)+"\n");
+		modelInfo.append("MinCount : " + minCount+"\n");
+		modelInfo.append("Min error: " + minError+"\n");
+		log.info(modelInfo);
+		
+		String modelPath=MessageFormat.format(Constant.PATH_OF_MODEL,new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH).format(Calendar.getInstance().getTime()),minError);
+		WriteData.contentToTxt(modelPath, modelInfo.toString());
 
 		
 		//get target function

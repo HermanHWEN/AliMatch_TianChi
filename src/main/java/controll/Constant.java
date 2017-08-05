@@ -16,7 +16,7 @@ public class Constant {
 	
 	public final static int MAXORDER=4;
 	public final static int FOLDTIME=10;
-	public final static int SIZE_OF_DATA=10000;
+	public final static int SIZE_OF_DATA=100000;
 	public final static int REPEATE_TIMES=10000000;
 	public final static double LEARNING_RATE=0.1;
 	public final static double THREDHOLD=0.00001;
@@ -31,6 +31,8 @@ public class Constant {
 	public final static boolean USE_MULTI_THREAD_FOR_TRAINING=true;
 	
 	public final static int[] STARTHOUR_RANGE=new int[]{8,9};//include first one, exclude second one
+	
+	public final static int[] NEED_MONTH=new int[]{5};
 	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	

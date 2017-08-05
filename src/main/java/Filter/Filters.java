@@ -20,10 +20,28 @@ public class Filters {
 		
 	}
 	
-	public static synchronized boolean startTimeShouldRemoved(DataInLink dataInLink){
-		
-		if(dataInLink.getStartTime().getHours()<Constant.STARTHOUR_RANGE[0] || dataInLink.getStartTime().getHours()>=Constant.STARTHOUR_RANGE[1])
+	public static synchronized boolean shouldAdd(DataInLink dataInLink){
+		return startTimeShouldAdd(dataInLink) && monthShouldAdd(dataInLink);
+	}
+	public static synchronized boolean startTimeShouldAdd(DataInLink dataInLink){
+		if(Constant.STARTHOUR_RANGE.length==0) 
 			return true;
+		
+		if(dataInLink.getStartTime().getHours()>=Constant.STARTHOUR_RANGE[0] && dataInLink.getStartTime().getHours()<Constant.STARTHOUR_RANGE[1])
+			return true;
+		return false;
+		
+	}
+	
+	public static synchronized boolean monthShouldAdd(DataInLink dataInLink){
+		
+		if(Constant.NEED_MONTH.length==0) 
+			return true;
+		
+		for(int month:Constant.NEED_MONTH){
+			if(month==dataInLink.getDate().getMonth()+1) 
+				return true;
+		}
 		return false;
 		
 	}

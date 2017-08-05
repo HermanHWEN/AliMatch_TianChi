@@ -47,6 +47,7 @@ public class App
     	log.info("Calculated weight of link # total : " + linksMap.size());
     	
     	
+    	log.info("Reading training data..." );
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
     	log.info("Read training data # total : " + dataInLinks.size());
 

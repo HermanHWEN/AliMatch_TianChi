@@ -121,7 +121,7 @@ class ConvertTxtToDataLink implements Runnable{
 				dataInLink.setTravle_time(new Double(linkFields[3]));
 				if(uniqueKeys.contains(dataInLink.getLink().getLink_ID()+times[0].trim())) continue;
 				
-				if(!Filters.startTimeShouldRemoved(dataInLink)) dataInLinks.add(dataInLink);
+				if(Filters.shouldAdd(dataInLink)) dataInLinks.add(dataInLink);
 			}
 		}
 		System.gc();

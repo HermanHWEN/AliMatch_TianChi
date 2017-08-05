@@ -47,6 +47,8 @@ public class App
     	System.gc();
     	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
     	
+    	Convert2STD.convert2STD(testDataSet);
+    	
 //    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);
     	System.out.println("Generated testing data set # total : " + testDataSet.size());
     	

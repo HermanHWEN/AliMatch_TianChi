@@ -8,15 +8,18 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
 import controll.Constant;
 import crossValidation.ErrorFun;
+import importData.ReadDataAsString;
 
 /**
  * Created by 43903042 on 2017/8/2.
  */
 public class Training implements Runnable{
+	private static Logger log = Logger.getLogger(Training.class);  
 	private final Object mListMutex = new Object();
 
 	private int count;
@@ -117,7 +120,7 @@ public class Training implements Runnable{
 		}
 
 		error=error/foldTime;
-		System.out.println("Training with "+(count+1)+" parameters completed! Error: " +error);
+		log.info("Training with "+(count+1)+" parameters completed! Error: " +error);
 		errorMap.put(count,error);
 		weightMap.put(count, W);
 
@@ -147,8 +150,8 @@ public class Training implements Runnable{
 		try{
 			W=sudoX.mult(Y);
 		}catch(Exception e){
-			System.out.println("sudoX rows#" + sudoX.numRows() +" cols#" + sudoX.numCols());
-			System.out.println("Y rows#" + Y.numRows() +" cols#" + Y.numCols());
+			log.info("sudoX rows#" + sudoX.numRows() +" cols#" + sudoX.numCols());
+			log.info("Y rows#" + Y.numRows() +" cols#" + Y.numCols());
 		}
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
@@ -200,7 +203,7 @@ public class Training implements Runnable{
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
 			if(errorLowerThanThredhold(W,Wn,X,Y,Constant.THREDHOLD)) {
-				System.out.println("Lower Than Thredhold # "+(res.size()-1)+" parameters  # Repeat times:" + (count+1));
+				log.info("Lower Than Thredhold # "+(res.size()-1)+" parameters  # Repeat times:" + (count+1));
 				break;
 			}
 			W=Wn;

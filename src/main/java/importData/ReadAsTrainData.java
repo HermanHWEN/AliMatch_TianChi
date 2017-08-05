@@ -14,12 +14,14 @@ import model.DataInLink;
 import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import Filter.Filters;
+import calculateFeatures.CalculateFeatures;
 import controll.Constant;
 
 public class ReadAsTrainData {
-
+	private static Logger log = Logger.getLogger(ReadAsTrainData.class);  
 	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException, InterruptedException{
 		
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
@@ -50,6 +52,7 @@ public class ReadAsTrainData {
 }
 
 class ConvertTxtToDataLink implements Runnable{
+	private static Logger log = Logger.getLogger(ConvertTxtToDataLink.class);  
 	int round;
 	List<String> uniqueKeys;
 	List<DataInLink> dataInLinks;
@@ -92,7 +95,7 @@ class ConvertTxtToDataLink implements Runnable{
 							dataInLink.setDate(df.parse(linkFields[1].trim()));
 						}
 					}catch(ParseException e){
-						System.out.println("Thread : "+round + "# index :"+index+" date: "+linkFields[1]);
+						log.info("Thread : "+round + "# index :"+index+" date: "+linkFields[1]);
 					}
 					
 				}
@@ -102,7 +105,7 @@ class ConvertTxtToDataLink implements Runnable{
 							dataInLink.setStartTime(df2.parse(times[0].trim()));
 						}
 					}catch(ParseException e){
-						System.out.println("Thread "+round + "# index :"+index+" Start time: "+times[0]);
+						log.info("Thread "+round + "# index :"+index+" Start time: "+times[0]);
 					}
 				}
 				if(StringUtils.isNotEmpty(times[1])){
@@ -111,7 +114,7 @@ class ConvertTxtToDataLink implements Runnable{
 							dataInLink.setEndTime(df2.parse(times[1].trim()));
 						}
 					}catch(ParseException e){
-						System.out.println("Thread "+round + "# index :"+index+" end time: "+times[1]);
+						log.info("Thread "+round + "# index :"+index+" end time: "+times[1]);
 					}
 				}
 				

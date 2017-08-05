@@ -11,9 +11,12 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import controll.Constant;
 
 public class ReadDataAsString {
+	private static Logger log = Logger.getLogger(ReadDataAsString.class);  
 	public static List<String> readTxtFile(String filePath,int linesWithHead){
 		List<String> res=new ArrayList<String>();
         try {
@@ -32,10 +35,10 @@ public class ReadDataAsString {
                     }
                     read.close();
         }else{
-            System.out.println("can't find file.");
+            log.info("can't find file.");
         }
         } catch (Exception e) {
-            System.out.println("reading error.");
+            log.info("reading error.");
             e.printStackTrace();
         }
         System.gc();
@@ -59,7 +62,7 @@ public class ReadDataAsString {
 		   FileOutputStream fout = new FileOutputStream(Constant.PATH_OF_TMP+"\\" + Math.random() + ".txt");
 		   FileChannel fcout = fout.getChannel();
 		   fcout.write(buffer);
-		   System.out.println(buffer);
+		   log.info(buffer);
 		  }
 		return null;
 	}

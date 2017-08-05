@@ -19,6 +19,7 @@ import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.log4j.Logger;
 
 import outputData.WriteData;
 import sun.util.calendar.CalendarUtils;
@@ -27,38 +28,37 @@ import calculateFeatures.CalculateFeatures;
 import calculateFeatures.Convert2STD;
 import crossValidation.CrossValidation;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
+	private static Logger log = Logger.getLogger(App.class);  
     public static void main( String[] args ) throws ParseException, InterruptedException
     {
+    	
+    	log.info(" ########################  STRAT  ######################## ");
     	DateFormat df = new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH);
     	Calendar  startTime=Calendar.getInstance();
     	
     	
     	Map<String,Link> linksMap=ReadAsLink.readAsLink();
-    	System.out.println("Read link info # total : " + linksMap.size());
+    	log.info("Read link info # total : " + linksMap.size());
     	
     	
     	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
-    	System.out.println("Calculated weight of link # total : " + linksMap.size());
+    	log.info("Calculated weight of link # total : " + linksMap.size());
     	
     	
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
-    	System.out.println("Read training data # total : " + dataInLinks.size());
+    	log.info("Read training data # total : " + dataInLinks.size());
 
     	
     	Convert2STD.convert2STD(dataInLinks);
-    	System.out.println("Got some componets for normalization.");
+    	log.info("Got some componets for normalization.");
     	
     	System.gc();
     	
-    	System.out.println("Training model... ");
+    	log.info("Training model... ");
     	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
-    	System.out.println("Got target function.");
+    	log.info("Got target function.");
     	
     	
     	System.gc();
@@ -67,19 +67,19 @@ public class App
     	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
     	Convert2STD.convert2STD(testDataSet);
 //    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);
-    	System.out.println("Generated testing data set # total : " + testDataSet.size());
+    	log.info("Generated testing data set # total : " + testDataSet.size());
     	
     	
     	Testing.testing(targetFunction,testDataSet);
-    	System.out.println("Test result generated.");
+    	log.info("Test result generated.");
     	
     	
-    	String today= df.format(Calendar.getInstance().getTime());
-    	System.out.println("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));
-    	WriteData.contentToTxt(MessageFormat.format(Constant.PATH_OF_RESULT,today), StringUtils.join(testDataSet, "\n")+"\n");
+//    	String today= df.format(Calendar.getInstance().getTime());
+//    	log.info("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));
+//    	WriteData.contentToTxt(MessageFormat.format(Constant.PATH_OF_RESULT,today), StringUtils.join(testDataSet, "\n")+"\n");
     	
     	
-    	System.out.println("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));
+    	log.info("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));
     }
     
     private static String getUsedTime(Calendar startTimeC,Calendar endTimeC){

@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
+import controll.App;
 import model.Link;
 
 public class CalculateFeatures {
-	
+	private static Logger log = Logger.getLogger(CalculateFeatures.class);  
 	public static void calculateFeaturesOfLinks(final Map<String,Link> links){
 		List<Link> linksList= new ArrayList<Link>(links.values());
 		initWeight(linksList);
@@ -25,8 +28,8 @@ public class CalculateFeatures {
 			oldWeight=newWeight;
 			newWeight=updateWeight(linksList,links,numOfTriangleMap);
 		}while(oldWeight.doubleValue()==0 || (oldWeight.add(newWeight.multiply(BigDecimal.valueOf(-1)))).abs().divide(oldWeight,MathContext.DECIMAL128).doubleValue()>0.0001);
-//		System.out.println(oldWeight+"");
-//		System.out.println(newWeight+"");
+//		log.info(oldWeight+"");
+//		log.info(newWeight+"");
 		  
 	}
 	
@@ -58,7 +61,7 @@ public class CalculateFeatures {
 		BigDecimal totalWeight=new BigDecimal(0);
 		for (Link link : linksList) {
 //			link.setWeight(link.getWeight()-minWeight);
-//			System.out.println(link.getWeight());
+//			log.info(link.getWeight());
 			totalWeight=totalWeight.add(BigDecimal.valueOf(link.getWeight()));
 		}
 		

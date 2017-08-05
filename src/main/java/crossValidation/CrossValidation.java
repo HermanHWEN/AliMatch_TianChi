@@ -12,34 +12,36 @@ import java.util.function.Function;
 import model.DataInLink;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
+import calculateFeatures.CalculateFeatures;
 import controll.Constant;
 import training.Training;
 
 public class CrossValidation {
-
+	private static Logger log = Logger.getLogger(CrossValidation.class); 
 	static Map<Integer,Double> errorMap=new HashMap<Integer,Double>();
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
 
 	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
 
 		//convert data high dimension
-		System.out.println("converting data high dimension");
+		log.info("converting data high dimension");
 		List<double[]> fullDataSetWithDimension= transferData(Constant.MAXORDER,dataInLinks);
-		System.out.println("converted data high dimension");
+		log.info("converted data high dimension");
 
 
 		//from low dimension to high
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
-		System.out.println("Start training");
+		log.info("Start training");
 		for(int count=0;count<fullDataSetWithDimension.size()-1;count++){
 			List<double[]> fullDataSet=new ArrayList<>();
 			for(int index=0;index<=count;index++){
 				fullDataSet.add(fullDataSetWithDimension.get(index));
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-			System.out.println("Start training with "+(count+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,count),","));
+			log.info("Start training with "+(count+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,count),","));
 			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
 				threadPoolExecutor.execute(new Training(count,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
 			}else{
@@ -51,7 +53,7 @@ public class CrossValidation {
 			threadPoolExecutor.shutdown();
 			while(!threadPoolExecutor.isTerminated()){}
 		}
-		System.out.println("All trainings completed.");
+		log.info("All trainings completed.");
 
 		
 		//get min error
@@ -71,10 +73,10 @@ public class CrossValidation {
 		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minCount);
 		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minCount);
 		double[] weights=weightMap.get(minCount).getMatrix().getData();
-		System.out.println("Order of min error:  " +StringUtils.join(ordersStr,"#"));
-		System.out.println("Weight of min error: "+ Arrays.toString(weights));
-		System.out.println("minCount : " + minCount);
-		System.out.println("Min error: " + minError);
+		log.info("Order of min error:  " +StringUtils.join(ordersStr,"#"));
+		log.info("Weight of min error: "+ Arrays.toString(weights));
+		log.info("minCount : " + minCount);
+		log.info("Min error: " + minError);
 
 		
 		//get target function

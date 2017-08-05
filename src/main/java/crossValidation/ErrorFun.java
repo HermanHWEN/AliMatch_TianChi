@@ -10,7 +10,8 @@ public class ErrorFun {
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 			double yi=Y.get(row, 0);
-			sum+=Math.abs(Xi.mult(W).trace()-yi)/yi;
+//			sum+=Math.abs(Xi.mult(W).trace()-yi)/yi;
+			sum+=Math.abs(Math.abs(Xi.mult(W).trace())-yi)/yi;
 		}
 		return sum/X.numRows();
 	}

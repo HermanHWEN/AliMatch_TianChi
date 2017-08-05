@@ -55,7 +55,7 @@ public class CrossValidation {
 		double minError=Double.MAX_VALUE;
 		for(int count=0;count<OrdersOfVars.getCounts(Constant.MAXORDER);count++){
 			if(errorMap.get(count)!=null){
-				if(errorMap.get(count)<minError && errorMap.get(count)>0.2 && errorMap.get(count)<0.5){
+				if(errorMap.get(count)<minError){
 					minCount=count;
 					minError=errorMap.get(count);
 				}
@@ -81,7 +81,8 @@ public class CrossValidation {
 				double weight=weights[index];
 				y+=x.powerWithOrders(order)*weight;
 			}
-			return y;
+//			return y;
+			return Math.abs(y);
 		};  
 
 		return targetFunction;

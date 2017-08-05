@@ -4,10 +4,14 @@ import importData.Constant;
 import importData.ReadAsLink;
 import importData.ReadAsTrainData;
 
+import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -32,7 +36,8 @@ public class App
 {
     public static void main( String[] args ) throws ParseException, InterruptedException
     {
-    	long  startTime=Calendar.getInstance().getTimeInMillis();
+    	DateFormat df = new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH);
+    	Calendar  startTime=Calendar.getInstance();
     	Map<String,Link> linksMap=ReadAsLink.readAsLink();
     	System.out.println("Read link info # total : " + linksMap.size());
     	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
@@ -60,16 +65,21 @@ public class App
     	Testing.testing(targetFunction,testDataSet);
     	System.out.println("Test result generated.");
     	
-    	
-    	System.out.println("Writing data to specified path - "+Constant.PATH_OF_RESULT);
+    	String today= df.format(Calendar.getInstance().getTime());
+    	System.out.println("Writing data to specified path - "+MessageFormat.format(Constant.PATH_OF_RESULT,today));
     	WriteData.contentToTxt(Constant.PATH_OF_RESULT, StringUtils.join(testDataSet, "\n"));
     	
-    	long endTime=Calendar.getInstance().getTimeInMillis();
+    	
+    	System.out.println("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));
+    }
+    
+    private static String getUsedTime(Calendar startTimeC,Calendar endTimeC){
+    	long startTime=startTimeC.getTimeInMillis();
+    	long endTime=endTimeC.getTimeInMillis();
     	long usedDays= (long)((endTime - startTime)/(1000 * 60 * 60 *24) + 0.5); 
     	long usedHours=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))/(1000 * 60 * 60); 
     	long usedMinus=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))% (1000 * 60 * 60)/(1000 * 60);
     	long usedSec=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))% (1000 * 60 * 60)%(1000 * 60)/1000;
-//    	startTime.getmi
-    	System.out.println("Done! Used days:" + usedDays+" hours:" + usedHours+" minus:" + usedMinus+" seconds:" + usedSec);
+    	return "days:" + usedDays+" hours:" + usedHours+" minus:" + usedMinus+" seconds:" + usedSec;
     }
 }

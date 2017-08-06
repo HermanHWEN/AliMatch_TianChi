@@ -26,7 +26,7 @@ public class ReadAsTrainData {
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		List<String> uniqueKeys=Collections.synchronizedList(new ArrayList<String>());
 		List<DataInLink> dataInLinks=Collections.synchronizedList(new ArrayList<DataInLink>());
-		List<String> linkInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_TRAINING_DATA,Constant.SIZE_OF_DATA);
+		List<String> linkInfos=ReadDataAsString.readTxtFile(Constant.PATH_OF_TRAINING_DATA,Constant.LINES_NEED_TO_READ);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 

@@ -78,32 +78,27 @@ public class Training implements Runnable{
 
 		//training.....
 		//get full dimension data
-
+		SimpleMatrix W;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
-
-			SimpleMatrix W;
-			if(Constant.USE_GRADIENT_DESCEND){
-				W=genTargetFunWeidthGradientDescend(trainingSet);
-			}else{
-				W=genTargetFunWeidthPseudoI(trainingSet);
-			}
-
-			//validation
+			//validation set
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
 			Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));
-
-			//get validation error
 			SimpleMatrix Xv=new SimpleMatrix(validationSet.get(0).length,validationSet.size()-1);
-
-			//validate
 			for(int colNum=0;colNum<validationSet.size()-1;colNum++){
 				double[] col=validationSet.get(colNum);
 				Xv.setColumn(colNum, 0,col);
 			}
-			//			double e=Xv.mult(W).minus(Yv).normF()/(validationSet.size()+1);
+
+			if(Constant.USE_GRADIENT_DESCEND){
+				W=genTargetFunWeidthGradientDescend(trainingSet,Xv,Yv);
+			}else{
+				W=genTargetFunWeidthPseudoI(trainingSet);
+			}
+
+			
 			double e=ErrorFun.targetError(W, Xv, Yv);
 			error+=e;
 			trainingSet.clear();
@@ -112,7 +107,6 @@ public class Training implements Runnable{
 			System.gc();
 		}
 
-		SimpleMatrix W;
 		if(Constant.USE_GRADIENT_DESCEND){
 			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
 		}else{
@@ -162,7 +156,7 @@ public class Training implements Runnable{
 	}
 
 	//iterator gradient descend
-	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res){
+	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res,SimpleMatrix ...validationSet){
 
 		SimpleMatrix Y;SimpleMatrix X;
 		
@@ -200,7 +194,7 @@ public class Training implements Runnable{
 		int countOfEpochWithMinError=0;
 		double minError = 0;
 		int countOfEpoch;
-		for(countOfEpoch=0;countOfEpoch<Constant.REPEATE_TIMES;countOfEpoch++){
+		for(countOfEpoch=0;countOfEpoch<Constant.MAX_REPEATE_TIMES;countOfEpoch++){
 			if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
 				for(int rowOffset=0;rowOffset<(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH);rowOffset++){
 					int r;
@@ -209,15 +203,20 @@ public class Training implements Runnable{
 					}else{
 						r=0;
 					}
+					Y.setColumn(0, rowOffset, res.get(res.size()-1)[r]);
 					for(int colNum=0;colNum<res.size()-1;colNum++){
-						Y.setColumn(0, rowOffset, res.get(res.size()-1)[r]);
 						double[] col=res.get(colNum);
 						X.setColumn(colNum, rowOffset,col[r]);
 					}
 				}
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, W, X, Y);
-			double errorN=ErrorFun.targetError(Wn, X, Y);
+			double errorN=0;
+			if(validationSet.length==2){
+				errorN=ErrorFun.targetError(Wn, validationSet[0], validationSet[1]);
+			}else{
+				errorN=ErrorFun.targetError(Wn, X, Y);
+			}
 			
 			
 			//initial min error
@@ -241,12 +240,13 @@ public class Training implements Runnable{
 			}else{//if reach the max count of epoch,check the learning rate lower bound
 				//if reach it , then end this training 
 				//else decrease learning rate.
-				if(learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
-				learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
+				if(!Constant.MUST_REACH_MAX_TIME &&learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
+				if(!Constant.MUST_REACH_MAX_TIME) learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
 				countOfEpochFromLastMinError=0;
 			}
 		}
-		log.info("Train of "+(res.size()-1)+" param model in "+"fold "+countFolde+" done."+
+		log.debug((res.size()-1)+" param model in fold "+countFolde+
+				" #Eror:"+minError+
 				" #Current learning rate:"+learningRate+
 				" #Repeated times got MinError:"+(countOfEpochWithMinError+1)+
 				" #Total repeated times:" + (countOfEpoch+1));

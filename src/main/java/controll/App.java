@@ -46,6 +46,10 @@ public class App
     	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
     	log.info("Read training data # total : " + dataInLinks.size());
 
+    	if(Constant.SIZE_OF_TRAINING_DATA<dataInLinks.size()){
+    		log.info("Pick training data # total : " + Constant.SIZE_OF_TRAINING_DATA);
+    		dataInLinks=dataInLinks.subList(0, Constant.SIZE_OF_TRAINING_DATA);
+    	}
     	
     	Convert2STD.convert2STD(dataInLinks);
     	log.info("Got some componets for normalization.");

@@ -19,7 +19,7 @@ public class Constant {
 	public final static int SIZE_OF_DATA=-1;
 	public final static int REPEATE_TIMES=10000000;
 	public final static double LEARNING_RATE=0.1;
-	public final static double THREDHOLD=0.00001;
+	public final static double THREDHOLD=0.000001;
 	
 	public final static boolean USE_GRADIENT_DESCEND=true;//when false, will use pseudo inverse
 	
@@ -32,7 +32,7 @@ public class Constant {
 	
 	public final static int[] STARTHOUR_RANGE=new int[]{8,9};//include first one, exclude second one
 	
-	public final static int[] NEED_MONTH=new int[]{5};
+	public final static int[] NEED_MONTH=new int[]{};
 	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	

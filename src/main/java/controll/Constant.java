@@ -26,7 +26,7 @@ public class Constant {
 	public final static boolean USE_GRADIENT_DESCEND=true;//when false, will use pseudo inverse
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=false;//when false, will use small batch gradient descend
 	public final static boolean USE_SMALL_BATCH_GRADIENT_DESCEND=true;//when above two are false, will use batch gradient descend
-	public final static int SIZE_OF_ONE_BATCH=10;
+	public final static int SIZE_OF_ONE_BATCH=100;
 	
 	//normalization
 	public final static boolean USE_MIN_MAX_NORMALIZATION=true;

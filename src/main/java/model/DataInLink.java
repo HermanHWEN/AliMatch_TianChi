@@ -18,7 +18,7 @@ public class DataInLink implements Cloneable{
 	private Date startTime;
 	private Date endTime;
 	private double travle_time;
-	private int holidayDays;
+	private long holidayDays;
 	private int dayInWeek;
 
 	private FlatData average;
@@ -147,11 +147,11 @@ public class DataInLink implements Cloneable{
 		this.link = link;
 	}
 
-	public int getHolidayDays() {
+	public long getHolidayDays() {
 		return holidayDays;
 	}
 
-	public void setHolidayDays(int holidays) {
+	public void setHolidayDays(long holidays) {
 		this.holidayDays = holidays;
 	}
 

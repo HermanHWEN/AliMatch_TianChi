@@ -1,17 +1,22 @@
 package calculateFeatures;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class Holiday {
 
-	private static DateFormat df = new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH);
-	private static ArrayList<String[]> rawHolidayMap=new ArrayList<String[]>(){
+	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+	private static List<String[]> rawHolidayMap=new ArrayList<String[]>(){
+		private static final long serialVersionUID = 1L;
+
 		{
 			add(new String[]{"2016-01-01", "2016-01-03"});
 			add(new String[]{"2016-02-06"});
@@ -38,13 +43,35 @@ public class Holiday {
 			add(new String[]{"2017-10-01", "2017-10-08"});
 		}
 	};
-	private static Map<String,Integer> holidayMap=new HashMap<String,Integer>();
-	public static synchronized int getHolidayDays(Date date){
+	private static Map<String,Long> holidayMap=new HashMap<String,Long>();
+	public static synchronized Long getHolidayDays(Date date) throws ParseException{
 		synchronized(holidayMap){
 			if(holidayMap.size()==0){
 				for(String[] holidays:rawHolidayMap){
-					int days=holidays.length;
-					for(String holiday:holidays) holidayMap.put(holiday, days);
+					if(holidays.length==0) continue;
+					if(holidays.length==1){
+						holidayMap.put(holidays[0], (long) 1);
+					}else{
+						Calendar startDate=Calendar.getInstance();
+						Calendar endDate=Calendar.getInstance();
+						startDate.setTime(df.parse(holidays[0]));
+						endDate.setTime(df.parse(holidays[1]));
+
+						if(endDate.before(startDate)){
+							Calendar tmp=startDate;
+							startDate=endDate;
+							endDate=tmp;
+						}
+
+						long days=(endDate.getTimeInMillis()-startDate.getTimeInMillis())/(1000 * 60 * 60 *24)+1;
+						endDate.add(Calendar.DATE, 1);
+						while(startDate.before(endDate)){
+							String holiday = df.format(startDate.getTime());
+							holidayMap.put(holiday, days);
+							startDate.add(Calendar.DATE, 1);
+						}
+					}
+
 				}
 			}
 		}
@@ -52,8 +79,7 @@ public class Holiday {
 		synchronized(df){
 			dateStr=df.format(date);
 		}
-		if(holidayMap.get(dateStr)==null) return 0;
+		if(holidayMap.get(dateStr)==null) return (long) 0;
 		return holidayMap.get(dateStr);
 	}
-
 }

@@ -120,7 +120,11 @@ class ConvertTxtToDataLink implements Runnable{
 				dataInLink.setTravle_time(new Double(linkFields[3]));
 				if(uniqueKeys.contains(dataInLink.getLink().getLink_ID()+times[0].trim())) continue;
 				
-				dataInLink.setHolidayDays(Holiday.getHolidayDays(dataInLink.getDate()));
+				try {
+					dataInLink.setHolidayDays(Holiday.getHolidayDays(dataInLink.getDate()));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 				dataInLink.setDayInWeek(dataInLink.getDate().getDay());
 				if(Filters.shouldAdd(dataInLink)) dataInLinks.add(dataInLink);
 			}

@@ -79,7 +79,7 @@ public class CrossValidation {
 		
 		StringBuffer modelInfo= new StringBuffer("Model info:\n");
 		modelInfo.append("Number of samples:  " +dataInLinks.size()+"\n");
-		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"#")+"\n");
+		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"+")+"\n");
 		modelInfo.append("Weight of min error: "+ Arrays.toString(weights)+"\n");
 		modelInfo.append("Parameters Num : " + minParametersNum+"\n");
 		modelInfo.append("Min error: " + minError+"\n");

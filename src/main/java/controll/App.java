@@ -60,10 +60,9 @@ public class App
     	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
     	log.info("Got target function.");
     	
-    	
     	System.gc();
-    	
-    	
+
+    	log.info("Getting testing data set ...");
     	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
     	Convert2STD.convert2STD(testDataSet);
 //    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);

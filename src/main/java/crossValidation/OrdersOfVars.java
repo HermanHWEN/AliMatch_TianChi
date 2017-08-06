@@ -16,6 +16,8 @@ public class OrdersOfVars {
 	private int dayInWeekO;
 	private int dateO;
 	
+	private int orderOfPower;
+	
 	public static List<OrdersOfVars> getOrders(int maxOrder,int maxParametersNum,FlatData standardDeviation){
 		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
 		int parametersNum=0;
@@ -52,6 +54,7 @@ public class OrdersOfVars {
 										ordersOfVars.setStartTimeO(startTimeO);
 										ordersOfVars.setHolidayDaysO(holidayDaysO);
 										ordersOfVars.setDayInWeekO(dayInWeekO);
+										ordersOfVars.setOrderOfPower(order);
 										ordersOfVarsList.add(ordersOfVars);
 										parametersNum++;
 										if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
@@ -84,9 +87,28 @@ public class OrdersOfVars {
 	}
 	@Override
 	public String toString() {
-		return "[" + lengthO + "," + widthO + "," + linkClassO+ "," 
-				+ startTimeO+ "," + weightO+ "," + holidayDaysO
-				+ "," + dayInWeekO+ "," + dateO  + "]";
+		
+		StringBuffer res=new StringBuffer();
+		if(lengthO!=0)
+			res.append("length^"+lengthO+"*");
+		if(widthO!=0)
+			res.append("width^"+widthO+"*");
+		if(linkClassO!=0)
+			res.append("linkClass^"+linkClassO+"*");
+		if(startTimeO!=0)
+			res.append("startTime^"+startTimeO+"*");
+		if(weightO!=0)
+			res.append("weight^"+weightO+"*");
+		if(holidayDaysO!=0)
+			res.append("holidayDays^"+holidayDaysO+"*");
+		if(dayInWeekO!=0)
+			res.append("dayInWeek^"+dayInWeekO+"*");
+		if(dateO!=0)
+			res.append("dateInMonth^"+dateO+"*");
+		if(lengthO+widthO+linkClassO+startTimeO+weightO+holidayDaysO+dayInWeekO+dateO==0){
+			return "1";
+		}
+		return res.substring(0, res.length());
 	}
 	
 	
@@ -143,5 +165,15 @@ public class OrdersOfVars {
 	public void setDayInWeekO(int dayInWeekO) {
 		this.dayInWeekO = dayInWeekO;
 	}
+
+	public int getOrderOfPower() {
+		return orderOfPower;
+	}
+
+	public void setOrderOfPower(int orderOfPower) {
+		this.orderOfPower = orderOfPower;
+	}
+	
+	
 	
 }

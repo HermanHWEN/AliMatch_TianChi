@@ -211,21 +211,21 @@ public class Training implements Runnable{
 			double errorO=ErrorFun.targetError(W, X, Y);
 			double errorN=ErrorFun.targetError(Wn, X, Y);
 			if(Math.abs(errorN-errorO)<=Constant.THRESHOLD) {
-				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than threshold # Repeated times:" + (count+1));
+				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than threshold. #Current learning rate:"+learningRate+" #Repeated times:" + (count+1));
 				W=Wn;
 				break;
 			}
 			
 			//if the error is going up the decrease the learning rate
 			if(errorN>=errorO+Constant.THRESHOLD){
-				learningRate=learningRate/2;
+				learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
 			}
 			
 			W=Wn;
-			if(learningRate<Constant.LEARNING_RATE/1024) break;
+			if(learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
 		}
-		if(parametersNum>=Constant.REPEATE_TIMES || learningRate<Constant.LEARNING_RATE/1024){
-			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than threshold # Reached times limit:" + Constant.REPEATE_TIMES);
+		if(parametersNum>=Constant.REPEATE_TIMES || learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)){
+			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than threshold. #Current learning rate:"+learningRate+" #Repeated times:" + Constant.REPEATE_TIMES);
 		}
 		Arrays.asList(W.getMatrix().data);
 		Y=null;

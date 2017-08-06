@@ -88,7 +88,7 @@ public class CrossValidation {
 		modelInfo.append("Min error: " + minError+"\n");
 		log.info(modelInfo);
 		
-		String modelPath=MessageFormat.format(Constant.PATH_OF_MODEL,new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH).format(Calendar.getInstance().getTime()),String.format(".6", minError));
+		String modelPath=MessageFormat.format(Constant.PATH_OF_MODEL,new SimpleDateFormat("yyyyMMMdd", Locale.ENGLISH).format(Calendar.getInstance().getTime()),String.format("%.6f", minError));
 		WriteData.contentToTxt(modelPath, modelInfo.toString());
 
 		

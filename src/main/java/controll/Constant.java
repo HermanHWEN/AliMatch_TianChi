@@ -19,7 +19,7 @@ public class Constant {
 	public final static int SIZE_OF_DATA=-1;
 	public final static int REPEATE_TIMES=10000000;//for gradient descend
 	public final static double LEARNING_RATE=0.1;//for gradient descend
-	public final static double THREDHOLD=0.001;//for gradient descend
+	public final static double THREDHOLD=0.00001;//for gradient descend
 	
 	
 	//gradient descend

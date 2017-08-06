@@ -15,24 +15,28 @@ public class Constant {
 	public final static String PATH_OF_MODEL="C://Match//{1}//Model_{0}_{1}.txt";
 	
 	public final static int MAXORDER=4;
-	public final static int FOLDTIME=10;
+	public final static int FOLDTIME=10;//for cross validation
 	public final static int SIZE_OF_DATA=-1;
-	public final static int REPEATE_TIMES=10000000;
-	public final static double LEARNING_RATE=0.1;
-	public final static double THREDHOLD=0.000001;
+	public final static int REPEATE_TIMES=10000000;//for gradient descend
+	public final static double LEARNING_RATE=0.1;//for gradient descend
+	public final static double THREDHOLD=0.001;//for gradient descend
 	
+	
+	//gradient descend
 	public final static boolean USE_GRADIENT_DESCEND=true;//when false, will use pseudo inverse
+	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=false;//when false, will use small batch gradient descend
+	public final static boolean USE_SMALL_BATCH_GRADIENT_DESCEND=true;//when above two are false, will use batch gradient descend
+	public final static int SIZE_OF_ONE_BATCH=10;
 	
-	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//when false, will use batch gradient descend
-	
+	//normalization
 	public final static boolean USE_MIN_MAX_NORMALIZATION=true;
 	public final static boolean USE_ZERO_MEAN_NORMALIZATION=true;//when above two are false, won't use normalization
-	
 	public final static boolean USE_MULTI_THREAD_FOR_TRAINING=true;
 	
-	public final static int[] STARTHOUR_RANGE=new int[]{8,9};//include first one, exclude second one
 	
-	public final static int[] NEED_MONTH=new int[]{};
+	//filter data
+	public final static int[] STARTHOUR_RANGE=new int[]{8,9};//include first one, exclude second one
+	public final static int[] NEED_MONTH=new int[]{4,5};
 	
 	public static ThreadPoolExecutor threadPoolExecutor;
 	

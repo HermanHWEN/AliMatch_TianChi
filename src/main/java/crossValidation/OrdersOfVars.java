@@ -3,6 +3,8 @@ package crossValidation;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.FlatData;
+
 public class OrdersOfVars {
 	
 	private int lengthO;
@@ -14,23 +16,37 @@ public class OrdersOfVars {
 	private int dayInWeekO;
 	private int dateO;
 	
-	public static List<OrdersOfVars> getOrders(int maxOrder,int maxParametersNum){
+	public static List<OrdersOfVars> getOrders(int maxOrder,int maxParametersNum,FlatData standardDeviation){
 		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
 		int parametersNum=0;
 		for(int order=0;order<=maxOrder;order++){
 
 			for(int lengthO=order;lengthO>=0;lengthO--){
+				if(standardDeviation.getLength()==0) lengthO=0;
+				
 				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					for(int classO=order-lengthO-widthO;classO>=0;classO--){
-						for(int startTimeO=order-lengthO-widthO-classO;startTimeO>=0;startTimeO--){
-							for(int weightO=order-lengthO-widthO-classO-startTimeO;weightO>=0;weightO--){
-								for(int holidayDaysO=order-lengthO-widthO-classO-startTimeO-weightO;holidayDaysO>=0;holidayDaysO--){
-									for(int dayInWeekO=order-lengthO-widthO-classO-startTimeO-weightO-holidayDaysO;dayInWeekO>=0;dayInWeekO--){
-										int dateO=order-lengthO-widthO-classO-startTimeO-weightO-holidayDaysO-dayInWeekO;
+					if(standardDeviation.getWidth()==0) widthO=0;
+					
+					for(int linkClassO=order-lengthO-widthO;linkClassO>=0;linkClassO--){
+						if(standardDeviation.getLinkClass()==0) linkClassO=0;
+						
+						for(int startTimeO=order-lengthO-widthO-linkClassO;startTimeO>=0;startTimeO--){
+							if(standardDeviation.getStartTime()==0) startTimeO=0;
+							
+							for(int weightO=order-lengthO-widthO-linkClassO-startTimeO;weightO>=0;weightO--){
+								if(standardDeviation.getWeight()==0) weightO=0;
+								
+								for(int holidayDaysO=order-lengthO-widthO-linkClassO-startTimeO-weightO;holidayDaysO>=0;holidayDaysO--){
+									if(standardDeviation.getHolidayDays()==0) holidayDaysO=0;
+									
+									for(int dayInWeekO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO;dayInWeekO>=0;dayInWeekO--){
+										if(standardDeviation.getDayInWeek()==0) dayInWeekO=0;
+										
+										int dateO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO-dayInWeekO;
 										OrdersOfVars ordersOfVars=new OrdersOfVars();
 										ordersOfVars.setLengthO(lengthO);
 										ordersOfVars.setWidthO(widthO);
-										ordersOfVars.setLinkClassO(classO);
+										ordersOfVars.setLinkClassO(linkClassO);
 										ordersOfVars.setWeightO(weightO);
 										ordersOfVars.setDateO(dateO);
 										ordersOfVars.setStartTimeO(startTimeO);
@@ -52,9 +68,9 @@ public class OrdersOfVars {
 
 	}
 	
-	public static List<String> getOrdersStr(int maxOrder,int maxParametersNum){
+	public static List<String> getOrdersStr(int maxOrder,int maxParametersNum,FlatData standardDeviation){
 		List<String> strRes=new ArrayList<>();
-		List<OrdersOfVars> res=OrdersOfVars.getOrders(maxOrder,maxParametersNum);
+		List<OrdersOfVars> res=OrdersOfVars.getOrders(maxOrder,maxParametersNum,standardDeviation);
 		for(OrdersOfVars r:res){
 			strRes.add(r.toString());
 		}
@@ -63,8 +79,8 @@ public class OrdersOfVars {
 
 	
 
-	public static int getParametersNum(int maxOrder){
-		return OrdersOfVars.getOrders(maxOrder,-1).size()-1;
+	public static int getParametersNum(int maxOrder,FlatData standardDeviation){
+		return OrdersOfVars.getOrders(maxOrder,-1,standardDeviation).size()-1;
 	}
 	@Override
 	public String toString() {

@@ -170,9 +170,11 @@ public class Training implements Runnable{
         Random random = new Random();
 
 		if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
-			//get W
 			Y=new SimpleMatrix(1,1);
 			X=new SimpleMatrix(1,res.size()-1);
+		}else if(Constant.USE_SMALL_BATCH_GRADIENT_DESCEND){
+			Y=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH,1);
+			X=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH,res.size()-1);
 		}else{
 			
 			//get W
@@ -200,6 +202,15 @@ public class Training implements Runnable{
 				for(int colNum=0;colNum<res.size()-1;colNum++){
 					double[] col=res.get(colNum);
 					X.setColumn(colNum, 0,col[r]);
+				}
+			}else if(Constant.USE_SMALL_BATCH_GRADIENT_DESCEND){
+				for(int rowOffset=0;rowOffset<Constant.SIZE_OF_ONE_BATCH;rowOffset++){
+					int r = random.nextInt(max);
+					for(int colNum=0;colNum<res.size()-1;colNum++){
+						Y.setColumn(0, rowOffset, res.get(res.size()-1)[r]);
+						double[] col=res.get(colNum);
+						X.setColumn(colNum, rowOffset,col[r]);
+					}
 				}
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);

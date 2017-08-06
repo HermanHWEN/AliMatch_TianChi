@@ -44,7 +44,7 @@ public class CrossValidation {
 				fullDataSet.add(fullDataSetWithDimension.get(index));
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-			log.info("Start training with "+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum),","));
+			log.info("Start training with "+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum,dataInLinks.get(0).getStandardDeviation()),","));
 			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
 				threadPoolExecutor.execute(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
 			}else{
@@ -62,7 +62,7 @@ public class CrossValidation {
 		//get min error
 		int minParametersNum=0;
 		double minError=Double.MAX_VALUE;
-		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER);parametersNum++){
+		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER,dataInLinks.get(0).getStandardDeviation());parametersNum++){
 			if(errorMap.get(parametersNum)!=null){
 				if(errorMap.get(parametersNum)<(minError-0.01)){
 					minParametersNum=parametersNum;
@@ -73,8 +73,8 @@ public class CrossValidation {
 
 		CrossValidation.minError=minError;
 		//print result
-		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minParametersNum);
-		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minParametersNum);
+		List<OrdersOfVars> orders=OrdersOfVars.getOrders(Constant.MAXORDER,minParametersNum,dataInLinks.get(0).getStandardDeviation());
+		List<String> ordersStr=OrdersOfVars.getOrdersStr(Constant.MAXORDER,minParametersNum,dataInLinks.get(0).getStandardDeviation());
 		double[] weights=weightMap.get(minParametersNum).getMatrix().getData();
 		
 		StringBuffer modelInfo= new StringBuffer("Model info:\n");
@@ -111,7 +111,7 @@ public class CrossValidation {
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		//init list
 
-		List<OrdersOfVars> orders=OrdersOfVars.getOrders(maxOrder,-1);
+		List<OrdersOfVars> orders=OrdersOfVars.getOrders(maxOrder,-1,dataInLinks.get(0).getStandardDeviation());
 		
 		for(OrdersOfVars order: orders){
 			double[] oneColData=new double[dataInLinks.size()];

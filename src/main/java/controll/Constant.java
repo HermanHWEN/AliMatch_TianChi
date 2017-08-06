@@ -18,14 +18,13 @@ public class Constant {
 	public final static int FOLDTIME=10;//for cross validation
 	public final static int SIZE_OF_DATA=-1;
 	public final static int REPEATE_TIMES=10000000;//for gradient descend
-	public final static double LEARNING_RATE=0.1;//for gradient descend
-	public final static double THREDHOLD=0.00001;//for gradient descend
+	public final static double LEARNING_RATE=0.25;//initial learning rate for gradient descend
+	public final static double THRESHOLD=0.00001;//for gradient descend
 	
 	
 	//gradient descend
-	public final static boolean USE_GRADIENT_DESCEND=true;//when false, will use pseudo inverse
-	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=false;//when false, will use small batch gradient descend
-	public final static boolean USE_SMALL_BATCH_GRADIENT_DESCEND=true;//when above two are false, will use batch gradient descend
+	public final static boolean USE_GRADIENT_DESCEND=true;//false, will use pseudo inverse
+	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//false, will use small batch stochastic gradient descend
 	public final static int SIZE_OF_ONE_BATCH=100;
 	
 	//normalization

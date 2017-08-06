@@ -170,11 +170,8 @@ public class Training implements Runnable{
         Random random = new Random();
 
 		if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
-			Y=new SimpleMatrix(1,1);
-			X=new SimpleMatrix(1,res.size()-1);
-		}else if(Constant.USE_SMALL_BATCH_GRADIENT_DESCEND){
-			Y=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH,1);
-			X=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH,res.size()-1);
+			Y=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,1);
+			X=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,res.size()-1);
 		}else{
 			
 			//get W
@@ -195,16 +192,11 @@ public class Training implements Runnable{
 		W.set(0.1);
 
 		countFolde++;
+		
+		double learningRate=Constant.LEARNING_RATE;
 		for(int count=0;count<Constant.REPEATE_TIMES;count++){
 			if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
-				int r = random.nextInt(max);
-				Y.setColumn(0, 0, res.get(res.size()-1)[r]);
-				for(int colNum=0;colNum<res.size()-1;colNum++){
-					double[] col=res.get(colNum);
-					X.setColumn(colNum, 0,col[r]);
-				}
-			}else if(Constant.USE_SMALL_BATCH_GRADIENT_DESCEND){
-				for(int rowOffset=0;rowOffset<Constant.SIZE_OF_ONE_BATCH;rowOffset++){
+				for(int rowOffset=0;rowOffset<(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH);rowOffset++){
 					int r = random.nextInt(max);
 					for(int colNum=0;colNum<res.size()-1;colNum++){
 						Y.setColumn(0, rowOffset, res.get(res.size()-1)[r]);
@@ -213,15 +205,27 @@ public class Training implements Runnable{
 					}
 				}
 			}
-			SimpleMatrix Wn=ErrorFun.updateWeight(Constant.LEARNING_RATE, W, X, Y);
-			if(errorLowerThanThredhold(W,Wn,X,Y,Constant.THREDHOLD)) {
-				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than thredhold # Repeated times:" + (count+1));
+			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, W, X, Y);
+			
+			//check if the change of error are in the threshold
+			double errorO=ErrorFun.targetError(W, X, Y);
+			double errorN=ErrorFun.targetError(Wn, X, Y);
+			if(Math.abs(errorN-errorO)<=Constant.THRESHOLD) {
+				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than threshold # Repeated times:" + (count+1));
+				W=Wn;
 				break;
 			}
+			
+			//if the error is going up the decrease the learning rate
+			if(errorN>=errorO+Constant.THRESHOLD){
+				learningRate=learningRate/2;
+			}
+			
 			W=Wn;
+			if(learningRate<Constant.LEARNING_RATE/1024) break;
 		}
-		if(parametersNum>=Constant.REPEATE_TIMES){
-			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than thredhold # Reached times limit:" + Constant.REPEATE_TIMES);
+		if(parametersNum>=Constant.REPEATE_TIMES || learningRate<Constant.LEARNING_RATE/1024){
+			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than threshold # Reached times limit:" + Constant.REPEATE_TIMES);
 		}
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
@@ -231,22 +235,17 @@ public class Training implements Runnable{
 
 	}
 
-	private static boolean lowerThanThredhold(SimpleMatrix Wo,SimpleMatrix Wn,double thredhold){
+	private static boolean lowerThanThreshold(SimpleMatrix Wo,SimpleMatrix Wn,double threshold){
 		SimpleMatrix tmp=Wn.minus(Wo);
 		for(int index=0;index<tmp.getNumElements();index++){
-			if(Math.abs((tmp.get(index)-Wo.get(index))/Wo.get(index))>thredhold){
+			if(Math.abs((tmp.get(index)-Wo.get(index))/Wo.get(index))>threshold){
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	private static boolean errorLowerThanThredhold(SimpleMatrix Wo,SimpleMatrix Wn,SimpleMatrix X,SimpleMatrix Y,double thredhold){
-		double errorO=ErrorFun.targetError(Wo, X, Y);
-		double errorN=ErrorFun.targetError(Wn, X, Y);
-		
-		return Math.abs(errorN-errorO)<=thredhold;
-	}
+	
 	private static boolean isGoingUp(Map<Integer, Double> errorMap,int parametersNum){
 		double[] errors=new double[errorMap.values().size()];
 		int errorI=0;

@@ -14,7 +14,7 @@ public class Constant {
 	public final static String PATH_OF_RESULT="C://Match//{1}//HermanWen_{0}_{1}.txt";
 	public final static String PATH_OF_MODEL="C://Match//{1}//Model_{0}_{1}.txt";
 	
-	public final static int MAXORDER=4;
+	public final static int MAXORDER=2;
 	public final static int FOLDTIME=10;//fold time of cross validation
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
 	public final static int SIZE_OF_TRAINING_DATA=1000;//how many data for training

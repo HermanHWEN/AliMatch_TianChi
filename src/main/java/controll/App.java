@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -56,19 +57,20 @@ public class App
     	
     	System.gc();
     	
+    	log.info("Getting testing data set ...");
+    	List<DataInLink> testDataSet = new LinkedList<>();
+    	Thread repareTestingT=new Thread(new RepareTestingData(linksMap,testDataSet));
+    	repareTestingT.start();
+    	
+    	
     	log.info("Training model... ");
     	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
     	log.info("Got target function.");
     	
     	System.gc();
 
-    	log.info("Getting testing data set ...");
-    	List<DataInLink> testDataSet=Testing.getTestDataSet(linksMap);
-    	Convert2STD.convert2STD(testDataSet);
-//    	List<DataInLink> testDataSet=Testing.getTestDataSetOfFirstLink(linksMap);
-    	log.info("Generated testing data set # total : " + testDataSet.size());
     	
-    	
+    	repareTestingT.join();
     	Testing.testing(targetFunction,testDataSet);
     	log.info("Test result generated.");
     	
@@ -91,4 +93,29 @@ public class App
     	long usedSec=(long)(((endTime - startTime)%(1000 * 60 * 60 *24) + 0.5))% (1000 * 60 * 60)%(1000 * 60)/1000;
     	return "days:" + usedDays+" hours:" + usedHours+" minus:" + usedMinus+" seconds:" + usedSec;
     }
+}
+
+class RepareTestingData implements Runnable{
+	private static Logger log = Logger.getLogger(App.class);
+	
+	private Map<String,Link> linksMap;
+	private List<DataInLink> testDataSet;
+
+	
+	public RepareTestingData(Map<String, Link> linksMap, List<DataInLink> testDataSet) {
+		super();
+		this.linksMap = linksMap;
+		this.testDataSet = testDataSet;
+	}
+
+
+	@Override
+	public void run() {
+    	Testing.getTestDataSet(linksMap,testDataSet);
+//    	Testing.getTestDataSetOfFirstLink(linksMap,testDataSet);
+    	Convert2STD.convert2STD(testDataSet);
+    	log.info("Generated testing data set # total : " + testDataSet.size());
+		
+	}
+	
 }

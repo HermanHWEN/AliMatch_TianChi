@@ -22,8 +22,10 @@ public class Testing {
 
 	}
 
-	public static List<DataInLink> getTestDataSet(Map<String,Link> linksMap){
-		List<DataInLink> testDataSet=new LinkedList<>();
+	public static List<DataInLink> getTestDataSet(Map<String,Link> linksMap,List<DataInLink> testDataSet){
+		if(testDataSet==null){
+			testDataSet=new LinkedList<>();
+		}
 		int year=2017;
 		int month=6-1;
 
@@ -64,8 +66,10 @@ public class Testing {
 		return testDataSet;
 	}
 
-	public static List<DataInLink> getTestDataSetOfFirstLink(Map<String,Link> linksMap){
-		List<DataInLink> testDataSet=new LinkedList<>();
+	public static List<DataInLink> getTestDataSetOfFirstLink(Map<String,Link> linksMap,List<DataInLink> testDataSet){
+		if(testDataSet==null){
+			testDataSet=new LinkedList<>();
+		}
 		int year=2017;
 		int month=6-1;
 

@@ -44,7 +44,7 @@ public class CrossValidation {
 				fullDataSet.add(fullDataSetWithDimension.get(index));
 			}
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
-			log.debug("Start training with "+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum,dataInLinks.get(0).getStandardDeviation()),","));
+			log.debug("Start training with "+StringUtils.repeat(" ", 3-String.valueOf((parametersNum+1)).length())+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum,dataInLinks.get(0).getStandardDeviation()),","));
 			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
 				threadPoolExecutor.execute(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
 			}else{

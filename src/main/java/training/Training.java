@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
@@ -114,7 +115,7 @@ public class Training implements Runnable{
 		}
 
 		error=error/foldTime;
-		log.info("Training with "+(parametersNum+1)+" parameters completed! Error: " +error);
+		log.info("Training with "+StringUtils.repeat(" ", 3-String.valueOf((parametersNum+1)).length())+(parametersNum+1)+" parameters completed! Error: " +error);
 		errorMap.put(parametersNum,error);
 		weightMap.put(parametersNum, W);
 
@@ -245,11 +246,14 @@ public class Training implements Runnable{
 				countOfEpochFromLastMinError=0;
 			}
 		}
-		log.debug((res.size()-1)+" param model in fold "+countFolde+
-				" #Eror:"+minError+
-				" #Current learning rate:"+learningRate+
-				" #Repeated times got MinError:"+(countOfEpochWithMinError+1)+
-				" #Total repeated times:" + (countOfEpoch+1));
+		
+		StringBuffer infoOfMinError=new StringBuffer("Model with"+StringUtils.repeat(" ", 3-String.valueOf((res.size()-1)).length())+(res.size()-1)+" params in ");
+		infoOfMinError.append("fold "+countFolde+StringUtils.repeat(" ", 3-String.valueOf(countFolde).length()));
+		infoOfMinError.append("#Eror:"+minError+StringUtils.repeat(" ", 20-String.valueOf(minError).length()));
+		infoOfMinError.append("#Current learning rate:"+learningRate+StringUtils.repeat(" ", 20-String.valueOf(learningRate).length()));
+		infoOfMinError.append("#Repeated times got MinError:"+(countOfEpochWithMinError+1)+StringUtils.repeat(" ", 10-String.valueOf((countOfEpochWithMinError+1)).length()));
+		infoOfMinError.append("#Total repeated times:" + countOfEpoch+StringUtils.repeat(" ", 6-String.valueOf(countOfEpoch).length()));
+		log.debug(infoOfMinError);
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
 		X=null;

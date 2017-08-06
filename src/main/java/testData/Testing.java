@@ -1,5 +1,6 @@
 package testData;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import calculateFeatures.Holiday;
 import model.DataInLink;
 import model.Link;
 
@@ -45,6 +47,13 @@ public class Testing {
 					calendar.set(year, month, day, 8, twominusStep*2+2, 0);
 					testData.setEndTime(calendar.getTime());
 
+					try {
+						testData.setHolidayDays(Holiday.getHolidayDays(testData.getDate()));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					testData.setDayInWeek(testData.getDate().getDay());
+					
 					testDataSet.add(testData);
 //					count++;
 

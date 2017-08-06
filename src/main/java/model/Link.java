@@ -12,7 +12,7 @@ public class Link {
 	}
 	private double length;
 	private double width;
-	private int link_class;
+	private int linkClass;
 	
 	private double weight;
 	
@@ -30,11 +30,11 @@ public class Link {
 	public void setWidth(double width) {
 		this.width = width;
 	}
-	public int getLink_class() {
-		return link_class;
+	public int getLinkClass() {
+		return linkClass;
 	}
-	public void setLink_class(int link_class) {
-		this.link_class = link_class;
+	public void setLinkClass(int link_class) {
+		this.linkClass = link_class;
 	}
 	public double getWeight() {
 		return weight;

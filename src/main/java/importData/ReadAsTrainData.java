@@ -10,15 +10,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import model.DataInLink;
-import model.Link;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import Filter.Filters;
-import calculateFeatures.CalculateFeatures;
+import calculateFeatures.Holiday;
 import controll.Constant;
+import model.DataInLink;
+import model.Link;
 
 public class ReadAsTrainData {
 	private static Logger log = Logger.getLogger(ReadAsTrainData.class);  
@@ -121,6 +120,8 @@ class ConvertTxtToDataLink implements Runnable{
 				dataInLink.setTravle_time(new Double(linkFields[3]));
 				if(uniqueKeys.contains(dataInLink.getLink().getLink_ID()+times[0].trim())) continue;
 				
+				dataInLink.setHolidayDays(Holiday.getHolidayDays(dataInLink.getDate()));
+				dataInLink.setDayInWeek(dataInLink.getDate().getDay());
 				if(Filters.shouldAdd(dataInLink)) dataInLinks.add(dataInLink);
 			}
 		}

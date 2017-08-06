@@ -3,10 +3,13 @@ package model;
 public class FlatData {
 	private double length;
 	private double width;
-	private double classLevel;
+	private double linkClass;
 	private double weight;
 	private double date;
 	private double startTime;
+	private double holidayDays;
+	private double dayInWeek;
+	
 	public double getLength() {
 		return length;
 	}
@@ -19,11 +22,11 @@ public class FlatData {
 	public void setWidth(double width) {
 		this.width = width;
 	}
-	public double getClassLevel() {
-		return classLevel;
+	public double getLinkClass() {
+		return linkClass;
 	}
-	public void setClassLevel(double classLevel) {
-		this.classLevel = classLevel;
+	public void setLinkClass(double classLevel) {
+		this.linkClass = classLevel;
 	}
 	public double getWeight() {
 		return weight;
@@ -43,27 +46,20 @@ public class FlatData {
 	public void setStartTime(double startTime) {
 		this.startTime = startTime;
 	}
-	public FlatData() {
-		super();
-		// TODO Auto-generated constructor stub
+	
+	
+	public double getHolidayDays() {
+		return holidayDays;
+	}
+	public void setHolidayDays(double holidayDays) {
+		this.holidayDays = holidayDays;
+	}
+	public double getDayInWeek() {
+		return dayInWeek;
+	}
+	public void setDayInWeek(double dayInWeek) {
+		this.dayInWeek = dayInWeek;
 	}
 	
-	public FlatData(String flag) {
-		if("min".equals(flag)){
-			this.length = Double.MAX_VALUE;
-			this.width = Double.MAX_VALUE;
-			this.classLevel = Double.MAX_VALUE;
-			this.weight = Double.MAX_VALUE;
-			this.date = Double.MAX_VALUE;
-			this.startTime = Double.MAX_VALUE;
-		}else{
-			this.length = Double.MIN_VALUE;
-			this.width = Double.MIN_VALUE;
-			this.classLevel = Double.MIN_VALUE;
-			this.weight = Double.MIN_VALUE;
-			this.date = Double.MIN_VALUE;
-			this.startTime = Double.MIN_VALUE;
-		}
-	}
 	
 }

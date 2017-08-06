@@ -22,7 +22,7 @@ public class ReadAsLink {
 			link.setLink_ID(linkFields[0]);
 			link.setLength(new Double(linkFields[1]));
 			link.setWidth(new Double(linkFields[2]));
-			link.setLink_class(new Integer(linkFields[3]));
+			link.setLinkClass(new Integer(linkFields[3]));
 			linksMap.put(link.getLink_ID(), link);
 		}
 		

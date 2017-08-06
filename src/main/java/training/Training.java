@@ -13,7 +13,6 @@ import org.ejml.simple.SimpleMatrix;
 
 import controll.Constant;
 import crossValidation.ErrorFun;
-import importData.ReadDataAsString;
 
 /**
  * Created by 43903042 on 2017/8/2.

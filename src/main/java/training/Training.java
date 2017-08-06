@@ -166,7 +166,8 @@ public class Training implements Runnable{
 
 		SimpleMatrix Y;SimpleMatrix X;
 		
-		int max=res.get(0).length-1;
+		int dataSize=res.get(0).length;
+		int maxRadomNum=dataSize-1;
         Random random = new Random();
 
 		if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
@@ -175,11 +176,11 @@ public class Training implements Runnable{
 		}else{
 			
 			//get W
-			Y=new SimpleMatrix(res.get(0).length,1);
+			Y=new SimpleMatrix(dataSize,1);
 			
 			Y.setColumn(0, 0, res.get(res.size()-1));
 			
-			X=new SimpleMatrix(res.get(0).length,res.size()-1);
+			X=new SimpleMatrix(dataSize,res.size()-1);
 			
 			for(int colNum=0;colNum<res.size()-1;colNum++){
 				double[] col=res.get(colNum);
@@ -193,11 +194,21 @@ public class Training implements Runnable{
 
 		countFolde++;
 		
+		//gradient descend ......
 		double learningRate=Constant.LEARNING_RATE;
-		for(int count=0;count<Constant.REPEATE_TIMES;count++){
+		int countOfEpochFromLastMinError=0;
+		int countOfEpochWithMinError=0;
+		double minError = 0;
+		int countOfEpoch;
+		for(countOfEpoch=0;countOfEpoch<Constant.REPEATE_TIMES;countOfEpoch++){
 			if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
 				for(int rowOffset=0;rowOffset<(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH);rowOffset++){
-					int r = random.nextInt(max);
+					int r;
+					if(dataSize>1){
+						r = random.nextInt(maxRadomNum);
+					}else{
+						r=0;
+					}
 					for(int colNum=0;colNum<res.size()-1;colNum++){
 						Y.setColumn(0, rowOffset, res.get(res.size()-1)[r]);
 						double[] col=res.get(colNum);
@@ -206,27 +217,39 @@ public class Training implements Runnable{
 				}
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, W, X, Y);
-			
-			//check if the change of error are in the threshold
-			double errorO=ErrorFun.targetError(W, X, Y);
 			double errorN=ErrorFun.targetError(Wn, X, Y);
-			if(Math.abs(errorN-errorO)<=Constant.THRESHOLD) {
-				log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" lower than threshold. #Current learning rate:"+learningRate+" #Repeated times:" + (count+1));
+			
+			
+			//initial min error
+			countOfEpochFromLastMinError++;
+			if(countOfEpoch==0)	{
 				W=Wn;
-				break;
+				minError=errorN;
+				countOfEpochWithMinError=countOfEpoch;
+				continue;
 			}
 			
-			//if the error is going up the decrease the learning rate
-			if(errorN>=errorO+Constant.THRESHOLD){
+			//check if reach the max count of epoch
+			//if not when error is less than last min error, then update min error.Else just go to next epoch
+			if(countOfEpochFromLastMinError<Constant.MAX_NUM_OF_EPOCH){
+				if(errorN<minError){
+					minError=errorN;
+					countOfEpochWithMinError=countOfEpoch;
+					countOfEpochFromLastMinError=0;
+					W=Wn;
+				}
+			}else{//if reach the max count of epoch,check the learning rate lower bound
+				//if reach it , then end this training 
+				//else decrease learning rate.
+				if(learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
 				learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
+				countOfEpochFromLastMinError=0;
 			}
-			
-			W=Wn;
-			if(learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
 		}
-		if(parametersNum>=Constant.REPEATE_TIMES || learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)){
-			log.info("Error of "+(res.size()-1)+" parameters model in "+"fold "+countFolde+" higher than threshold. #Current learning rate:"+learningRate+" #Repeated times:" + Constant.REPEATE_TIMES);
-		}
+		log.info("Train of "+(res.size()-1)+" param model in "+"fold "+countFolde+" done."+
+				" #Current learning rate:"+learningRate+
+				" #Repeated times got MinError:"+(countOfEpochWithMinError+1)+
+				" #Total repeated times:" + (countOfEpoch+1));
 		Arrays.asList(W.getMatrix().data);
 		Y=null;
 		X=null;

@@ -20,8 +20,9 @@ public class Constant {
 	public final static int REPEATE_TIMES=10000000;//for gradient descend
 	public final static double LEARNING_RATE=0.25;//initial learning rate for gradient descend
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
-	public final static double LEARNING_RATE_LBOUND_DIVISOR=1024;//if the current learning rate<(initial/this), will stop
-	public final static double THRESHOLD=0.00001;//for gradient descend
+	public final static double LEARNING_RATE_LBOUND_DIVISOR=10240;//if the current learning rate<(initial/this), will stop
+	public final static int MAX_NUM_OF_EPOCH=20;//for when epoch time reach this, will check if error is “no-improvement-in-n" 
+//	public final static double THRESHOLD=0.00001;//for gradient descend
 	
 	
 	//gradient descend

@@ -1,5 +1,6 @@
 package training;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -232,7 +233,7 @@ public class Training implements Runnable{
 			//check if reach the max count of epoch
 			//if not when error is less than last min error, then update min error.Else just go to next epoch
 			if(countOfEpochFromLastMinError<Constant.MAX_NUM_OF_EPOCH){
-				if(errorN<minError){
+				if(BigDecimal.valueOf(errorN).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()){
 					minError=errorN;
 					countOfEpochWithMinError=countOfEpoch;
 					countOfEpochFromLastMinError=0;

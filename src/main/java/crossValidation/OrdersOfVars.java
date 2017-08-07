@@ -108,7 +108,7 @@ public class OrdersOfVars {
 		if(lengthO+widthO+linkClassO+startTimeO+weightO+holidayDaysO+dayInWeekO+dateO==0){
 			return "1";
 		}
-		return res.substring(0, res.length());
+		return res.substring(0, res.length()-1);
 	}
 	
 	

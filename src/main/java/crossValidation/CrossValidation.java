@@ -13,15 +13,14 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
-import model.DataInLink;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
+import controll.Constant;
+import model.DataInLink;
 import outputData.WriteData;
 import training.Training;
-import controll.Constant;
 
 public class CrossValidation {
 	private static Logger log = Logger.getLogger(CrossValidation.class); 

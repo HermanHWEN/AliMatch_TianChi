@@ -9,6 +9,7 @@ public class FlatData {
 	private double startTime;
 	private double holidayDays;
 	private double dayInWeek;
+	private int notZero;
 	
 	public double getLength() {
 		return length;
@@ -46,8 +47,6 @@ public class FlatData {
 	public void setStartTime(double startTime) {
 		this.startTime = startTime;
 	}
-	
-	
 	public double getHolidayDays() {
 		return holidayDays;
 	}
@@ -60,6 +59,15 @@ public class FlatData {
 	public void setDayInWeek(double dayInWeek) {
 		this.dayInWeek = dayInWeek;
 	}
-	
-	
+	public int getNotZero() {
+		if(length!=0) notZero++;
+		if(width!=0) notZero++;
+		if(linkClass!=0) notZero++;
+		if(weight!=0) notZero++;
+		if(date!=0) notZero++;
+		if(startTime!=0) notZero++;
+		if(holidayDays!=0) notZero++;
+		if(dayInWeek!=0) notZero++;
+		return notZero;
+	}
 }

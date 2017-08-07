@@ -13,14 +13,15 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
+import model.DataInLink;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
-import controll.Constant;
-import model.DataInLink;
 import outputData.WriteData;
 import training.Training;
+import controll.Constant;
 
 public class CrossValidation {
 	private static Logger log = Logger.getLogger(CrossValidation.class); 
@@ -65,7 +66,7 @@ public class CrossValidation {
 		double minError=Double.MAX_VALUE;
 		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER,dataInLinks.get(0).getStandardDeviation());parametersNum++){
 			if(errorMap.get(parametersNum)!=null){
-				if(BigDecimal.valueOf(errorMap.get(parametersNum)).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()){
+				if(BigDecimal.valueOf(errorMap.get(parametersNum)).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()){
 					minParametersNum=parametersNum;
 					minError=errorMap.get(parametersNum);
 				}

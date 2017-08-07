@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +34,7 @@ public class DataInLink implements Cloneable{
 		return link.getLink_ID()
 				+ "#" + DataInLink.df.format(date)
 				+ "#[" + DataInLink.df2.format(startTime) + "," + DataInLink.df2.format(endTime)
-				+ ")#" + travle_time;
+				+ ")#" + BigDecimal.valueOf(travle_time).setScale(Constant.ACURACY_OF_TRAVEL_TIME_OUTPUT, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public synchronized double powerWithOrders(OrdersOfVars order){

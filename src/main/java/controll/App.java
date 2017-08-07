@@ -1,5 +1,8 @@
 package controll;
 
+import importData.ReadAsLink;
+import importData.ReadAsTrainData;
+
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -11,18 +14,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
+import model.DataInLink;
+import model.Link;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import outputData.WriteData;
+import testData.Testing;
 import calculateFeatures.CalculateFeatures;
 import calculateFeatures.Convert2STD;
 import crossValidation.CrossValidation;
-import importData.ReadAsLink;
-import importData.ReadAsTrainData;
-import model.DataInLink;
-import model.Link;
-import outputData.WriteData;
-import testData.Testing;
 
 public class App 
 {
@@ -78,7 +80,7 @@ public class App
     	String today= df.format(Calendar.getInstance().getTime());
     	String resultPath=MessageFormat.format(Constant.PATH_OF_RESULT,today,String.format("%.6f", CrossValidation.minError));
     	log.info("Writing data to specified path - "+resultPath);
-    	WriteData.contentToTxt(resultPath, StringUtils.join(testDataSet, "\r\n"));
+    	WriteData.contentToTxt(resultPath, StringUtils.join(testDataSet, "\r\n")+"\r\n");
     	
     	
     	log.info("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));

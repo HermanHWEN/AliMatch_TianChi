@@ -1,6 +1,5 @@
 package calculateFeatures;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.DataInLink;
@@ -73,6 +72,8 @@ public class Convert2STD {
 		standardDeviation.setHolidayDays(Math.sqrt(standardDeviation.getHolidayDays()/dataInLinks.size()));
 		standardDeviation.setDayInWeek(Math.sqrt(standardDeviation.getDayInWeek()/dataInLinks.size()));
 		
+		//exclude day of month
+		standardDeviation.setDate(0);
 		
 		//convert data
 		for(DataInLink dataInLink: dataInLinks){

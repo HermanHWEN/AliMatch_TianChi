@@ -80,7 +80,11 @@ public class Training implements Runnable{
 
 		//training.....
 		//get full dimension data
-		SimpleMatrix W;
+		
+		SimpleMatrix initW= new SimpleMatrix(trainingSetWithFold.get(0).size()-1,1);
+		initW.set(0.1);
+		
+		SimpleMatrix W = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
@@ -93,13 +97,13 @@ public class Training implements Runnable{
 				double[] col=validationSet.get(colNum);
 				Xv.setColumn(colNum, 0,col);
 			}
-
+			
 			if(Constant.USE_GRADIENT_DESCEND){
-				W=genTargetFunWeidthGradientDescend(trainingSet,Xv,Yv);
+				W=genTargetFunWeidthGradientDescend(trainingSet,initW,Xv,Yv);
 			}else{
 				W=genTargetFunWeidthPseudoI(trainingSet);
 			}
-
+			initW=W;
 			
 			double e=ErrorFun.targetError(W, Xv, Yv);
 			error+=e;
@@ -110,7 +114,7 @@ public class Training implements Runnable{
 		}
 
 		if(Constant.USE_GRADIENT_DESCEND){
-			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension);
+			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,W,null,null);
 		}else{
 			W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
 		}
@@ -158,7 +162,7 @@ public class Training implements Runnable{
 	}
 
 	//iterator gradient descend
-	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res,SimpleMatrix ...validationSet){
+	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res,SimpleMatrix initW,SimpleMatrix Xv,SimpleMatrix Yv){
 
 		SimpleMatrix Y;SimpleMatrix X;
 		
@@ -171,7 +175,6 @@ public class Training implements Runnable{
 			X=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,res.size()-1);
 		}else{
 			
-			//get W
 			Y=new SimpleMatrix(dataSize,1);
 			
 			Y.setColumn(0, 0, res.get(res.size()-1));
@@ -184,9 +187,12 @@ public class Training implements Runnable{
 			}
 		}
 
-		SimpleMatrix W = new SimpleMatrix(res.size()-1,1);
-
-		W.set(0.1);
+		if(initW==null){
+			initW= new SimpleMatrix(res.size()-1,1);
+			initW.set(0.1);
+		}
+		
+		SimpleMatrix W =initW;
 
 		countFolde++;
 		
@@ -214,8 +220,8 @@ public class Training implements Runnable{
 			}
 			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, W, X, Y);
 			double errorN=0;
-			if(validationSet.length==2){
-				errorN=ErrorFun.targetError(Wn, validationSet[0], validationSet[1]);
+			if(Xv!=null && Yv!=null){
+				errorN=ErrorFun.targetError(Wn, Xv, Yv);
 			}else{
 				errorN=ErrorFun.targetError(Wn, X, Y);
 			}
@@ -233,7 +239,7 @@ public class Training implements Runnable{
 			//check if reach the max count of epoch
 			//if not when error is less than last min error, then update min error.Else just go to next epoch
 			if(countOfEpochFromLastMinError<Constant.MAX_NUM_OF_EPOCH){
-				if(BigDecimal.valueOf(errorN).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()){
+				if(BigDecimal.valueOf(errorN).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()<BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()){
 					minError=errorN;
 					countOfEpochWithMinError=countOfEpoch;
 					countOfEpochFromLastMinError=0;

@@ -23,41 +23,92 @@ public class OrdersOfVars {
 		int parametersNum=0;
 		for(int order=0;order<=maxOrder;order++){
 
-			for(int lengthO=order;lengthO>=0;lengthO--){
-				if(standardDeviation.getLength()==0) lengthO=0;
+			int startLengthO=order;
+			int endLengthO=0;
+			if(standardDeviation.getLength()==0) 
+				startLengthO=0;
+			
+			for(int lengthO=startLengthO;lengthO>=endLengthO;lengthO--){
+
+				int startWidthO=order-lengthO;
+				int endWidthO=0;
+				if(standardDeviation.getWidth()==0)
+					startWidthO=0;
+				if(standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 
+						&& standardDeviation.getWeight()==0 && standardDeviation.getHolidayDays()==0 
+						&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+					endWidthO=startWidthO;
 				
-				for(int widthO=order-lengthO;widthO>=0;widthO--){
-					if(standardDeviation.getWidth()==0) widthO=0;
+				for(int widthO=startWidthO;widthO>=endWidthO;widthO--){
+
+					int startLinkClassO=order-lengthO-widthO;
+					int endLinkClassO=0;
+					if(standardDeviation.getLinkClass()==0)
+						startLinkClassO=0;
+					if(standardDeviation.getStartTime()==0 && standardDeviation.getWeight()==0 && standardDeviation.getHolidayDays()==0 
+							&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+						endLinkClassO=startLinkClassO;
 					
-					for(int linkClassO=order-lengthO-widthO;linkClassO>=0;linkClassO--){
-						if(standardDeviation.getLinkClass()==0) linkClassO=0;
+					for(int linkClassO=startLinkClassO;linkClassO>=endLinkClassO;linkClassO--){
 						
-						for(int startTimeO=order-lengthO-widthO-linkClassO;startTimeO>=0;startTimeO--){
-							if(standardDeviation.getStartTime()==0) startTimeO=0;
+						int startStartTimeO=order-lengthO-widthO-linkClassO;
+						int endStartTimeO=0;
+						if(standardDeviation.getStartTime()==0) 
+							startStartTimeO=0;
+						if(standardDeviation.getWeight()==0 && standardDeviation.getHolidayDays()==0 
+								&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+							endStartTimeO=startStartTimeO;
+						
+						for(int startTimeO=startStartTimeO;startTimeO>=endStartTimeO;startTimeO--){
 							
-							for(int weightO=order-lengthO-widthO-linkClassO-startTimeO;weightO>=0;weightO--){
-								if(standardDeviation.getWeight()==0) weightO=0;
+							int startWeightO=order-lengthO-widthO-linkClassO-startTimeO;
+							int endWeightO=0;
+							if(standardDeviation.getWeight()==0)
+								startWeightO=0;
+							if(standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+								endWeightO=startWeightO;
+							
+							for(int weightO=startWeightO;weightO>=endWeightO;weightO--){
 								
-								for(int holidayDaysO=order-lengthO-widthO-linkClassO-startTimeO-weightO;holidayDaysO>=0;holidayDaysO--){
-									if(standardDeviation.getHolidayDays()==0) holidayDaysO=0;
+								int startHolidayDaysO=order-lengthO-widthO-linkClassO-startTimeO-weightO;
+								int endHolidayDaysO=0;
+								if(standardDeviation.getHolidayDays()==0) 
+									startHolidayDaysO=0;
+								if(standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0) 
+									endHolidayDaysO=startHolidayDaysO;
+								
+								for(int holidayDaysO=startHolidayDaysO;holidayDaysO>=endHolidayDaysO;holidayDaysO--){
 									
-									for(int dayInWeekO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO;dayInWeekO>=0;dayInWeekO--){
-										if(standardDeviation.getDayInWeek()==0) dayInWeekO=0;
+									int startDayInWeeksO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO;
+									int endDayInWeekO=0;
+									if(standardDeviation.getDayInWeek()==0) 
+										startDayInWeeksO=0;
+									if(standardDeviation.getDate()==0)
+										endDayInWeekO=startDayInWeeksO;
+									
+									for(int dayInWeekO=startDayInWeeksO;dayInWeekO>=endDayInWeekO;dayInWeekO--){
 										
-										int dateO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO-dayInWeekO;
-										OrdersOfVars ordersOfVars=new OrdersOfVars();
-										ordersOfVars.setLengthO(lengthO);
-										ordersOfVars.setWidthO(widthO);
-										ordersOfVars.setLinkClassO(linkClassO);
-										ordersOfVars.setWeightO(weightO);
-										ordersOfVars.setDateO(dateO);
-										ordersOfVars.setStartTimeO(startTimeO);
-										ordersOfVars.setHolidayDaysO(holidayDaysO);
-										ordersOfVars.setDayInWeekO(dayInWeekO);
-										ordersOfVars.setOrderOfPower(order);
-										ordersOfVarsList.add(ordersOfVars);
-										parametersNum++;
-										if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
+										int startDateO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO-dayInWeekO;
+										int endDateO=startDateO;
+										if(standardDeviation.getDate()==0) 
+											startDateO=0;
+										
+										for(int dateO=startDateO;dateO>=endDateO;dateO--){
+											
+											OrdersOfVars ordersOfVars=new OrdersOfVars();
+											ordersOfVars.setLengthO(lengthO);
+											ordersOfVars.setWidthO(widthO);
+											ordersOfVars.setLinkClassO(linkClassO);
+											ordersOfVars.setWeightO(weightO);
+											ordersOfVars.setDateO(dateO);
+											ordersOfVars.setStartTimeO(startTimeO);
+											ordersOfVars.setHolidayDaysO(holidayDaysO);
+											ordersOfVars.setDayInWeekO(dayInWeekO);
+											ordersOfVars.setOrderOfPower(order);
+											ordersOfVarsList.add(ordersOfVars);
+											parametersNum++;
+											if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
+										}
 									}
 								}
 							}

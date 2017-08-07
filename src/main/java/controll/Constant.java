@@ -25,7 +25,7 @@ public class Constant {
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
 	public final static double LEARNING_RATE_LBOUND_DIVISOR=Math.pow(2, 15);//if the current learning rate<(initial/this), will stop
 	public final static int MAX_NUM_OF_EPOCH=1000;//for when epoch time reach this, will check if error is “no-improvement-in-n"
-	public final static int ACURACY_OF_ERROR=6;//accuracy of error when checking min error
+	public final static int ACURACY_OF_ERROR=5;//accuracy of error when checking min error
 //	public final static double THRESHOLD=0.00001;//for gradient descend
 	
 	

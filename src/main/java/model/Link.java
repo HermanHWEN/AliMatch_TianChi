@@ -11,6 +11,7 @@ public class Link {
 		this.link_ID = link_ID;
 	}
 	private double length;
+	private double reciprocalOfWidth;
 	private double width;
 	private int linkClass;
 	
@@ -29,6 +30,9 @@ public class Link {
 	}
 	public void setWidth(double width) {
 		this.width = width;
+		if(width!=0){
+			reciprocalOfWidth=1/width;
+		}
 	}
 	public int getLinkClass() {
 		return linkClass;
@@ -53,6 +57,12 @@ public class Link {
 	}
 	public void setOut_links(List<String> out_links) {
 		this.out_links = out_links;
+	}
+	public double getReciprocalOfWidth() {
+		return reciprocalOfWidth;
+	}
+	public void setReciprocalOfWidth(double reciprocalOfWidth) {
+		this.reciprocalOfWidth = reciprocalOfWidth;
 	}
 	
 	

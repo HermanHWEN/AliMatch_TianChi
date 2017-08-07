@@ -2,7 +2,7 @@ package model;
 
 public class FlatData {
 	private double length;
-	private double width;
+	private double reciprocalOfWidth;
 	private double linkClass;
 	private double weight;
 	private double date;
@@ -17,11 +17,11 @@ public class FlatData {
 	public void setLength(double length) {
 		this.length = length;
 	}
-	public double getWidth() {
-		return width;
+	public double getReciprocalOfWidth() {
+		return reciprocalOfWidth;
 	}
-	public void setWidth(double width) {
-		this.width = width;
+	public void setReciprocalOfWidth(double reciprocalOfWidth) {
+		this.reciprocalOfWidth = reciprocalOfWidth;
 	}
 	public double getLinkClass() {
 		return linkClass;
@@ -61,7 +61,7 @@ public class FlatData {
 	}
 	public int getNotZero() {
 		if(length!=0) notZero++;
-		if(width!=0) notZero++;
+		if(reciprocalOfWidth!=0) notZero++;
 		if(linkClass!=0) notZero++;
 		if(weight!=0) notZero++;
 		if(date!=0) notZero++;

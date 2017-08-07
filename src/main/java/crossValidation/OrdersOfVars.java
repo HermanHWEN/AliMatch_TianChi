@@ -8,7 +8,7 @@ import model.FlatData;
 public class OrdersOfVars {
 	
 	private int lengthO;
-	private int widthO;
+	private int reciprocalOfWidthO;
 	private int linkClassO;
 	private int startTimeO;
 	private int weightO; 
@@ -32,7 +32,7 @@ public class OrdersOfVars {
 
 				int startWidthO=order-lengthO;
 				int endWidthO=0;
-				if(standardDeviation.getWidth()==0)
+				if(standardDeviation.getReciprocalOfWidth()==0)
 					startWidthO=0;
 				if(standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 
 						&& standardDeviation.getWeight()==0 && standardDeviation.getHolidayDays()==0 
@@ -68,9 +68,9 @@ public class OrdersOfVars {
 							if(standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
 								endWeightO=startWeightO;
 							
-							for(int weightO=startWeightO;weightO>=endWeightO;weightO--){
+							for(int reciprocalOfWeightO=startWeightO;reciprocalOfWeightO>=endWeightO;reciprocalOfWeightO--){
 								
-								int startHolidayDaysO=order-lengthO-widthO-linkClassO-startTimeO-weightO;
+								int startHolidayDaysO=order-lengthO-widthO-linkClassO-startTimeO-reciprocalOfWeightO;
 								int endHolidayDaysO=0;
 								if(standardDeviation.getHolidayDays()==0) 
 									startHolidayDaysO=0;
@@ -79,7 +79,7 @@ public class OrdersOfVars {
 								
 								for(int holidayDaysO=startHolidayDaysO;holidayDaysO>=endHolidayDaysO;holidayDaysO--){
 									
-									int startDayInWeeksO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO;
+									int startDayInWeeksO=order-lengthO-widthO-linkClassO-startTimeO-reciprocalOfWeightO-holidayDaysO;
 									int endDayInWeekO=0;
 									if(standardDeviation.getDayInWeek()==0) 
 										startDayInWeeksO=0;
@@ -88,7 +88,7 @@ public class OrdersOfVars {
 									
 									for(int dayInWeekO=startDayInWeeksO;dayInWeekO>=endDayInWeekO;dayInWeekO--){
 										
-										int startDateO=order-lengthO-widthO-linkClassO-startTimeO-weightO-holidayDaysO-dayInWeekO;
+										int startDateO=order-lengthO-widthO-linkClassO-startTimeO-reciprocalOfWeightO-holidayDaysO-dayInWeekO;
 										int endDateO=startDateO;
 										if(standardDeviation.getDate()==0) 
 											startDateO=0;
@@ -97,9 +97,9 @@ public class OrdersOfVars {
 											
 											OrdersOfVars ordersOfVars=new OrdersOfVars();
 											ordersOfVars.setLengthO(lengthO);
-											ordersOfVars.setWidthO(widthO);
+											ordersOfVars.setReciprocalOfWidthO(widthO);
 											ordersOfVars.setLinkClassO(linkClassO);
-											ordersOfVars.setWeightO(weightO);
+											ordersOfVars.setWeightO(reciprocalOfWeightO);
 											ordersOfVars.setDateO(dateO);
 											ordersOfVars.setStartTimeO(startTimeO);
 											ordersOfVars.setHolidayDaysO(holidayDaysO);
@@ -141,22 +141,22 @@ public class OrdersOfVars {
 		
 		StringBuffer res=new StringBuffer();
 		if(lengthO!=0)
-			res.append("length^"+lengthO+"*");
-		if(widthO!=0)
-			res.append("width^"+widthO+"*");
+			res.append("len^"+lengthO+"*");
+		if(reciprocalOfWidthO!=0)
+			res.append("wih^-"+reciprocalOfWidthO+"*");
 		if(linkClassO!=0)
-			res.append("linkClass^"+linkClassO+"*");
+			res.append("lCla^"+linkClassO+"*");
 		if(startTimeO!=0)
-			res.append("startTime^"+startTimeO+"*");
+			res.append("startT^"+startTimeO+"*");
 		if(weightO!=0)
-			res.append("weight^"+weightO+"*");
+			res.append("wet^"+weightO+"*");
 		if(holidayDaysO!=0)
-			res.append("holidayDays^"+holidayDaysO+"*");
+			res.append("hoDs^"+holidayDaysO+"*");
 		if(dayInWeekO!=0)
-			res.append("dayInWeek^"+dayInWeekO+"*");
+			res.append("dIW^"+dayInWeekO+"*");
 		if(dateO!=0)
-			res.append("dateInMonth^"+dateO+"*");
-		if(lengthO+widthO+linkClassO+startTimeO+weightO+holidayDaysO+dayInWeekO+dateO==0){
+			res.append("dIM^"+dateO+"*");
+		if(lengthO+reciprocalOfWidthO+linkClassO+startTimeO+weightO+holidayDaysO+dayInWeekO+dateO==0){
 			return "1";
 		}
 		return res.substring(0, res.length()-1);
@@ -170,11 +170,11 @@ public class OrdersOfVars {
 	public void setLengthO(int lengthO) {
 		this.lengthO = lengthO;
 	}
-	public int getWidthO() {
-		return widthO;
+	public int getReciprocalOfWidthO() {
+		return reciprocalOfWidthO;
 	}
-	public void setWidthO(int widthO) {
-		this.widthO = widthO;
+	public void setReciprocalOfWidthO(int reciprocalOfWidthO) {
+		this.reciprocalOfWidthO = reciprocalOfWidthO;
 	}
 	public int getLinkClassO() {
 		return linkClassO;

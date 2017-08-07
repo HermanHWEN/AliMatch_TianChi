@@ -46,7 +46,7 @@ public class DataInLink implements Cloneable{
 	public synchronized double withoutNormalization(OrdersOfVars order){
 		double reswithOrder=1;
 		reswithOrder*=Math.pow(this.link.getLength(), order.getLengthO());
-		reswithOrder*=Math.pow(this.link.getWidth(), order.getWidthO());
+		reswithOrder*=Math.pow(this.link.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
 		reswithOrder*=Math.pow(this.link.getLinkClass(), order.getLinkClassO());
 		reswithOrder*=Math.pow(this.link.getWeight(), order.getWeightO());
 		reswithOrder*=Math.pow(this.date.getDate(), order.getDateO());
@@ -58,8 +58,8 @@ public class DataInLink implements Cloneable{
 		double reswithOrder=1;
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO());
-		if(standardDeviation.getWidth()!=0)
-			reswithOrder*=Math.pow((this.link.getWidth()-average.getWidth())/standardDeviation.getWidth(), order.getWidthO());
+		if(standardDeviation.getReciprocalOfWidth()!=0)
+			reswithOrder*=Math.pow((this.link.getReciprocalOfWidth()-average.getReciprocalOfWidth())/standardDeviation.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
 		if(standardDeviation.getLinkClass()!=0)
 			reswithOrder*=Math.pow((this.link.getLinkClass()-average.getLinkClass())/standardDeviation.getLinkClass(), order.getLinkClassO());
 		if(standardDeviation.getWeight()!=0)
@@ -75,8 +75,8 @@ public class DataInLink implements Cloneable{
 		double reswithOrder=1;
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-min.getLength())/(max.getLength()-min.getLength()), order.getLengthO());
-		if(standardDeviation.getWidth()!=0)
-			reswithOrder*=Math.pow((this.link.getWidth()-min.getWidth())/(max.getWidth()-min.getWidth()), order.getWidthO());
+		if(standardDeviation.getReciprocalOfWidth()!=0)
+			reswithOrder*=Math.pow((this.link.getReciprocalOfWidth()-min.getReciprocalOfWidth())/(max.getReciprocalOfWidth()-min.getReciprocalOfWidth()), order.getReciprocalOfWidthO());
 		if(standardDeviation.getLinkClass()!=0)
 			reswithOrder*=Math.pow((this.link.getLinkClass()-min.getLinkClass())/(max.getLinkClass()-min.getLinkClass()), order.getLinkClassO());
 		if(standardDeviation.getWeight()!=0)

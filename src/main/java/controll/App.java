@@ -78,7 +78,7 @@ public class App
     	String today= df.format(Calendar.getInstance().getTime());
     	String resultPath=MessageFormat.format(Constant.PATH_OF_RESULT,today,String.format("%.6f", CrossValidation.minError));
     	log.info("Writing data to specified path - "+resultPath);
-    	WriteData.contentToTxt(resultPath, StringUtils.join(testDataSet, "\r\n")+"\r\n");
+    	WriteData.contentToTxt(resultPath, StringUtils.join(testDataSet, "\n")+"\n");
     	
     	
     	log.info("Done! Used " + getUsedTime(startTime,Calendar.getInstance()));

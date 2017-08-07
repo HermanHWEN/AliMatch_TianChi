@@ -17,7 +17,7 @@ public class Constant {
 	public final static int MAXORDER=2;
 	public final static int FOLDTIME=10;//fold time of cross validation
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
-	public final static int SIZE_OF_TRAINING_DATA=1000;//how many data for training
+	public final static int SIZE_OF_TRAINING_DATA=5000;//how many data for training
 	public final static double LEARNING_RATE=0.25;//initial learning rate for gradient descend
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
 	public final static double LEARNING_RATE_LBOUND_DIVISOR=10240;//if the current learning rate<(initial/this), will stop

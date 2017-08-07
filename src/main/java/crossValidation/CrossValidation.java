@@ -1,5 +1,6 @@
 package crossValidation;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class CrossValidation {
 		double minError=Double.MAX_VALUE;
 		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER,dataInLinks.get(0).getStandardDeviation());parametersNum++){
 			if(errorMap.get(parametersNum)!=null){
-				if(errorMap.get(parametersNum)<(minError-0.01)){
+				if(BigDecimal.valueOf(errorMap.get(parametersNum)).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue()){
 					minParametersNum=parametersNum;
 					minError=errorMap.get(parametersNum);
 				}
@@ -81,7 +82,7 @@ public class CrossValidation {
 		modelInfo.append("Number of samples:  " +dataInLinks.size()+"\n");
 		modelInfo.append("Order of min error:  " +StringUtils.join(ordersStr,"+")+"\n");
 		modelInfo.append("Weight of min error: "+ Arrays.toString(weights)+"\n");
-		modelInfo.append("Parameters Num : " + minParametersNum+"\n");
+		modelInfo.append("Parameters Num : " + (minParametersNum+1)+"\n");
 		modelInfo.append("Min error: " + minError+"\n");
 		log.info(modelInfo);
 		

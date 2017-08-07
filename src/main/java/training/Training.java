@@ -83,7 +83,7 @@ public class Training implements Runnable{
 		
 		SimpleMatrix initW= new SimpleMatrix(trainingSetWithFold.get(0).size()-1,1);
 		initW.set(0.1);
-		
+		initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
 		SimpleMatrix W = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
@@ -249,9 +249,13 @@ public class Training implements Runnable{
 			}else{//if reach the max count of epoch,check the learning rate lower bound
 				//if reach it , then end this training 
 				//else decrease learning rate.
-				if(!Constant.MUST_REACH_MAX_TIME &&learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
-				if(!Constant.MUST_REACH_MAX_TIME) learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
-				countOfEpochFromLastMinError=0;
+				if(Constant.DECAY_LEARNING_RATE){
+					if(learningRate<(Constant.LEARNING_RATE/Constant.LEARNING_RATE_LBOUND_DIVISOR)) break;
+					learningRate=learningRate/Constant.LEARNING_RATE_DIVISOR;
+					countOfEpochFromLastMinError=0;
+				}else{
+					break;
+				}
 			}
 		}
 		

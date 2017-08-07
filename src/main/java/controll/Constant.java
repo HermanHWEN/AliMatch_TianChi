@@ -21,6 +21,7 @@ public class Constant {
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
 	public final static int SIZE_OF_TRAINING_DATA=5000;//how many data for training
 	public final static double LEARNING_RATE=0.25;//initial learning rate for gradient descend
+	public final static boolean DECAY_LEARNING_RATE=false;
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
 	public final static double LEARNING_RATE_LBOUND_DIVISOR=Math.pow(2, 15);//if the current learning rate<(initial/this), will stop
 	public final static int MAX_NUM_OF_EPOCH=1000;//for when epoch time reach this, will check if error is “no-improvement-in-n"
@@ -30,7 +31,6 @@ public class Constant {
 	
 	//gradient descend
 	public final static int MAX_REPEATE_TIMES=1000000;//for gradient descend
-	public final static boolean MUST_REACH_MAX_TIME=false;//true, num of epochs must be MAX_REPEATE_TIMES;false, will do the early-stopping by LEARNING_RATE_LBOUND_DIVISOR
 	public final static boolean USE_GRADIENT_DESCEND=true;//false, will use pseudo inverse
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//true, will use small batch stochastic gradient descend;false will use whole data set
 	public final static int SIZE_OF_ONE_BATCH=200;//when USE_STOCHASTIC_GRADIENT_DESCEND is true, using it as batch size

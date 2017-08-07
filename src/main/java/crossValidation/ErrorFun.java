@@ -20,9 +20,7 @@ public class ErrorFun {
 	
 	public static synchronized SimpleMatrix updateWeight(double learningRate,SimpleMatrix W,SimpleMatrix X,SimpleMatrix Y){
 		SimpleMatrix lamda=new SimpleMatrix(W.numRows(),W.numRows());
-		for(int i=0;i<W.numRows();i++){
-			lamda.set(i, i, learningRate);
-		}
+		lamda.set(learningRate);
 		
 		SimpleMatrix WNew=W.minus(lamda.mult(derivative(W,X,Y)));
 		return WNew;
@@ -48,9 +46,7 @@ public class ErrorFun {
 				cons=-1*cons;
 			}
 			SimpleMatrix consM=new SimpleMatrix(X.numCols(),X.numCols());
-			for(int i=0;i<consM.numRows();i++){
-				consM.set(i, i, cons);
-			}
+			consM.set(cons);
 			
 			if(N==1) return consM.mult(Xi.transpose());
 			sum=sum.plus(consM.mult(Xi.transpose()));

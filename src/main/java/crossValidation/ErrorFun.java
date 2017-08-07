@@ -7,13 +7,13 @@ public class ErrorFun {
 
 		double sum=0;
 		if(X.numRows()==1){
-			return Math.abs(Math.abs(X.mult(W).trace())-Y.trace())/Y.trace();
+			return Math.abs(Math.abs(X.mult(W).elementSum())-Y.elementSum())/Y.elementSum();
 		}
 		for(int row=0;row<X.numRows();row++){
 
 			SimpleMatrix Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 			double yi=Y.get(row, 0);
-			sum+=Math.abs(Math.abs(Xi.mult(W).trace())-yi)/yi;
+			sum+=Math.abs(Math.abs(Xi.mult(W).elementSum())-yi)/yi;
 		}
 		return sum/X.numRows();
 	}
@@ -40,10 +40,10 @@ public class ErrorFun {
 				Xi=X.extractMatrix(row, row+1, 0, X.numCols());
 				yi=Y.extractMatrix(row, row+1, 0, 1);
 			}
-			double yiNum=yi.trace();
+			double yiNum=yi.elementSum();
 			
 			double cons=1/(yiNum*N);//yi/N
-			double yHash=Xi.mult(W).trace();
+			double yHash=Xi.mult(W).elementSum();
 			if((yHash>0 && yHash<yiNum) || yHash<(-1*yiNum)){
 				cons=-1*cons;
 			}

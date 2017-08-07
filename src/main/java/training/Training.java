@@ -114,7 +114,7 @@ public class Training implements Runnable{
 		}
 
 		if(Constant.USE_GRADIENT_DESCEND){
-			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,W,null,null);
+			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,initW,null,null);
 		}else{
 			W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
 		}
@@ -192,6 +192,7 @@ public class Training implements Runnable{
 			initW.set(0.1);
 		}
 		
+		String traceOfLastW=Arrays.toString(initW.getMatrix().data);
 		SimpleMatrix W =initW;
 
 		countFolde++;
@@ -254,14 +255,17 @@ public class Training implements Runnable{
 			}
 		}
 		
+		String traceOfThisW=Arrays.toString(W.getMatrix().data);
 		StringBuffer infoOfMinError=new StringBuffer("Model with"+StringUtils.repeat(" ", 3-String.valueOf((res.size()-1)).length())+(res.size()-1)+" params in ");
 		infoOfMinError.append("fold "+countFolde+StringUtils.repeat(" ", 3-String.valueOf(countFolde).length()));
-		infoOfMinError.append("#Eror:"+minError+StringUtils.repeat(" ", 20-String.valueOf(minError).length()));
+		infoOfMinError.append("#Error:"+minError+StringUtils.repeat(" ", 20-String.valueOf(minError).length()));
 		infoOfMinError.append("#Current learning rate:"+learningRate+StringUtils.repeat(" ", 20-String.valueOf(learningRate).length()));
 		infoOfMinError.append("#Repeated times got MinError:"+(countOfEpochWithMinError+1)+StringUtils.repeat(" ", 10-String.valueOf((countOfEpochWithMinError+1)).length()));
 		infoOfMinError.append("#Total repeated times:" + countOfEpoch+StringUtils.repeat(" ", 6-String.valueOf(countOfEpoch).length()));
+		infoOfMinError.append("\n"+StringUtils.repeat(" ",101)+"#Last weight:" + traceOfLastW +StringUtils.repeat(" ", 20-String.valueOf(traceOfLastW).length()));
+		infoOfMinError.append("\n"+StringUtils.repeat(" ",101)+"#This weight:" + traceOfThisW+StringUtils.repeat(" ", String.valueOf(traceOfThisW).length()));
 		log.debug(infoOfMinError);
-		Arrays.asList(W.getMatrix().data);
+		Arrays.asList();
 		Y=null;
 		X=null;
 		System.gc();

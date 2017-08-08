@@ -24,11 +24,12 @@ public class Constant {
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
 	public final static double LEARNING_RATE_LBOUND_DIVISOR=Math.pow(2, 13);//if the current learning rate<(initial/this), will stop
 	public final static int MAX_NUM_OF_EPOCH=1000;//for when epoch time reach this, will check if error is “no-improvement-in-n"
-	public final static int ACURACY_OF_ERROR=6;//accuracy of error when checking min error
+	public final static int ACURACY_OF_ERROR=3;//accuracy of error when checking min error#####after testing, when 3,error turn small
 //	public final static double THRESHOLD=0.00001;//for gradient descend
 	
 	
 	//gradient descend
+	public final static boolean USE_PSEUDO_INI_WEIGHT=true;
 	public final static int MAX_REPEATE_TIMES=9000000;//for gradient descend
 	public final static boolean USE_GRADIENT_DESCEND=true;//false, will use pseudo inverse
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//true, will use small batch stochastic gradient descend;false will use whole data set

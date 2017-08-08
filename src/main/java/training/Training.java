@@ -80,10 +80,11 @@ public class Training implements Runnable{
 
 		//training.....
 		//get full dimension data
-		
+
 		SimpleMatrix initW= new SimpleMatrix(trainingSetWithFold.get(0).size()-1,1);
 		initW.set(0.1);
-		initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
+		if(Constant.USE_PSEUDO_INI_WEIGHT)
+			initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
 		SimpleMatrix W = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
@@ -97,14 +98,14 @@ public class Training implements Runnable{
 				double[] col=validationSet.get(colNum);
 				Xv.setColumn(colNum, 0,col);
 			}
-			
+
 			if(Constant.USE_GRADIENT_DESCEND){
 				W=genTargetFunWeidthGradientDescend(trainingSet,initW,Xv,Yv);
 			}else{
 				W=genTargetFunWeidthPseudoI(trainingSet);
 			}
 			initW=W;
-			
+
 			double e=ErrorFun.targetError(W, Xv, Yv);
 			error+=e;
 			trainingSet.clear();
@@ -165,7 +166,7 @@ public class Training implements Runnable{
 	public SimpleMatrix genTargetFunWeidthGradientDescend(List<double[]> res,SimpleMatrix initW,SimpleMatrix Xv,SimpleMatrix Yv){
 
 		SimpleMatrix Y;SimpleMatrix X;
-		
+
 		int dataSize=res.get(0).length;
 		int maxRadomNum=dataSize-1;
 
@@ -173,13 +174,13 @@ public class Training implements Runnable{
 			Y=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,1);
 			X=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,res.size()-1);
 		}else{
-			
+
 			Y=new SimpleMatrix(dataSize,1);
-			
+
 			Y.setColumn(0, 0, res.get(res.size()-1));
-			
+
 			X=new SimpleMatrix(dataSize,res.size()-1);
-			
+
 			for(int colNum=0;colNum<res.size()-1;colNum++){
 				double[] col=res.get(colNum);
 				X.setColumn(colNum, 0,col);
@@ -190,12 +191,12 @@ public class Training implements Runnable{
 			initW= new SimpleMatrix(res.size()-1,1);
 			initW.set(0.1);
 		}
-		
+
 		String traceOfLastW=Arrays.toString(initW.getMatrix().data);
 		SimpleMatrix minW =new SimpleMatrix(res.size()-1,1);
 
 		countFolde++;
-		
+
 		//gradient descend ......
 		double learningRate=Constant.LEARNING_RATE;
 		int countOfEpochFromLastMinError=0;
@@ -225,7 +226,7 @@ public class Training implements Runnable{
 			}else{
 				errorN=ErrorFun.targetError(Wn, X, Y);
 			}
-			
+
 			initW=Wn;
 			//initial min error
 			countOfEpochFromLastMinError++;
@@ -235,7 +236,7 @@ public class Training implements Runnable{
 				countOfEpochWithMinError=countOfEpoch;
 				continue;
 			}
-			
+
 			//check if reach the max count of epoch
 			//if not when error is less than last min error, then update min error.Else just go to next epoch
 			if(countOfEpochFromLastMinError<Constant.MAX_NUM_OF_EPOCH){
@@ -257,10 +258,10 @@ public class Training implements Runnable{
 				}
 			}
 		}
-		
+
 		String traceOfThisW=Arrays.toString(minW.getMatrix().data);
 		StringBuffer infoOfMinError=new StringBuffer("Model with"+StringUtils.repeat(" ", 3-String.valueOf((res.size()-1)).length())+(res.size()-1)+" params in ");
-		infoOfMinError.append("fold "+countFolde+StringUtils.repeat(" ", 3-String.valueOf(countFolde).length()));
+		infoOfMinError.append("fold"+countFolde+StringUtils.repeat(" ", 3-String.valueOf(countFolde).length()));
 		infoOfMinError.append("#Error:"+minError+StringUtils.repeat(" ", 20-String.valueOf(minError).length()));
 		infoOfMinError.append("#Current learning rate:"+learningRate+StringUtils.repeat(" ", 20-String.valueOf(learningRate).length()));
 		infoOfMinError.append("#Repeated times got MinError:"+(countOfEpochWithMinError+1)+StringUtils.repeat(" ", 10-String.valueOf((countOfEpochWithMinError+1)).length()));
@@ -285,8 +286,8 @@ public class Training implements Runnable{
 		}
 		return true;
 	}
-	
-	
+
+
 	private static boolean isGoingUp(Map<Integer, Double> errorMap,int parametersNum){
 		double[] errors=new double[errorMap.values().size()];
 		int errorI=0;

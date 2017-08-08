@@ -39,7 +39,7 @@ public class App
     	log.info("Read link info # total : " + linksMap.size());
     	
     	
-    	CalculateFeatures.calculateFeaturesOfLinks(linksMap);
+    	CalculateFeatures.calculateFeaturesOfLinks2(linksMap);
     	log.info("Calculated weight of link # total : " + linksMap.size());
     	
     	

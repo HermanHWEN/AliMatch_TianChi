@@ -15,10 +15,20 @@ public class Constant {
 	public final static String PATH_OF_MODEL="C://Match//{1}//Model_{0}_{1}.txt";
 	public final static int ACURACY_OF_TRAVEL_TIME_OUTPUT=14;//accuracy of travel time for output
 	
-	public final static int MAXORDER=2;
-	public final static int FOLDTIME=10;//fold time of cross validation
+	//update weight of each line
+	public final static int ITERATIONS_OF_UPDATE_LINE_WEIGHT=20000;
+	
+	//size of source data and training data
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
 	public final static int SIZE_OF_TRAINING_DATA=5000;//how many data for training
+	
+	
+	//cross validation
+	public final static int MAXORDER=2;
+	public final static int FOLDTIME=10;//fold time of cross validation
+	
+	
+	//learning rate
 	public final static double LEARNING_RATE=2;//initial learning rate for gradient descend
 	public final static boolean DECAY_LEARNING_RATE=true;
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this

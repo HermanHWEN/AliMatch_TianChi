@@ -31,17 +31,17 @@ public class ReadAsLink {
 		for(int index=1;index<linkInOutInfos.size();++index){
 			String linkInOutInfo=linkInOutInfos.get(index);
 			String[] linkFields=linkInOutInfo.split(";");
-			if(linkFields.length!=3) continue;
 			Link link=linksMap.get(linkFields[0]);
 			
+			
 			//set in_links
-			if(!"".equals(linkFields[1]) && linkFields[1]!=null){
+			if(linkFields.length>=2 && !"".equals(linkFields[1]) && linkFields[1]!=null){
 				String[] inLinks=linkFields[1].split("#");
 				link.setIn_links(Arrays.asList(inLinks));
 			}
 			
 			//set out_links
-			if(!"".equals(linkFields[2]) && linkFields[2]!=null){
+			if(linkFields.length>=3 && !"".equals(linkFields[2]) && linkFields[2]!=null){
 				String[] outLinks=linkFields[2].split("#");
 				link.setOut_links(Arrays.asList(outLinks));
 			}

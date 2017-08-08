@@ -192,7 +192,7 @@ public class Training implements Runnable{
 		}
 		
 		String traceOfLastW=Arrays.toString(initW.getMatrix().data);
-		SimpleMatrix W =initW;
+		SimpleMatrix minW =new SimpleMatrix(res.size()-1,1);
 
 		countFolde++;
 		
@@ -218,7 +218,7 @@ public class Training implements Runnable{
 					}
 				}
 			}
-			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, W, X, Y);
+			SimpleMatrix Wn=ErrorFun.updateWeight(learningRate, initW, X, Y);
 			double errorN=0;
 			if(Xv!=null && Yv!=null){
 				errorN=ErrorFun.targetError(Wn, Xv, Yv);
@@ -226,11 +226,11 @@ public class Training implements Runnable{
 				errorN=ErrorFun.targetError(Wn, X, Y);
 			}
 			
-			
+			initW=Wn;
 			//initial min error
 			countOfEpochFromLastMinError++;
 			if(countOfEpoch==0)	{
-				W=Wn;
+				minW=Wn;
 				minError=errorN;
 				countOfEpochWithMinError=countOfEpoch;
 				continue;
@@ -243,7 +243,7 @@ public class Training implements Runnable{
 					minError=errorN;
 					countOfEpochWithMinError=countOfEpoch;
 					countOfEpochFromLastMinError=0;
-					W=Wn;
+					minW=Wn;
 				}
 			}else{//if reach the max count of epoch,check the learning rate lower bound
 				//if reach it , then end this training 
@@ -258,7 +258,7 @@ public class Training implements Runnable{
 			}
 		}
 		
-		String traceOfThisW=Arrays.toString(W.getMatrix().data);
+		String traceOfThisW=Arrays.toString(minW.getMatrix().data);
 		StringBuffer infoOfMinError=new StringBuffer("Model with"+StringUtils.repeat(" ", 3-String.valueOf((res.size()-1)).length())+(res.size()-1)+" params in ");
 		infoOfMinError.append("fold "+countFolde+StringUtils.repeat(" ", 3-String.valueOf(countFolde).length()));
 		infoOfMinError.append("#Error:"+minError+StringUtils.repeat(" ", 20-String.valueOf(minError).length()));
@@ -272,7 +272,7 @@ public class Training implements Runnable{
 		Y=null;
 		X=null;
 		System.gc();
-		return W;
+		return minW;
 
 	}
 

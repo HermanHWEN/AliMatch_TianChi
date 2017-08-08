@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -168,7 +168,6 @@ public class Training implements Runnable{
 		
 		int dataSize=res.get(0).length;
 		int maxRadomNum=dataSize-1;
-        Random random = new Random();
 
 		if(Constant.USE_STOCHASTIC_GRADIENT_DESCEND){
 			Y=new SimpleMatrix(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH,1);
@@ -208,7 +207,7 @@ public class Training implements Runnable{
 				for(int rowOffset=0;rowOffset<(Constant.SIZE_OF_ONE_BATCH<=0?1:Constant.SIZE_OF_ONE_BATCH);rowOffset++){
 					int r;
 					if(dataSize>1){
-						r = random.nextInt(maxRadomNum);
+						r = ThreadLocalRandom.current().nextInt(maxRadomNum);
 					}else{
 						r=0;
 					}

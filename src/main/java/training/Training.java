@@ -82,13 +82,15 @@ public class Training implements Runnable{
 
 		SimpleMatrix initW= new SimpleMatrix(trainingSetWithFold.get(0).size()-1,1);
 		initW.set(0.1);
+		//intial weight
 		if(Constant.USE_PSEUDO_INI_WEIGHT)
-			initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
+			initW=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
 		SimpleMatrix W = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
+			
 			//validation set
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
 			Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));

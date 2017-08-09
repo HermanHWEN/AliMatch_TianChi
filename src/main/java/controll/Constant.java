@@ -26,6 +26,8 @@ public class Constant {
 	//cross validation
 	public final static int MAXORDER=3;
 	public final static int FOLDTIME=10;//fold time of cross validation
+	public final static int NUM_OF_PARAMS_OF_START=22;
+	public final static int NUM_OF_PARAMS_OF_END=32;
 	
 	
 	//learning rate
@@ -39,7 +41,7 @@ public class Constant {
 	
 	
 	//gradient descend
-	public final static boolean USE_PSEUDO_INI_WEIGHT=true;
+	public final static boolean USE_PSEUDO_INI_WEIGHT=false;
 	public final static int MAX_REPEATE_TIMES=1000000;//for gradient descend
 	public final static boolean USE_GRADIENT_DESCEND=true;//false, will use pseudo inverse
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//true, will use small batch stochastic gradient descend;false will use whole data set

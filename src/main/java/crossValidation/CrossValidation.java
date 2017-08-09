@@ -13,14 +13,15 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
+import model.DataInLink;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.ejml.simple.SimpleMatrix;
 
-import controll.Constant;
-import model.DataInLink;
 import outputData.WriteData;
 import training.Training;
+import controll.Constant;
 
 public class CrossValidation {
 	private static Logger log = Logger.getLogger(CrossValidation.class); 
@@ -39,7 +40,9 @@ public class CrossValidation {
 		//from low dimension to high
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		log.info("Start training");
-		for(int parametersNum=0;parametersNum<fullDataSetWithDimension.size()-1;parametersNum++){
+		int startNumOfParams=Constant.NUM_OF_PARAMS_OF_START==-1?0:Constant.NUM_OF_PARAMS_OF_START-1;
+		int endNumOfParams=Constant.NUM_OF_PARAMS_OF_END==-1?(fullDataSetWithDimension.size()-1):Constant.NUM_OF_PARAMS_OF_END;
+		for(int parametersNum=startNumOfParams;parametersNum<endNumOfParams;parametersNum++){
 			List<double[]> fullDataSet=new ArrayList<>();
 			for(int index=0;index<=parametersNum;index++){
 				fullDataSet.add(fullDataSetWithDimension.get(index));

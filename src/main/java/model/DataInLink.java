@@ -48,7 +48,8 @@ public class DataInLink implements Cloneable{
 		reswithOrder*=Math.pow(this.link.getLength(), order.getLengthO());
 		reswithOrder*=Math.pow(this.link.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
 		reswithOrder*=Math.pow(this.link.getLinkClass(), order.getLinkClassO());
-		reswithOrder*=Math.pow(this.link.getWeight(), order.getWeightO());
+		reswithOrder*=Math.pow(this.link.getWeightFromInLink(), order.getWeightFromInLinkO());
+		reswithOrder*=Math.pow(this.link.getWeightFromOutLink(), order.getWeightFromOutLinkO());
 		reswithOrder*=Math.pow(this.date.getDate(), order.getDateO());
 		reswithOrder*=Math.pow(this.startTime.getHours()*30+this.startTime.getMinutes()/2, order.getStartTimeO());
 		return reswithOrder;
@@ -62,8 +63,10 @@ public class DataInLink implements Cloneable{
 			reswithOrder*=Math.pow((this.link.getReciprocalOfWidth()-average.getReciprocalOfWidth())/standardDeviation.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
 		if(standardDeviation.getLinkClass()!=0)
 			reswithOrder*=Math.pow((this.link.getLinkClass()-average.getLinkClass())/standardDeviation.getLinkClass(), order.getLinkClassO());
-		if(standardDeviation.getWeight()!=0)
-			reswithOrder*=Math.pow((this.link.getWeight()-average.getWeight())/standardDeviation.getWeight(), order.getWeightO());
+		if(standardDeviation.getWeightFromInLink()!=0)
+			reswithOrder*=Math.pow((this.link.getWeightFromInLink()-average.getWeightFromInLink())/standardDeviation.getWeightFromInLink(), order.getWeightFromInLinkO());
+		if(standardDeviation.getWeightFromOutLink()!=0)
+			reswithOrder*=Math.pow((this.link.getWeightFromOutLink()-average.getWeightFromOutLink())/standardDeviation.getWeightFromOutLink(), order.getWeightFromOutLinkO());
 		if(standardDeviation.getDate()!=0)
 			reswithOrder*=Math.pow((this.date.getDate()-average.getDate())/standardDeviation.getDate(), order.getDateO());
 		if(standardDeviation.getStartTime()!=0)
@@ -79,8 +82,10 @@ public class DataInLink implements Cloneable{
 			reswithOrder*=Math.pow((this.link.getReciprocalOfWidth()-min.getReciprocalOfWidth())/(max.getReciprocalOfWidth()-min.getReciprocalOfWidth()), order.getReciprocalOfWidthO());
 		if(standardDeviation.getLinkClass()!=0)
 			reswithOrder*=Math.pow((this.link.getLinkClass()-min.getLinkClass())/(max.getLinkClass()-min.getLinkClass()), order.getLinkClassO());
-		if(standardDeviation.getWeight()!=0)
-			reswithOrder*=Math.pow((this.link.getWeight()-min.getWeight())/(max.getWeight()-min.getWeight()), order.getWeightO());
+		if(standardDeviation.getWeightFromInLink()!=0)
+			reswithOrder*=Math.pow((this.link.getWeightFromInLink()-min.getWeightFromInLink())/(max.getWeightFromInLink()-min.getWeightFromInLink()), order.getWeightFromInLinkO());
+		if(standardDeviation.getWeightFromOutLink()!=0)
+			reswithOrder*=Math.pow((this.link.getWeightFromOutLink()-min.getWeightFromOutLink())/(max.getWeightFromOutLink()-min.getWeightFromOutLink()), order.getWeightFromOutLinkO());
 		if(standardDeviation.getDate()!=0)
 			reswithOrder*=Math.pow((this.date.getDate()-min.getDate())/(max.getDate()-min.getDate()), order.getDateO());
 		if(standardDeviation.getStartTime()!=0)

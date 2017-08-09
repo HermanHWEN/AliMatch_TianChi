@@ -7,16 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.Link;
+
 import org.apache.log4j.Logger;
 
 import controll.Constant;
-import model.Link;
 
 public class CalculateFeatures {
 	private static Logger log = Logger.getLogger(CalculateFeatures.class);
 	
 	//using pagerank to as weight of each link
-	//consider its outlinks as source pages of a page
+	//consider its outlinks as source pages of a page to update WeightFromOutLink
+	//consider its inlinks as source pages of a page to update WeightFromInLink
 	public static void calculateFeaturesOfLinks2(final Map<String,Link> links){
 
 		List<Link> linksList= new ArrayList<Link>(links.values());
@@ -24,13 +26,22 @@ public class CalculateFeatures {
 
 		for(int count=0;count<Constant.ITERATIONS_OF_UPDATE_LINE_WEIGHT;count++){
 			for (Link link : linksList) {
-				double sum=0;
-				if(link.getOut_links()==null) continue;
-				for(String outLinkId:link.getOut_links()){
-					Link outLink=links.get(outLinkId);
-					sum+=outLink.getWeight()/outLink.getIn_links().size();
+				double sumForInLink=0;
+				double sumForOutLink=0;
+				if(link.getOut_links()!=null){
+					for(String outLinkId:link.getOut_links()){
+						Link outLink=links.get(outLinkId);
+						sumForOutLink+=outLink.getWeightFromOutLink()/outLink.getIn_links().size();
+					}
 				}
-				link.setWeight(0.15+0.85*sum);
+				if(link.getIn_links()!=null){
+					for(String inLinkId:link.getIn_links()){
+						Link inLink=links.get(inLinkId);
+						sumForInLink+=inLink.getWeightFromInLink()/inLink.getOut_links().size();
+					}
+				}
+				link.setWeightFromInLink(0.15+0.85*sumForInLink);
+				link.setWeightFromOutLink(0.15+0.85*sumForOutLink);
 			}
 		}
 	}
@@ -56,7 +67,8 @@ public class CalculateFeatures {
 
 	private static void initWeight(final List<Link> linksList){
 		for (Link link : linksList) {
-			link.setWeight(1);
+			link.setWeightFromOutLink(1);
+			link.setWeightFromInLink(1);
 		}
 	}
 	private static BigDecimal updateWeight(final List<Link> linksList,final Map<String,Link> links,Map<String,Integer> numOfTriangleMap){
@@ -72,9 +84,9 @@ public class CalculateFeatures {
 			double u=(getDegreeOfLeftNode-getNumOfTriangle)*(getDegreeOfRightNode-getNumOfTriangle);
 			double lamda=getNumOfTriangle/2+1;
 
-			link.setWeight(u/lamda);
-			if(link.getWeight()<minWeight){
-				minWeight=link.getWeight();
+			link.setWeightFromOutLink(u/lamda);
+			if(link.getWeightFromOutLink()<minWeight){
+				minWeight=link.getWeightFromOutLink();
 			}
 
 		}
@@ -83,7 +95,7 @@ public class CalculateFeatures {
 		for (Link link : linksList) {
 			//			link.setWeight(link.getWeight()-minWeight);
 			//			log.info(link.getWeight());
-			totalWeight=totalWeight.add(BigDecimal.valueOf(link.getWeight()));
+			totalWeight=totalWeight.add(BigDecimal.valueOf(link.getWeightFromOutLink()));
 		}
 
 		return totalWeight;

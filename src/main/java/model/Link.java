@@ -15,7 +15,8 @@ public class Link {
 	private double width;
 	private int linkClass;
 	
-	private double weight;
+	private double weightFromOutLink;
+	private double weightFromInLink;
 	
 	private List<String> in_links;
 	private List<String> out_links;
@@ -40,12 +41,20 @@ public class Link {
 	public void setLinkClass(int link_class) {
 		this.linkClass = link_class;
 	}
-	public double getWeight() {
-		return weight;
+	public double getWeightFromOutLink() {
+		return weightFromOutLink;
 	}
-	public void setWeight(double weight) {
-		this.weight = weight;
+	public void setWeightFromOutLink(double weightFromOutLink) {
+		this.weightFromOutLink = weightFromOutLink;
 	}
+	
+	public double getWeightFromInLink() {
+		return weightFromInLink;
+	}
+	public void setWeightFromInLink(double weightFromInLink) {
+		this.weightFromInLink = weightFromInLink;
+	}
+	
 	public List<String> getIn_links() {
 		return in_links;
 	}

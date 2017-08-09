@@ -4,7 +4,8 @@ public class FlatData {
 	private double length;
 	private double reciprocalOfWidth;
 	private double linkClass;
-	private double weight;
+	private double weightFromOutLink;
+	private double weightFromInLink;
 	private double date;
 	private double startTime;
 	private double holidayDays;
@@ -29,11 +30,18 @@ public class FlatData {
 	public void setLinkClass(double classLevel) {
 		this.linkClass = classLevel;
 	}
-	public double getWeight() {
-		return weight;
+	public double getWeightFromOutLink() {
+		return weightFromOutLink;
 	}
-	public void setWeight(double weight) {
-		this.weight = weight;
+	public void setWeightFromOutLink(double weightFromOutLink) {
+		this.weightFromOutLink = weightFromOutLink;
+	}
+	
+	public double getWeightFromInLink() {
+		return weightFromInLink;
+	}
+	public void setWeightFromInLink(double weightFromInLink) {
+		this.weightFromInLink = weightFromInLink;
 	}
 	public double getDate() {
 		return date;
@@ -63,7 +71,8 @@ public class FlatData {
 		if(length!=0) notZero++;
 		if(reciprocalOfWidth!=0) notZero++;
 		if(linkClass!=0) notZero++;
-		if(weight!=0) notZero++;
+		if(weightFromInLink!=0) notZero++;
+		if(weightFromOutLink!=0) notZero++;
 		if(date!=0) notZero++;
 		if(startTime!=0) notZero++;
 		if(holidayDays!=0) notZero++;

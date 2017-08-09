@@ -84,7 +84,7 @@ public class Training implements Runnable{
 		initW.set(0.1);
 		//intial weight
 		if(Constant.USE_PSEUDO_INI_WEIGHT)
-			initW=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+			initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
 		SimpleMatrix W = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);

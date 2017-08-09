@@ -81,7 +81,13 @@ public class Training implements Runnable{
 		//get full dimension data
 
 		SimpleMatrix initW= new SimpleMatrix(trainingSetWithFold.get(0).size()-1,1);
-		initW.set(0.1);
+		for(int i=0;i<initW.getNumElements();i++){
+			double intWeight=ThreadLocalRandom.current().nextDouble();
+			while(intWeight==0){
+				intWeight=ThreadLocalRandom.current().nextDouble();
+			}
+			initW.set(i,intWeight);
+		}
 		//intial weight
 		if(Constant.USE_PSEUDO_INI_WEIGHT)
 			initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
@@ -90,7 +96,7 @@ public class Training implements Runnable{
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
 
-			
+
 			//validation set
 			SimpleMatrix Yv=new SimpleMatrix(validationSet.get(0).length,1);
 			Yv.setColumn(0, 0, validationSet.get(validationSet.size()-1));

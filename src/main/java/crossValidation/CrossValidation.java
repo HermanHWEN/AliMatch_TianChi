@@ -65,7 +65,7 @@ public class CrossValidation {
 		double minError=Double.MAX_VALUE;
 		for(int parametersNum=0;parametersNum<OrdersOfVars.getParametersNum(Constant.MAXORDER,dataInLinks.get(0).getStandardDeviation());parametersNum++){
 			if(errorMap.get(parametersNum)!=null){
-				if(BigDecimal.valueOf(errorMap.get(parametersNum)).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()){
+				if(BigDecimal.valueOf(errorMap.get(parametersNum)).setScale(Constant.ACURACY_OF_ERROR_FORWARD, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR_FORWARD, BigDecimal.ROUND_HALF_UP).doubleValue()){
 					minParametersNum=parametersNum;
 					minError=errorMap.get(parametersNum);
 				}

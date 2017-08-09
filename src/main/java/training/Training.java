@@ -21,7 +21,6 @@ import crossValidation.ErrorFun;
  */
 public class Training implements Runnable{
 	private static Logger log = Logger.getLogger(Training.class);  
-	private final Object mListMutex = new Object();
 
 	private int countFolde;
 	private int parametersNum;
@@ -240,11 +239,13 @@ public class Training implements Runnable{
 			//check if reach the max count of epoch
 			//if not when error is less than last min error, then update min error.Else just go to next epoch
 			if(countOfEpochFromLastMinError<Constant.MAX_NUM_OF_EPOCH){
-				if(BigDecimal.valueOf(errorN).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR, BigDecimal.ROUND_HALF_UP).doubleValue()){
-					minError=errorN;
-					countOfEpochWithMinError=countOfEpoch;
+				if(BigDecimal.valueOf(errorN).setScale(Constant.ACURACY_OF_ERROR_FORWARD, BigDecimal.ROUND_HALF_UP).doubleValue()<=BigDecimal.valueOf(minError).setScale(Constant.ACURACY_OF_ERROR_FORWARD, BigDecimal.ROUND_HALF_UP).doubleValue()){
+					if(errorN<minError){
+						minError=errorN;
+						countOfEpochWithMinError=countOfEpoch;
+						minW=Wn;
+					}
 					countOfEpochFromLastMinError=0;
-					minW=Wn;
 				}
 			}else{//if reach the max count of epoch,check the learning rate lower bound
 				//if reach it , then end this training 

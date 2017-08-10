@@ -10,7 +10,7 @@ public class Constant {
 	public final static String PATH_OF_TMP="C://TMP";
 	public final static String PATH_OF_LINK_TOP="C://Match//gy_contest_link_top(20170715更新).txt";
 //	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data - small.txt";
-	public final static String PATH_OF_TRAINING_DATA="C://Match//gy_contest_link_traveltime_training_data.txt";
+	public final static String PATH_OF_TRAINING_DATA="C://Match//[新-训练集]gy_contest_traveltime_training_data_second.txt";
 	public final static String PATH_OF_RESULT="C://Match//{1}//HermanWen_{0}_{1}.txt";
 	public final static String PATH_OF_MODEL="C://Match//{1}//Model_{0}_{1}.txt";
 	public final static int ACURACY_OF_TRAVEL_TIME_OUTPUT=14;//accuracy of travel time for output
@@ -20,14 +20,14 @@ public class Constant {
 	
 	//size of source data and training data
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
-	public final static int SIZE_OF_TRAINING_DATA=-1;//how many data for training
+	public final static int SIZE_OF_TRAINING_DATA=20000;//how many data for training
 	
 	
 	//cross validation
 	public final static int MAXORDER=3;
 	public final static int FOLDTIME=10;//fold time of cross validation
-	public final static int NUM_OF_PARAMS_OF_START=22;
-	public final static int NUM_OF_PARAMS_OF_END=32;
+	public final static int NUM_OF_PARAMS_OF_START=10;
+	public final static int NUM_OF_PARAMS_OF_END=35;
 	
 	
 	//learning rate
@@ -45,7 +45,7 @@ public class Constant {
 	public final static int MAX_REPEATE_TIMES=1000000;//for gradient descend
 	public final static boolean USE_GRADIENT_DESCEND=true;//false, will use pseudo inverse
 	public final static boolean USE_STOCHASTIC_GRADIENT_DESCEND=true;//true, will use small batch stochastic gradient descend;false will use whole data set
-	public final static int SIZE_OF_ONE_BATCH=200;//when USE_STOCHASTIC_GRADIENT_DESCEND is true, using it as batch size
+	public final static int SIZE_OF_ONE_BATCH=10;//when USE_STOCHASTIC_GRADIENT_DESCEND is true, using it as batch size
 	
 	//normalization
 	public final static boolean USE_MIN_MAX_NORMALIZATION=false;

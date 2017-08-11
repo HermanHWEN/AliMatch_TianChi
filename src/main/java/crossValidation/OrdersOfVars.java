@@ -25,12 +25,14 @@ public class OrdersOfVars {
 		int parametersNum=0;
 		for(int order=0;order<=maxOrder;order++){
 			
-			int startTravelTimeO=order;
-			int endTravelTimeO=0;
-			if(standardDeviation.getLength()==0 && standardDeviation.getReciprocalOfWidth()==0 && standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 
-					&& standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
-					&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
-				endTravelTimeO=startTravelTimeO;
+			int startTravelTimeO;
+			int endTravelTimeO;
+			if(order==1){
+				startTravelTimeO=1;
+			}else{
+				startTravelTimeO=0;
+			}
+			endTravelTimeO=startTravelTimeO;
 			
 			for(int lastTravelTimeO=startTravelTimeO;lastTravelTimeO>=endTravelTimeO;lastTravelTimeO--){
 				

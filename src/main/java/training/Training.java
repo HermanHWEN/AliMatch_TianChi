@@ -96,6 +96,8 @@ public class Training implements Runnable{
 		if(Constant.USE_PSEUDO_INI_WEIGHT)
 			initW=genTargetFunWeidthPseudoI(validationSetWithFold.get(0));
 		SimpleMatrix W = null;
+		double minError=Double.MAX_VALUE;
+		SimpleMatrix minW = null;
 		for(int fold=0;fold< trainingSetWithFold.size();fold++){
 			List<double[]> trainingSet=trainingSetWithFold.get(fold);
 			List<double[]> validationSet=validationSetWithFold.get(fold);
@@ -118,6 +120,9 @@ public class Training implements Runnable{
 			initW=W;
 
 			double e=ErrorFun.targetError(W, Xv, Yv);
+			if(e<minError){
+				minW=W;
+			}
 			error+=e;
 			trainingSet.clear();
 			validationSet.clear();
@@ -134,7 +139,7 @@ public class Training implements Runnable{
 		error=error/foldTime;
 		log.info("Training with "+StringUtils.repeat(" ", 3-String.valueOf((parametersNum+1)).length())+(parametersNum+1)+" parameters completed! Error: " +error);
 		errorMap.put(parametersNum,error);
-		weightMap.put(parametersNum, W);
+		weightMap.put(parametersNum, minW);
 
 
 		trainingSetWithFold=null;

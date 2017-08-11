@@ -27,11 +27,11 @@ public class Constant {
 	public final static int MAXORDER=3;
 	public final static int FOLDTIME=10;//fold time of cross validation
 	public final static int NUM_OF_PARAMS_OF_START=10;
-	public final static int NUM_OF_PARAMS_OF_END=35;
+	public final static int NUM_OF_PARAMS_OF_END=40;
 	
 	
 	//learning rate
-	public final static double LEARNING_RATE=2;//initial learning rate for gradient descend
+	public final static double LEARNING_RATE=60;//initial learning rate for gradient descend
 	public final static boolean DECAY_LEARNING_RATE=true;
 	public final static double LEARNING_RATE_DIVISOR=2;//if the error is going up,learning rate will divided by this
 	public final static double LEARNING_RATE_LBOUND_DIVISOR=Math.pow(2, 13);//if the current learning rate<(initial/this), will stop

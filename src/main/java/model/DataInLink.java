@@ -56,6 +56,15 @@ public class DataInLink implements Cloneable{
 		if(lastDataInLink!=null){
 			double lastTravelTime=lastDataInLink.getTravle_time();
 			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}else{
+			calendar.add(Calendar.MINUTE, -2);
+			lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+					+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+					+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+			if(lastDataInLink!=null){
+				double lastTravelTime=lastDataInLink.getTravle_time();
+				reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+			}
 		}
 		reswithOrder*=Math.pow(this.link.getLength(), order.getLengthO());
 		reswithOrder*=Math.pow(this.link.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
@@ -78,6 +87,15 @@ public class DataInLink implements Cloneable{
 		if(lastDataInLink!=null){
 			double lastTravelTime=lastDataInLink.getTravle_time();
 			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}else{
+			calendar.add(Calendar.MINUTE, -2);
+			lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+					+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+					+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+			if(lastDataInLink!=null){
+				double lastTravelTime=lastDataInLink.getTravle_time();
+				reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+			}
 		}
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO());
@@ -107,6 +125,15 @@ public class DataInLink implements Cloneable{
 		if(lastDataInLink!=null){
 			double lastTravelTime=lastDataInLink.getTravle_time();
 			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}else{
+			calendar.add(Calendar.MINUTE, -2);
+			lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+					+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+					+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+			if(lastDataInLink!=null){
+				double lastTravelTime=lastDataInLink.getTravle_time();
+				reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+			}
 		}
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-min.getLength())/(max.getLength()-min.getLength()), order.getLengthO());

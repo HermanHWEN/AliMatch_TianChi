@@ -20,7 +20,7 @@ public class Constant {
 	
 	//size of source data and training data
 	public final static int LINES_NEED_TO_READ=-1;//how many lines of txt file need to be read in.
-	public final static int SIZE_OF_TRAINING_DATA=20000;//how many data for training
+	public final static int SIZE_OF_TRAINING_DATA=50000;//how many data for training
 	
 	
 	//cross validation

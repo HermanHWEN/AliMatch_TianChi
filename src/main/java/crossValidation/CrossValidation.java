@@ -41,7 +41,7 @@ public class CrossValidation {
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		log.info("Start training");
 		int startNumOfParams=Constant.NUM_OF_PARAMS_OF_START==-1?0:Constant.NUM_OF_PARAMS_OF_START-1;
-		int endNumOfParams=Constant.NUM_OF_PARAMS_OF_END==-1?(fullDataSetWithDimension.size()-1):Constant.NUM_OF_PARAMS_OF_END;
+		int endNumOfParams=(Constant.NUM_OF_PARAMS_OF_END==-1 || (fullDataSetWithDimension.size()-1)<Constant.NUM_OF_PARAMS_OF_END)?(fullDataSetWithDimension.size()-1):Constant.NUM_OF_PARAMS_OF_END;
 		for(int parametersNum=startNumOfParams;parametersNum<endNumOfParams;parametersNum++){
 			List<double[]> fullDataSet=new ArrayList<>();
 			for(int index=0;index<=parametersNum;index++){

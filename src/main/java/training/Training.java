@@ -117,15 +117,15 @@ public class Training implements Runnable{
 			error+=e;
 			trainingSet.clear();
 			validationSet.clear();
-			W=null;Yv=null;Xv=null;
+			Yv=null;Xv=null;
 			System.gc();
 		}
-
-		if(Constant.USE_GRADIENT_DESCEND){
-			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,initW,null,null);
-		}else{
-			W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
-		}
+//
+//		if(Constant.USE_GRADIENT_DESCEND){
+//			W=genTargetFunWeidthGradientDescend(fullDataSetWithDimension,initW,null,null);
+//		}else{
+//			W=genTargetFunWeidthPseudoI(fullDataSetWithDimension);
+//		}
 
 		error=error/foldTime;
 		log.info("Training with "+StringUtils.repeat(" ", 3-String.valueOf((parametersNum+1)).length())+(parametersNum+1)+" parameters completed! Error: " +error);

@@ -7,6 +7,7 @@ import model.FlatData;
 
 public class OrdersOfVars {
 
+	private int lastTravelTimeO;
 	private int lengthO;
 	private int reciprocalOfWidthO;
 	private int linkClassO;
@@ -23,112 +24,128 @@ public class OrdersOfVars {
 		List<OrdersOfVars> ordersOfVarsList = new ArrayList<>();
 		int parametersNum=0;
 		for(int order=0;order<=maxOrder;order++){
-
-			int startLengthO=order;
-			int endLengthO=0;
-			if(standardDeviation.getLength()==0) 
-				startLengthO=0;
-
-			for(int lengthO=startLengthO;lengthO>=endLengthO;lengthO--){
-
-				int startWidthO=order-lengthO;
-				int endWidthO=0;
-				if(standardDeviation.getReciprocalOfWidth()==0)
-					startWidthO=0;
-				if(standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 && standardDeviation.getWeightFromInLink()==0
+			
+			int startTravelTimeO=order;
+			int endTravelTimeO=0;
+			if(standardDeviation.getLength()==0 && standardDeviation.getReciprocalOfWidth()==0 && standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 
+					&& standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
+					&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+				endTravelTimeO=startTravelTimeO;
+			
+			for(int lastTravelTimeO=startTravelTimeO;lastTravelTimeO>=endTravelTimeO;lastTravelTimeO--){
+				
+				int startLengthO=order-lastTravelTimeO;
+				int endLengthO=0;
+				if(standardDeviation.getLength()==0) 
+					startLengthO=0;
+				if(standardDeviation.getReciprocalOfWidth()==0 && standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 && standardDeviation.getWeightFromInLink()==0
 						&& standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
 						&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
-					endWidthO=startWidthO;
-
-				for(int reciprocalOfWidthO=startWidthO;reciprocalOfWidthO>=endWidthO;reciprocalOfWidthO--){
-
-					int startLinkClassO=order-lengthO-reciprocalOfWidthO;
-					int endLinkClassO=0;
-					if(standardDeviation.getLinkClass()==0)
-						startLinkClassO=0;
-					if(standardDeviation.getStartTime()==0 && standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 
-							&& standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
-						endLinkClassO=startLinkClassO;
-
-					for(int linkClassO=startLinkClassO;linkClassO>=endLinkClassO;linkClassO--){
-
-						int startStartTimeO=order-lengthO-reciprocalOfWidthO-linkClassO;
-						int endStartTimeO=0;
-						if(standardDeviation.getStartTime()==0) 
-							startStartTimeO=0;
-						if(standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
-								&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
-							endStartTimeO=startStartTimeO;
-
-						for(int startTimeO=startStartTimeO;startTimeO>=endStartTimeO;startTimeO--){
-
-							int startWeightFromInLinkO=order-lengthO-reciprocalOfWidthO-linkClassO-startTimeO;
-							int endWeightFromInLinkO=0;
-							if(standardDeviation.getWeightFromInLink()==0)
-								startWeightFromInLinkO=0;
-							if(standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
-								endWeightFromInLinkO=startWeightFromInLinkO;
-
-
-							for(int weightFromInLinkO=startWeightFromInLinkO;weightFromInLinkO>=endWeightFromInLinkO;weightFromInLinkO--){
-								int startWeightFromOutLinkO=order-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO;
-								int endWeightFromOutLinkO=0;
-								if(standardDeviation.getWeightFromOutLink()==0)
+					endLengthO=startLengthO;
+				
+				for(int lengthO=startLengthO;lengthO>=endLengthO;lengthO--){
+					
+					int startWidthO=order-lastTravelTimeO-lengthO;
+					int endWidthO=0;
+					if(standardDeviation.getReciprocalOfWidth()==0)
+						startWidthO=0;
+					if(standardDeviation.getLinkClass()==0 && standardDeviation.getStartTime()==0 && standardDeviation.getWeightFromInLink()==0
+							&& standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
+							&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+						endWidthO=startWidthO;
+					
+					for(int reciprocalOfWidthO=startWidthO;reciprocalOfWidthO>=endWidthO;reciprocalOfWidthO--){
+						
+						int startLinkClassO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO;
+						int endLinkClassO=0;
+						if(standardDeviation.getLinkClass()==0)
+							startLinkClassO=0;
+						if(standardDeviation.getStartTime()==0 && standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 
+								&& standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+							endLinkClassO=startLinkClassO;
+						
+						for(int linkClassO=startLinkClassO;linkClassO>=endLinkClassO;linkClassO--){
+							
+							int startStartTimeO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO;
+							int endStartTimeO=0;
+							if(standardDeviation.getStartTime()==0) 
+								startStartTimeO=0;
+							if(standardDeviation.getWeightFromInLink()==0 && standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 
+									&& standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+								endStartTimeO=startStartTimeO;
+							
+							for(int startTimeO=startStartTimeO;startTimeO>=endStartTimeO;startTimeO--){
+								
+								int startWeightFromInLinkO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO-startTimeO;
+								int endWeightFromInLinkO=0;
+								if(standardDeviation.getWeightFromInLink()==0)
 									startWeightFromInLinkO=0;
-								if(standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+								if(standardDeviation.getWeightFromOutLink()==0 && standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
 									endWeightFromInLinkO=startWeightFromInLinkO;
-
-								for(int weightFromOutLinkO=startWeightFromOutLinkO;weightFromOutLinkO>=endWeightFromOutLinkO;weightFromOutLinkO--){
-
-									int startHolidayDaysO=order-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO;
-									int endHolidayDaysO=0;
-									if(standardDeviation.getHolidayDays()==0) 
-										startHolidayDaysO=0;
-									if(standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0) 
-										endHolidayDaysO=startHolidayDaysO;
-
-									for(int holidayDaysO=startHolidayDaysO;holidayDaysO>=endHolidayDaysO;holidayDaysO--){
-
-										int startDayInWeeksO=order-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO-holidayDaysO;
-										int endDayInWeekO=0;
-										if(standardDeviation.getDayInWeek()==0) 
-											startDayInWeeksO=0;
-										if(standardDeviation.getDate()==0)
-											endDayInWeekO=startDayInWeeksO;
-
-										for(int dayInWeekO=startDayInWeeksO;dayInWeekO>=endDayInWeekO;dayInWeekO--){
-
-											int startDateO=order-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO-holidayDaysO-dayInWeekO;
-											int endDateO=startDateO;
-											if(standardDeviation.getDate()==0) 
-												startDateO=0;
-
-											for(int dateO=startDateO;dateO>=endDateO;dateO--){
-
-												OrdersOfVars ordersOfVars=new OrdersOfVars();
-												ordersOfVars.setLengthO(lengthO);
-												ordersOfVars.setReciprocalOfWidthO(reciprocalOfWidthO);
-												ordersOfVars.setLinkClassO(linkClassO);
-												ordersOfVars.setWeightFromInLinkO(weightFromInLinkO);
-												ordersOfVars.setWeightFromOutLinkO(weightFromOutLinkO);
-												ordersOfVars.setDateO(dateO);
-												ordersOfVars.setStartTimeO(startTimeO);
-												ordersOfVars.setHolidayDaysO(holidayDaysO);
-												ordersOfVars.setDayInWeekO(dayInWeekO);
-												ordersOfVars.setOrderOfPower(order);
-												ordersOfVarsList.add(ordersOfVars);
-												parametersNum++;
-												if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
+								
+								
+								for(int weightFromInLinkO=startWeightFromInLinkO;weightFromInLinkO>=endWeightFromInLinkO;weightFromInLinkO--){
+									int startWeightFromOutLinkO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO;
+									int endWeightFromOutLinkO=0;
+									if(standardDeviation.getWeightFromOutLink()==0)
+										startWeightFromInLinkO=0;
+									if(standardDeviation.getHolidayDays()==0 && standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0)
+										endWeightFromInLinkO=startWeightFromInLinkO;
+									
+									for(int weightFromOutLinkO=startWeightFromOutLinkO;weightFromOutLinkO>=endWeightFromOutLinkO;weightFromOutLinkO--){
+										
+										int startHolidayDaysO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO;
+										int endHolidayDaysO=0;
+										if(standardDeviation.getHolidayDays()==0) 
+											startHolidayDaysO=0;
+										if(standardDeviation.getDayInWeek()==0 && standardDeviation.getDate()==0) 
+											endHolidayDaysO=startHolidayDaysO;
+										
+										for(int holidayDaysO=startHolidayDaysO;holidayDaysO>=endHolidayDaysO;holidayDaysO--){
+											
+											int startDayInWeeksO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO-holidayDaysO;
+											int endDayInWeekO=0;
+											if(standardDeviation.getDayInWeek()==0) 
+												startDayInWeeksO=0;
+											if(standardDeviation.getDate()==0)
+												endDayInWeekO=startDayInWeeksO;
+											
+											for(int dayInWeekO=startDayInWeeksO;dayInWeekO>=endDayInWeekO;dayInWeekO--){
+												
+												int startDateO=order-lastTravelTimeO-lengthO-reciprocalOfWidthO-linkClassO-startTimeO-weightFromInLinkO-weightFromOutLinkO-holidayDaysO-dayInWeekO;
+												int endDateO=startDateO;
+												if(standardDeviation.getDate()==0) 
+													startDateO=0;
+												
+												for(int dateO=startDateO;dateO>=endDateO;dateO--){
+													
+													OrdersOfVars ordersOfVars=new OrdersOfVars();
+													ordersOfVars.setLastTravelTimeO(lastTravelTimeO);
+													ordersOfVars.setLengthO(lengthO);
+													ordersOfVars.setReciprocalOfWidthO(reciprocalOfWidthO);
+													ordersOfVars.setLinkClassO(linkClassO);
+													ordersOfVars.setWeightFromInLinkO(weightFromInLinkO);
+													ordersOfVars.setWeightFromOutLinkO(weightFromOutLinkO);
+													ordersOfVars.setDateO(dateO);
+													ordersOfVars.setStartTimeO(startTimeO);
+													ordersOfVars.setHolidayDaysO(holidayDaysO);
+													ordersOfVars.setDayInWeekO(dayInWeekO);
+													ordersOfVars.setOrderOfPower(order);
+													ordersOfVarsList.add(ordersOfVars);
+													parametersNum++;
+													if(parametersNum>maxParametersNum && maxParametersNum!=-1) return ordersOfVarsList;
+												}
 											}
 										}
 									}
 								}
+								
 							}
-
 						}
 					}
 				}
 			}
+			
 		}
 		return ordersOfVarsList;
 
@@ -152,6 +169,8 @@ public class OrdersOfVars {
 	public String toString() {
 
 		StringBuffer res=new StringBuffer();
+		if(lastTravelTimeO!=0)
+			res.append("lastTravelT^"+lastTravelTimeO+"*");
 		if(lengthO!=0)
 			res.append("len^"+lengthO+"*");
 		if(reciprocalOfWidthO!=0)
@@ -170,7 +189,7 @@ public class OrdersOfVars {
 			res.append("dIW^"+dayInWeekO+"*");
 		if(dateO!=0)
 			res.append("dIM^"+dateO+"*");
-		if(lengthO+reciprocalOfWidthO+linkClassO+startTimeO+weightFromInLinkO+weightFromOutLinkO+holidayDaysO+dayInWeekO+dateO==0){
+		if(lastTravelTimeO+lengthO+reciprocalOfWidthO+linkClassO+startTimeO+weightFromInLinkO+weightFromOutLinkO+holidayDaysO+dayInWeekO+dateO==0){
 			return "1";
 		}
 		return res.substring(0, res.length()-1);
@@ -243,6 +262,14 @@ public class OrdersOfVars {
 
 	public void setOrderOfPower(int orderOfPower) {
 		this.orderOfPower = orderOfPower;
+	}
+
+	public int getLastTravelTimeO() {
+		return lastTravelTimeO;
+	}
+
+	public void setLastTravelTimeO(int lastTravelTimeO) {
+		this.lastTravelTimeO = lastTravelTimeO;
 	}
 
 

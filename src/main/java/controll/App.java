@@ -1,28 +1,32 @@
 package controll;
 
+import importData.ReadAsLink;
+import importData.ReadAsTrainData;
+
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
+import model.DataInLink;
+import model.Link;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import outputData.WriteData;
+import testData.Testing;
 import calculateFeatures.CalculateFeatures;
 import calculateFeatures.Convert2STD;
 import crossValidation.CrossValidation;
-import importData.ReadAsLink;
-import importData.ReadAsTrainData;
-import model.DataInLink;
-import model.Link;
-import outputData.WriteData;
-import testData.Testing;
 
 public class App 
 {
@@ -44,7 +48,8 @@ public class App
     	
     	
     	log.info("Reading training data..." );
-    	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap);
+    	Map<String,DataInLink> dataInLinksMap=Collections.synchronizedMap(new HashMap<String,DataInLink>());
+    	List<DataInLink> dataInLinks=ReadAsTrainData.readAsTrainData(linksMap,dataInLinksMap);
     	log.info("Read training data # total : " + dataInLinks.size());
 
     	if(Constant.SIZE_OF_TRAINING_DATA!=-1 && Constant.SIZE_OF_TRAINING_DATA<dataInLinks.size()){
@@ -64,7 +69,7 @@ public class App
     	
     	
     	log.info("Training model... ");
-    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks);
+    	Function<DataInLink,Double> targetFunction=CrossValidation.getModel(dataInLinks,dataInLinksMap);
     	log.info("Got target function.");
     	
     	System.gc();

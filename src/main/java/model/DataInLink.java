@@ -3,7 +3,9 @@ package model;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import controll.Constant;
 import crossValidation.OrdersOfVars;
@@ -37,14 +39,24 @@ public class DataInLink implements Cloneable{
 				+ ")#" + BigDecimal.valueOf(travle_time).setScale(Constant.ACURACY_OF_TRAVEL_TIME_OUTPUT, BigDecimal.ROUND_HALF_UP);
 	}
 
-	public synchronized double powerWithOrders(OrdersOfVars order){
-		if(Constant.USE_MIN_MAX_NORMALIZATION) return withMinMaxNormalization(order);
-		if(Constant.USE_ZERO_MEAN_NORMALIZATION) return withZeroMeanNormalization(order);
-		return withoutNormalization(order);
+	public synchronized double powerWithOrders(OrdersOfVars order,Map<String,DataInLink> dataInLinksMap){
+		if(Constant.USE_MIN_MAX_NORMALIZATION) return withMinMaxNormalization(order,dataInLinksMap);
+		if(Constant.USE_ZERO_MEAN_NORMALIZATION) return withZeroMeanNormalization(order,dataInLinksMap);
+		return withoutNormalization(order,dataInLinksMap);
 	}
 
-	public synchronized double withoutNormalization(OrdersOfVars order){
+	public synchronized double withoutNormalization(OrdersOfVars order,Map<String,DataInLink> dataInLinksMap){
 		double reswithOrder=1;
+		Calendar calendar=Calendar.getInstance();
+		calendar.setTime(this.startTime);
+		calendar.add(Calendar.MINUTE, -2);
+		DataInLink lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+				+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+				+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+		if(lastDataInLink!=null){
+			double lastTravelTime=lastDataInLink.getTravle_time();
+			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}
 		reswithOrder*=Math.pow(this.link.getLength(), order.getLengthO());
 		reswithOrder*=Math.pow(this.link.getReciprocalOfWidth(), order.getReciprocalOfWidthO());
 		reswithOrder*=Math.pow(this.link.getLinkClass(), order.getLinkClassO());
@@ -55,8 +67,18 @@ public class DataInLink implements Cloneable{
 		return reswithOrder;
 	}
 
-	public synchronized double withZeroMeanNormalization(OrdersOfVars order){
+	public synchronized double withZeroMeanNormalization(OrdersOfVars order,Map<String,DataInLink> dataInLinksMap){
 		double reswithOrder=1;
+		Calendar calendar=Calendar.getInstance();
+		calendar.setTime(this.startTime);
+		calendar.add(Calendar.MINUTE, -2);
+		DataInLink lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+				+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+				+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+		if(lastDataInLink!=null){
+			double lastTravelTime=lastDataInLink.getTravle_time();
+			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-average.getLength())/standardDeviation.getLength(), order.getLengthO());
 		if(standardDeviation.getReciprocalOfWidth()!=0)
@@ -74,8 +96,18 @@ public class DataInLink implements Cloneable{
 		return reswithOrder;
 	}
 
-	public synchronized double withMinMaxNormalization(OrdersOfVars order){
+	public synchronized double withMinMaxNormalization(OrdersOfVars order,Map<String,DataInLink> dataInLinksMap){
 		double reswithOrder=1;
+		Calendar calendar=Calendar.getInstance();
+		calendar.setTime(this.startTime);
+		calendar.add(Calendar.MINUTE, -2);
+		DataInLink lastDataInLink=dataInLinksMap.get(link.getLink_ID()
+				+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+				+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND));
+		if(lastDataInLink!=null){
+			double lastTravelTime=lastDataInLink.getTravle_time();
+			reswithOrder*=Math.pow(lastTravelTime, order.getLastTravelTimeO());
+		}
 		if(standardDeviation.getLength()!=0)
 			reswithOrder*=Math.pow((this.link.getLength()-min.getLength())/(max.getLength()-min.getLength()), order.getLengthO());
 		if(standardDeviation.getReciprocalOfWidth()!=0)

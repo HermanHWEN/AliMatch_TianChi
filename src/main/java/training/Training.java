@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import model.DataInLink;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,15 +32,17 @@ public class Training implements Runnable{
 	private List<List<double[]>> trainingSetWithFold=new ArrayList<List<double[]>>();
 	private List<List<double[]>> validationSetWithFold=new ArrayList<List<double[]>>();
 	private List<double[]> fullDataSetWithDimension;
+	private Map<String,DataInLink> dataInLinksMap;
 
 
 	public Training(int parametersNum,int foldTime, Map<Integer, Double> errorMap, Map<Integer, SimpleMatrix> weightMap,
-			List<double[]> fullDataSetWithDimension) {
+			List<double[]> fullDataSetWithDimension,Map<String,DataInLink> dataInLinksMap) {
 		super();
 		this.parametersNum = parametersNum;
 		this.foldTime = foldTime;
 		this.errorMap = errorMap;
 		this.weightMap = weightMap;
+		this.dataInLinksMap=dataInLinksMap;
 		this.fullDataSetWithDimension=Collections.unmodifiableList(fullDataSetWithDimension);
 	}
 

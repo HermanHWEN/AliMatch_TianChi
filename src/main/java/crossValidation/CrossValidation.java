@@ -29,11 +29,11 @@ public class CrossValidation {
 	static Map<Integer,SimpleMatrix> weightMap=new HashMap<Integer,SimpleMatrix>();
 	public static double minError;
 
-	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks) throws InterruptedException{
+	public static Function<DataInLink,Double> getModel(List<DataInLink> dataInLinks,Map<String,DataInLink> dataInLinksMap) throws InterruptedException{
 
 		//convert data high dimension
 		log.info("converting data high dimension");
-		List<double[]> fullDataSetWithDimension= transferData(Constant.MAXORDER,dataInLinks);
+		List<double[]> fullDataSetWithDimension= transferData(Constant.MAXORDER,dataInLinks,dataInLinksMap);
 		log.info("converted data high dimension");
 
 
@@ -50,9 +50,9 @@ public class CrossValidation {
 			fullDataSet.add(fullDataSetWithDimension.get(fullDataSetWithDimension.size()-1));
 			log.debug("Start training with "+StringUtils.repeat(" ", 3-String.valueOf((parametersNum+1)).length())+(parametersNum+1)+" parameters and powered by orders: " +StringUtils.join(OrdersOfVars.getOrdersStr(Constant.MAXORDER,parametersNum,dataInLinks.get(0).getStandardDeviation()),","));
 			if(Constant.USE_MULTI_THREAD_FOR_TRAINING){
-				threadPoolExecutor.execute(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet));
+				threadPoolExecutor.execute(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet,dataInLinksMap));
 			}else{
-				new Thread(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet)).run();
+				new Thread(new Training(parametersNum,Constant.FOLDTIME,errorMap,weightMap,fullDataSet,dataInLinksMap)).run();
 			}
 		}
 		
@@ -99,9 +99,13 @@ public class CrossValidation {
 			for(int index=0;index<orders.size();++index){
 				OrdersOfVars order=orders.get(index);
 				double weight=weights[index];
-				y+=x.powerWithOrders(order)*weight;
+				y+=x.powerWithOrders(order,dataInLinksMap)*weight;
 			}
-//			return y;
+			Calendar calendar=Calendar.getInstance();
+			calendar.setTime(x.getStartTime());
+			dataInLinksMap.put(x.getLink().getLink_ID()
+					+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+					+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND), x);
 			return Math.abs(y);
 		};  
 
@@ -109,7 +113,7 @@ public class CrossValidation {
 	}
 
 
-	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks) throws InterruptedException{
+	public static List<double[]>  transferData(int maxOrder,final List<DataInLink> dataInLinks,Map<String,DataInLink> dataInLinksMap) throws InterruptedException{
 		List<double[]> res=new ArrayList<double[]>();
 		DataInLink dataInLink;
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
@@ -120,7 +124,7 @@ public class CrossValidation {
 		for(OrdersOfVars order: orders){
 			double[] oneColData=new double[dataInLinks.size()];
 			res.add(oneColData);
-			threadPoolExecutor.execute(new InitOneCol(oneColData,dataInLinks,order));
+			threadPoolExecutor.execute(new InitOneCol(oneColData,dataInLinks,order,dataInLinksMap));
 		}
 
 		threadPoolExecutor.shutdown();
@@ -146,23 +150,24 @@ class InitOneCol implements Runnable{
 	private double[] oneColData;
 	private List<DataInLink> dataInLinks;
 	private OrdersOfVars order;
-
+	private Map<String,DataInLink> dataInLinksMap;
 
 	@Override
 	public void run() {
 		for(int index=0;index<dataInLinks.size();index++){
 			DataInLink dataInLink=dataInLinks.get(index);
 			if(dataInLink!=null){
-				oneColData[index]=dataInLink.powerWithOrders(order);
+				oneColData[index]=dataInLink.powerWithOrders(order,dataInLinksMap);
 			}
 		}
 	}
 
-	public InitOneCol(double[] oneColData, List<DataInLink> dataInLinks, OrdersOfVars order) {
+	public InitOneCol(double[] oneColData, List<DataInLink> dataInLinks, OrdersOfVars order,Map<String,DataInLink> dataInLinksMap) {
 		super();
 		this.oneColData = oneColData;
 		this.dataInLinks = dataInLinks;
 		this.order = order;
+		this.dataInLinksMap=dataInLinksMap;
 	}
 
 }

@@ -4,11 +4,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import model.DataInLink;
+import model.Link;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -16,12 +20,10 @@ import org.apache.log4j.Logger;
 import Filter.Filters;
 import calculateFeatures.Holiday;
 import controll.Constant;
-import model.DataInLink;
-import model.Link;
 
 public class ReadAsTrainData {
 	private static Logger log = Logger.getLogger(ReadAsTrainData.class);  
-	public static List<DataInLink> readAsTrainData(Map<String,Link> links) throws ParseException, InterruptedException{
+	public static List<DataInLink> readAsTrainData(Map<String,Link> links,Map<String,DataInLink> dataInLinksMap) throws ParseException, InterruptedException{
 		
 		ThreadPoolExecutor threadPoolExecutor=Constant.getThreadPoolExecutor();
 		List<String> uniqueKeys=Collections.synchronizedList(new ArrayList<String>());
@@ -35,7 +37,7 @@ public class ReadAsTrainData {
 
 
 		for(int threadIndex=0;threadIndex<totalThreadNum;++threadIndex){
-			ConvertTxtToDataLink convertTxtToDataLinkI=new ConvertTxtToDataLink(threadIndex,uniqueKeys,dataInLinks,linkInfos,df,df2,links,threadIndex*step,(threadIndex+1)*step-1);
+			ConvertTxtToDataLink convertTxtToDataLinkI=new ConvertTxtToDataLink(threadIndex,uniqueKeys,dataInLinks,dataInLinksMap,linkInfos,df,df2,links,threadIndex*step,(threadIndex+1)*step-1);
 			Thread convertTxtToDataLink=new Thread(convertTxtToDataLinkI);
 			threadPoolExecutor.execute(convertTxtToDataLink);
 		}
@@ -55,6 +57,7 @@ class ConvertTxtToDataLink implements Runnable{
 	int round;
 	List<String> uniqueKeys;
 	List<DataInLink> dataInLinks;
+	Map<String,DataInLink> dataInLinksMap;
 	List<String> linkInfos;
 	DateFormat df;
 	DateFormat df2;
@@ -63,10 +66,11 @@ class ConvertTxtToDataLink implements Runnable{
 	int startIndex;
 	int endIndex;
 
-	public ConvertTxtToDataLink(int round,List<String> uniqueKeys,List<DataInLink> dataInLinks,final List<String> linkInfos, DateFormat df, DateFormat df2, Map<String, Link> links, int startIndex, int endIndex) {
+	public ConvertTxtToDataLink(int round,List<String> uniqueKeys,List<DataInLink> dataInLinks,Map<String,DataInLink> dataInLinksMap,final List<String> linkInfos, DateFormat df, DateFormat df2, Map<String, Link> links, int startIndex, int endIndex) {
 		this.round=round;
 		this.uniqueKeys = uniqueKeys;
 		this.dataInLinks = dataInLinks;
+		this.dataInLinksMap=dataInLinksMap;
 		this.linkInfos = linkInfos;
 		this.df = df;
 		this.df2 = df2;
@@ -126,7 +130,14 @@ class ConvertTxtToDataLink implements Runnable{
 					e.printStackTrace();
 				}
 				dataInLink.setDayInWeek(dataInLink.getDate().getDay());
-				if(Filters.shouldAdd(dataInLink)) dataInLinks.add(dataInLink);
+				if(Filters.shouldAdd(dataInLink)) {
+					dataInLinks.add(dataInLink);
+					Calendar calendar=Calendar.getInstance();
+					calendar.setTime(dataInLink.getStartTime());
+					dataInLinksMap.put(dataInLink.getLink().getLink_ID()
+							+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+							+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND), dataInLink);
+				}
 			}
 		}
 		System.gc();

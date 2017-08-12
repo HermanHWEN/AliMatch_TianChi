@@ -43,7 +43,7 @@ public class DataInLink implements Cloneable{
 	public synchronized double powerWithOrders(OrdersOfVars order,Map<String,DataInLink> dataInLinksMap){
 		Calendar calendar=Calendar.getInstance();
 		calendar.setTime(this.startTime);
-		calendar.add(Calendar.MINUTE, -60);
+		calendar.add(Calendar.MINUTE, -2);
 		DataInLink lastDataInLink;
 		lastDataInLink=dataInLinksMap.get(link.getLink_ID()
 				+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)

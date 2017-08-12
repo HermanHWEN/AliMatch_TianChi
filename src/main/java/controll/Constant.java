@@ -26,8 +26,8 @@ public class Constant {
 	//cross validation
 	public final static int MAXORDER=3;
 	public final static int FOLDTIME=10;//fold time of cross validation
-	public final static int NUM_OF_PARAMS_OF_START=10;
-	public final static int NUM_OF_PARAMS_OF_END=40;
+	public final static int NUM_OF_PARAMS_OF_START=35;
+	public final static int NUM_OF_PARAMS_OF_END=35;
 	
 	
 	//learning rate

@@ -132,12 +132,12 @@ class ConvertTxtToDataLink implements Runnable{
 				dataInLink.setDayInWeek(dataInLink.getDate().getDay());
 				if(Filters.shouldAdd(dataInLink)) {
 					dataInLinks.add(dataInLink);
-					Calendar calendar=Calendar.getInstance();
-					calendar.setTime(dataInLink.getStartTime());
-					dataInLinksMap.put(dataInLink.getLink().getLink_ID()
-							+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
-							+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND), dataInLink);
 				}
+				Calendar calendar=Calendar.getInstance();
+				calendar.setTime(dataInLink.getStartTime());
+				dataInLinksMap.put(dataInLink.getLink().getLink_ID()
+						+calendar.get(Calendar.YEAR)+calendar.get(Calendar.MONTH)+calendar.get(Calendar.DATE)
+						+calendar.get(Calendar.HOUR)+calendar.get(Calendar.MINUTE)+calendar.get(Calendar.SECOND), dataInLink);
 			}
 		}
 		System.gc();
